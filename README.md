@@ -46,3 +46,55 @@ Caratteristiche principali del sistema di chat richiesto:
 - Implementazione: Il sistema di chat deve essere implementato usando la libreria socket.io.
 - Stanze tematiche: Le discussioni devono essere organizzate in stanze tematiche specifiche, ad esempio, stanze dedicate a un particolare film o attore.
 - Partecipanti: Il sistema di chat è pensato per consentire la comunicazione tra fan ed esperti (giornalisti).
+
+---
+# Prima di tutto:
+
+## Dipendenze
+
+Eseguire:
+```bash 
+# dipendenze python
+  pip install -r requirements.txt
+# dipendenze JavaScript/Node.js
+  npm install
+```
+
+### Ambiente virtuale Python (venv)
+
+Per isolare le dipendenze del progetto, è possibile usare un ambiente virtuale Python con venv.
+
+#### 1. Creazione dell'ambiente virtuale
+
+Esegui una sola volta nella cartella del progetto:
+
+```bash
+python -m venv venv
+```
+
+#### 2. Attivazione dell'ambiente virtuale
+
+- **Su Windows:**
+  ```bash
+  .\venv\Scripts\activate
+  ```
+- **Su Mac/Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
+
+#### 3. Installazione delle dipendenze
+
+Dopo aver attivato l'ambiente:
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Disattivazione dell'ambiente
+
+Quando hai finito:
+
+```bash
+deactivate
+```
