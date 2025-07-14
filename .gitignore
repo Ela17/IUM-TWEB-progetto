@@ -1,0 +1,22 @@
+data/
+data_clean/
+Assignment/
+
+# File di cache di Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# File temporanei di Jupyter Notebook
+.ipynb_checkpoints/
+
+# File temporanei di Jupyter Notebook
+.ipynb_checkpoints/
+
+# File temporanei di sistema operativo
+.DS_Store
+Thumbs.db
+
+# Ambienti virtuali Python
+venv/
+.env/
