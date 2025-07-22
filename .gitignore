@@ -6,6 +6,9 @@ Assignment/
 .env
 .env.database
 
+# Directory di jetbrains
+.idea/
+
 # File di cache di Python
 __pycache__/
 *.py[cod]
@@ -50,3 +53,14 @@ yarn-debug.log*
 
 # Package manager files
 package-lock.json
+venv/
+
+# File e cartelle di Node.js/Express
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+# File di build temporanei
+dist/
+build/
