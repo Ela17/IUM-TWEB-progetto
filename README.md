@@ -48,53 +48,53 @@ Caratteristiche principali del sistema di chat richiesto:
 - Partecipanti: Il sistema di chat è pensato per consentire la comunicazione tra fan ed esperti (giornalisti).
 
 ---
-# Prima di tutto:
 
-## Dipendenze
+## 🟢 ISTRUZIONI AVVIO SISTEMA
 
-Eseguire:
-```bash 
-# dipendenze python
-  pip install -r requirements.txt
-# dipendenze JavaScript/Node.js
-  npm install
+### 1. **(Consigliato) Crea e attiva un virtual environment Python**
+
+**Con Git Bash, WSL o terminale Linux/Mac:**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-### Ambiente virtuale Python (venv)
+**Con Git Bash su Windows:**
+```bash
+python -m venv .venv
+source .venv/Scripts/activate
+```
 
-Per isolare le dipendenze del progetto, è possibile usare un ambiente virtuale Python con venv.
+> **Se non vuoi usare un virtual environment, puoi saltare questo passaggio, ma è fortemente consigliato!**
 
-#### 1. Creazione dell'ambiente virtuale
+---
 
-Esegui una sola volta nella cartella del progetto:
+### 2. **Installa Bash se non lo hai già**
+
+- Su Windows puoi usare [Git Bash](https://gitforwindows.org/) oppure WSL.
+
+---
+
+### 3. **Avvia lo script di setup**
+
+Apri il terminale nella cartella del progetto e lancia:
 
 ```bash
-python -m venv venv
+bash ./execute.sh
 ```
 
-#### 2. Attivazione dell'ambiente virtuale
+---
 
-- **Su Windows:**
-  ```bash
-  .\venv\Scripts\activate
-  ```
-- **Su Mac/Linux:**
-  ```bash
-  source venv/bin/activate
-  ```
+### 4. **Segui le istruzioni a schermo**
 
-#### 3. Installazione delle dipendenze
+- Scegli l’azione desiderata dal menu.
+- Inserisci le variabili richieste per i database.
+- Inserisci il percorso dei file CSV quando richiesto.
 
-Dopo aver attivato l'ambiente:
+---
 
-```bash
-pip install -r requirements.txt
-```
+### 5. **Note importanti**
 
-#### 4. Disattivazione dell'ambiente
+- Se vuoi usare un virtual environment, **attivalo prima** di eseguire lo script.
+- Se non hai i database MongoDB e PostgreSQL già creati, creali prima di avviare il setup.
 
-Quando hai finito:
-
-```bash
-deactivate
-```
