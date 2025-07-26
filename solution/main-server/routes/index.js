@@ -1,9 +1,11 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
 
 /* GET home page. */
-router.get('pages/index', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get("/", function (req, res, next) {
+  res.render("index", { title: "Express" });
 });
 
 module.exports = router;
+
+// TODO: inserire la logica per fare chiamate Axios agli altri server
