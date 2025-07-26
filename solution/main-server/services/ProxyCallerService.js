@@ -1,4 +1,4 @@
-// main-server/services/ProxyCallerService.js
+// main-server/services/proxyCallerService.js
 
 const axios = require("axios");
 const createError = require("http-errors");

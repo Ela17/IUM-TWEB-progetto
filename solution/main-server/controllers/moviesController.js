@@ -1,0 +1,135 @@
+// solution/main-server/controllers/MoviesController.js
+
+const URLSearchParams = require("url").URLSearchParams;
+
+/**
+ * @class MoviesController
+ * @description Controller per la gestione delle operazioni relative ai film.
+ * Incapsula la logica di business per la ricerca di film, il recupero dei dettagli
+ * e l'ottenimento di suggerimenti, interagendo con i servizi esterni tramite il ProxyCallerServices.
+ */
+class MoviesController {
+  constructor(proxyService) {
+    this.proxyCallerServices = proxyService;
+  }
+
+  /**
+   * @method searchMovies
+   * @description Gestisce la richiesta di ricerca di film.
+   * Recupera i parametri di ricerca dalla query string della richiesta,
+   * li formatta e invia una richiesta al servizio Spring Boot.
+   * @param {Object} req - L'oggetto Request, contenente i parametri della query.
+   * @param {Object} res - L'oggetto Response per inviare la risposta al client.
+   * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
+   * @throws {Error} Lancia un errore se la chiamata al servizio esterno fallisce.
+   */
+  async searchMovies(req, res, next) {
+    try {
+      const searchParams = new URLSearchParams();
+
+      if (req.query.title) searchParams.set("title", req.query.title);
+      if (req.query.page) searchParams.set("page", req.query.page);
+      if (req.query.limit) searchParams.set("limit", req.query.limit);
+      if (req.query.genre) searchParams.set("genre", req.query.genre);
+      if (req.query.year_from)
+        searchParams.set("year_from", req.query.year_from);
+      if (req.query.year_to) searchParams.set("year_to", req.query.year_to);
+      if (req.query.min_rating)
+        searchParams.set("min_rating", req.query.min_rating);
+      if (req.query.max_rating)
+        searchParams.set("max_rating", req.query.max_rating);
+
+      const endpoint = `/api/movies/search?${searchParams.toString()}`;
+      const springResponse =
+        await this.proxyCallerServices.callSpringBoot(endpoint);
+
+      res.json(springResponse.data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @method getMovieDetails
+   * @description Gestisce la richiesta per recuperare i dettagli aggregati di un film.
+   * Effettua chiamate parallele a due microservizi microservizi:
+   * - Spring Boot per i dettagli del film.
+   * - L'altro server Express per le recensioni e le statistiche delle recensioni.
+   * Aggrega i risultati in un'unica risposta per il client.
+   * @param {Object} req - L'oggetto Request contenente l'ID del film.
+   * @param {Object} res - L'oggetto Response per inviare la risposta al client.
+   * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
+   * @throws {Error} Lancia un errore se la chiamata principale per i dettagli del film fallisce.
+   */
+  async getMovieDetails(req, res, next) {
+    try {
+      const movieId = parseInt(req.params.movieId);
+
+      console.log(`Retreiving data for movie ID: ${movieId}`);
+
+      // Chiamate in parallelo per aggregare i dati
+      const [movieResult, reviewsResults, reviewsStats] = await Promise.all([
+        this.proxyCallerServices.callSpringBoot(`/api/movies/${movieId}`),
+        this.proxyCallerServices.callOtherExpress(
+          `/api/reviews/movie/${movieId}`,
+        ),
+        this.proxyCallerServices.callOtherExpress(
+          `/api/reviews/movie/${movieId}/stats`,
+        ),
+      ]);
+
+      if (movieResult.status === "rejected") {
+        const error = movieResult.reason;
+        error.additionalDetails = {
+          ...(error.additionalDetails ?? {}),
+          message: error.response?.data?.error || null,
+          idMovie: error.response?.data?.movie_id || null,
+          reviewsResults: reviewsResults.status,
+        };
+        next(error);
+      } else {
+        const response = {};
+
+        if (reviewsResults.status === "rejected") {
+          response.reviews = null;
+          response.reviewsStat = null;
+        } else {
+          response.reviews = reviewsResults.value.data;
+          response.reviewsStat = reviewsStats.value.data;
+        }
+
+        response.movieDetails = movieResult.value.data;
+
+        res.status(200).json(response);
+      }
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @method getSuggestions
+   * @description Gestisce la richiesta per ottenere suggerimenti di film.
+   * Invia la query al servizio Spring Boot.
+   * @param {Object} req - L'oggetto Request contenente la query di suggerimento.
+   * @param {Object} res - L'oggetto Response per inviare la risposta al client.
+   * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
+   * @throws {Error} Lancia un errore se la chiamata al servizio esterno fallisce.
+   */
+  async getSuggestions(req, res, next) {
+    try {
+      const searchParams = new URLSearchParams();
+      if (req.query.q) searchParams.set("q", req.query.q);
+
+      const endpoint = `/api/movies/suggestions?${searchParams.toString()}`;
+      const springResponse =
+        await this.proxyCallerServices.callSpringBoot(endpoint);
+
+      res.json(springResponse.data);
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+
+module.exports = MoviesController;
