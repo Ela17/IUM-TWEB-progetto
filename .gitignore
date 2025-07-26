@@ -13,23 +13,37 @@ __pycache__/
 # File temporanei di Jupyter Notebook
 .ipynb_checkpoints/
 
-# File temporanei di Jupyter Notebook
-.ipynb_checkpoints/
-
 # File temporanei di sistema operativo
 .DS_Store
 Thumbs.db
 
 # Ambienti virtuali Python
-venv/
 .env/
+.venv/
 
-# File e cartelle di Node.js/Express
+# File di log
+*.log
+
+# File di configurazione IDE
+.vscode/
+.idea/
+
+# File di pacchetti Python
+*.egg
+*.egg-info/
+dist/
+build/
+
+# File temporanei vari
+*.tmp
+*.bak
+
+# File di database locali
+*.sqlite3
+*.db
+
+# File di output HTML/JS/CSS generati
+/static/
 node_modules/
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
-*.log
-# File di build temporanei
-dist/
-build/
