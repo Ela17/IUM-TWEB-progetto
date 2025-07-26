@@ -51,10 +51,10 @@ update_databases() {
 
     if [ -z "$csv_path" ]; then
         # Nessun path inserito, chiama lo script senza parametri
-        python database/databases_setup.py
+        python solution/database/databases_setup.py
     else
         # Passa il path come parametro
-        python database/databases_setup.py "$csv_path"
+        python solution/database/databases_setup.py "$csv_path"
     fi
 }
 
