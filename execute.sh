@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Funzione per creare/aggiornare il file .env.db
+# Funzione per creare/aggiornare il file .env.database
 create_env() {
     echo "Creazione/aggiornamento delle variabili d'ambiente in corso..."
 
     mkdir -p database
 
-    if [ -f database/.env.db ]; then
-        read -p "Il file 'database/.env.db' esiste già. Vuoi aggiornarlo? (S/N): " overwrite
+    if [ -f database/.env.database ]; then
+        read -p "Il file 'database/.env.database' esiste già. Vuoi aggiornarlo? (S/N): " overwrite
         if [[ "$overwrite" != "s" && "$overwrite" != "S" ]]; then
             echo "Operazione annullata."
             return
@@ -24,17 +24,17 @@ create_env() {
     read -p "PORT: " mongo_port
     read -p "DB_NAME: " mongo_name
 
-    # Scrivi le variabili d'ambiente nel file .env.db
-    echo "POSTGRES_HOST=localhost" > database/.env.db
-    echo "POSTGRES_PORT=$pg_port" >> database/.env.db
-    echo "POSTGRES_DB=$pg_name" >> database/.env.db
-    echo "POSTGRES_USER=$pg_user" >> database/.env.db
-    echo "POSTGRES_PASSWORD=$pg_pass" >> database/.env.db
-    echo "POSTGRES_BATCH_SIZE=1000" >> database/.env.db
-    echo "MONGO_HOST=localhost" >> database/.env.db
-    echo "MONGO_PORT=$mongo_port" >> database/.env.db
-    echo "MONGO_DB=$mongo_name" >> database/.env.db
-    echo "MONGO_BATCH_SIZE=1000" >> database/.env.db
+    # Scrivi le variabili d'ambiente nel file .env.database
+    echo "POSTGRES_HOST=localhost" > database/.env.database
+    echo "POSTGRES_PORT=$pg_port" >> database/.env.database
+    echo "POSTGRES_DB=$pg_name" >> database/.env.database
+    echo "POSTGRES_USER=$pg_user" >> database/.env.database
+    echo "POSTGRES_PASSWORD=$pg_pass" >> database/.env.database
+    echo "POSTGRES_BATCH_SIZE=1000" >> database/.env.database
+    echo "MONGO_HOST=localhost" >> database/.env.database
+    echo "MONGO_PORT=$mongo_port" >> database/.env.database
+    echo "MONGO_DB=$mongo_name" >> database/.env.database
+    echo "MONGO_BATCH_SIZE=1000" >> database/.env.database
 
     echo "Variabili d'ambiente salvate con successo."
 }
