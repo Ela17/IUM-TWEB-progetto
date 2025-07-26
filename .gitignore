@@ -2,9 +2,9 @@ data/
 data_clean/
 Assignment/
 
-# Environment
+# Environment files
 .env
-.env.database
+.env.main-server
 
 # Directory di jetbrains
 .idea/
@@ -21,7 +21,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Ambienti virtuali Python
+# Ambienti virtuali
 .venv/
 
 # File di log
