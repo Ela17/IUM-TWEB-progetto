@@ -4,7 +4,6 @@ Assignment/
 
 # Environment files
 .env
-.env.main-server
 
 # Directory di jetbrains
 .idea/

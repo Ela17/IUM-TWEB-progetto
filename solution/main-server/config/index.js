@@ -16,14 +16,14 @@ const getEnvAsArrayOrDefault = (key, defaultValue) => {
 
 // server principale
 const serverConfig = {
-  port: getEnvAsIntOrDefault("PORT", 3000),
+  port: getEnvAsIntOrDefault("MAIN_SERVER_PORT", 3000),
   enviroment: getEnvOrDefault("NODE_ENV", "development"),
 };
 
 // microservizi
 const servicesConfig = {
   springBoot: {
-    url: getEnvOrDefault("SPRING_BOOT_SERVER_URL", "http://localhost:8080"), // Porta tipica di Spring Boot
+    url: getEnvOrDefault("SPRING_BOOT_SERVER_URL", "http://localhost:8081"), 
     timeout: getEnvAsIntOrDefault("SPRING_BOOT_SERVER_TIMEOUT", 8000), // Timeout più alto per il DB relazionale o logica complessa
   },
 
