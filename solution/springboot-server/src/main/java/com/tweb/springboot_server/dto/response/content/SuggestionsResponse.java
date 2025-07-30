@@ -2,6 +2,8 @@ package com.tweb.springboot_server.dto.response.content;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * DTO che incapsula una lista di suggerimenti di film.
  * Utilizzata nelle risposte API per fornire un elenco di film suggeriti all'utente.
@@ -24,6 +26,8 @@ public class SuggestionsResponse {
     public static class MovieSuggestion {
         private Long id;
         private String name;
+        
+        @JsonProperty("poster_url")
         private String posterUrl;
 
         public MovieSuggestion() {

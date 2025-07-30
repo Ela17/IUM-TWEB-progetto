@@ -46,7 +46,7 @@ public class MovieDetailDto {
      * (Nota: la chiave della mappa rappresenta il paese, ma un film può avere più rilasci nello stesso paese,
      * quindi il valore è una lista di {@link ReleaseDetailDto}).
      */
-    private Map<String, List<ReleaseDetailDto>> releases; // la Key rappresenta country TODO: deve essere una lista per ogni key
+    private Map<String, List<ReleaseDetailDto>> releases; // la Key rappresenta country
     
     /**
      * Una lista di DTO che rappresentano i dettagli dei premi Oscar (nomination e vittorie)
