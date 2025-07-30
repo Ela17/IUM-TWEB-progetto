@@ -1,13 +1,30 @@
+/**
+ * Middleware di gestione centralizzata degli errori.
+ * Standardizza la formattazione delle risposte di errore
+ * e gestisce il logging basato sulla gravità dell'errore, distinguendo
+ * tra errori interni, di validazione, di servizio e client.
+ *
+ * @param {Error} err L'oggetto errore passato dal middleware precedente.
+ * Può contenere proprietà come `status`, `statusCode`, `message`, `code`,
+ * e `additionalDetails`.
+ * @param {import('express').Request} req L'oggetto request di Express.
+ * @param {import('express').Response} res L'oggetto response di Express.
+ * @param {import('express').NextFunction} next La funzione next di Express.
+ * La funzione `next` non è usata per terminare la catena, infatti non si intende delegare ulteriormente l'errore.
+ *
+ * @returns {void} Invia una risposta JSON standardizzata al client con lo stato HTTP appropriato.
+ */
 function standardErrorHandler(err, req, res, next) {
-  let statusCode = 500;
-  let userMessage = "Si è verificato un errore interno del server";
-  let errorCode = "INTERNAL_SERVER_ERROR";
-  let additionalDetails = err?.additionalDetails;
+  let statusCode = err.status || err.statusCode || 500;
+  let userMessage = "Internal Server Error";
+  let errorMessage = err.message || null;
+  let errorCode = err.code || "INTERNAL_SERVER_ERROR";
+  let additionalDetails = err.additionalDetails || null;
   let logLevel = "error";
 
   if (err.name === "ValidationError" || err.code?.startsWith("VALIDATION_")) {
     statusCode = 400;
-    userMessage = err.message;
+    userMessage = "Validation Error";
     errorCode = err.code || "VALIDATION_ERROR";
     logLevel = "warn";
   } else if (
@@ -15,45 +32,47 @@ function standardErrorHandler(err, req, res, next) {
     err.code?.includes("SERVICE_UNAVAILABLE")
   ) {
     // Errori di servizi esterni: problemi con microservizi o database
-
     statusCode = 503;
-    userMessage = "Il servizio è temporaneamente non disponibile.";
+    userMessage = "Service Temporary Unavailable";
     errorCode = err.code || "SERVICE_UNAVAILABLE";
     logLevel = "error";
   } else if (err.status === 404 || err.code?.includes("NOT_FOUND")) {
     // Risorsa non trovata: l'ID richiesto non esiste
     statusCode = 404;
-    userMessage = err.message || "La risorsa richiesta non è stata trovata.";
+    userMessage = "Resource Not Found";
     errorCode = err.code || "RESOURCE_NOT_FOUND";
     logLevel = "info";
   } else if (err.status && err.status >= 400 && err.status < 500) {
-    // Altri errori client: mantieni il status code originale se ragionevole
+    // Altri errori client: mantieni status code originale se ragionevole
     statusCode = err.status;
-    userMessage = err.message || "Errore nella richiesta";
+    userMessage = "Client Request Error";
     errorCode = err.code || "CLIENT_ERROR";
     logLevel = "warn";
   }
 
   const logEntry = {
-    timestamp: new Date().toISOString(),
-    level: logLevel,
-    errorCode: errorCode,
-    message: err.message,
-    statusCode: statusCode,
+    metadata: {
+      timestamp: new Date().toISOString(),
+      level: logLevel
+    },
+    error: {
+      errorName: err.name,
+      statusCode: statusCode,
+      errorMessage: errorMessage,
+      userMessage: userMessage,
+      errorCode: errorCode
+    },
     request: {
       method: req.method,
       url: req.originalUrl,
       userAgent: req.get("User-Agent"),
-      ip: req.ip,
-    },
-    error: {
-      name: err.name,
-      code: err.code,
-      stack: err.stack?.split("\n"),
+      ip: req.ip
     },
     additionalDetails: { ...additionalDetails },
+    stack: err.stack?.split("\n")
   };
 
+  // Console logging basato sul livello di log
   if (logLevel === "error") {
     console.error("CRITICAL ERROR:", JSON.stringify(logEntry, null, 2));
   } else if (logLevel === "warn") {
@@ -62,6 +81,7 @@ function standardErrorHandler(err, req, res, next) {
     console.info("INFO:", JSON.stringify(logEntry, null, 2));
   }
 
+  // Creazione della risposta standardizzata
   const response = {
     success: false,
     error: {

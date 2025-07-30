@@ -1,5 +1,3 @@
-// solution/main-server/middlewares/validations/movieIdValidation.js
-
 const { valMovieId } = require("./common");
 const {validationErrorHandler} =  require('./validationErrorHandler')
 

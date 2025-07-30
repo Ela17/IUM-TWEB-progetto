@@ -1,5 +1,3 @@
-// solution/main-server/middleware/validations/moviesValidation.js
-
 const { query } = require("express-validator");
 const { valTitle, valPage, valLimit } = require("./common");
 const {validationErrorHandler} =  require('./validationErrorHandler')

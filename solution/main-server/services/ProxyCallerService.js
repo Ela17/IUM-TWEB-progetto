@@ -1,5 +1,3 @@
-// main-server/services/proxyCallerService.js
-
 const axios = require("axios");
 const createError = require("http-errors");
 const { servicesConfig } = require("../config");
@@ -13,7 +11,8 @@ const ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE"];
 
 /**
  * @class ProxyCallerService
- * @description Gestisce le chiamate HTTP ai microservizi esterni (Spring Boot e un altro server Express).
+ * @description Classe Signleton che gestisce le chiamate HTTP ai microservizi esterni 
+ * (Spring Boot e un altro server Express).
  * Agisce come un livello di proxy centralizzato, incapsulando la logica di comunicazione
  * e la gestione degli errori per le richieste tra il Main Server e i servizi dipendenti.
  * Le configurazioni (URL e timeout) vengono caricate dal modulo `config/index.js`.
@@ -25,30 +24,25 @@ class ProxyCallerService {
     this.otherExpressUrl = servicesConfig.otherExpress.url;
     this.otherExpressTimeout = servicesConfig.otherExpress.timeout;
 
-    console.log(`ProxyCallerServices initialized!`);
-    console.log(`Spring Boot Server URL: ${this.springBootUrl}`);
-    console.log(`Other Express Server URL: ${this.otherExpressUrl}`);
+    console.log(`🚀 ProxyCallerService initialized!`);
+    console.log(`🌐 Spring Boot Server URL: ${this.springBootUrl}`);
+    console.log(`🌐 Other Express Server URL: ${this.otherExpressUrl}`);
   }
 
   /**
    * @private
    * @method _prepareError
-   * @description Prepara un oggetto errore standardizzato con dettagli aggiuntivi.
-   * @param {Error} originalError - L'errore originale catturato.
+   * @description Prepara un oggetto errore standardizzato con dettagli aggiuntivi a partire dall errore di axios.
+   * @param {Error} axiosError - L'errore di axios.
    * @param {string} serviceType - Una stringa che identifica il tipo di servizio.
-   * @returns {Error} Un oggetto errore `http-errors` arricchito.
+   * @returns {Error} Un oggetto errore `http-errors` arricchito dagli errori.
    */
-  _prepareError(originalError, serviceType) {
-    const status = originalError.response?.status || 500;
-    const message = originalError.response?.data?.message || `Internal error`;
-    const err = createError(status, message);
-
-    err.additionalDetails = {
+  _prepareError(axiosError, serviceType) {
+    axiosError.additionalDetails = {
       serviceType: serviceType,
-      originalError: originalError.message,
-      originalResponseData: originalError.response?.data,
+      ...axiosError.response?.data, // Include i dati di errore della risposta se disponibili
     };
-    return err;
+    return axiosError;
   }
 
   /**
@@ -63,7 +57,7 @@ class ProxyCallerService {
    */
   async callSpringBoot(endpoint, method = "GET", data = null) {
     if (!ALLOWED_METHODS.includes(method.toUpperCase())) {
-      throw createError(405, `HTTP method not allowed: ${method}`);
+      throw createError(405, `HTTP method not allowed: ${method}`, {additionalDetails:{serviceType: "SPRING_BOOT_SERVER",}});
     }
 
     const axiosCallConfig = {
@@ -102,7 +96,7 @@ class ProxyCallerService {
    */
   async callOtherExpress(endpoint, method = "GET", data = null) {
     if (!ALLOWED_METHODS.includes(method.toUpperCase())) {
-      throw createError(405, `HTTP method not allowed: ${method}`);
+      throw createError(405, `HTTP method not allowed: ${method}`, {additionalDetails:{serviceType: "OTHER_EXPRESS_SERVER",}});
     }
 
     const axiosCallConfig = {
@@ -130,4 +124,4 @@ class ProxyCallerService {
   }
 }
 
-module.exports = new ProxyCallerServices(); // singletone
+module.exports = new ProxyCallerService(); // singletone

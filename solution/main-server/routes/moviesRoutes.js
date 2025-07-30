@@ -1,15 +1,13 @@
-// solution/main-server/routes/moviesRoutes.js
-
 const express = require("express");
 const MoviesController = require("../controllers/moviesController"); 
-const { validateMovieId } = require('../middleware/validation/movieIdValidation'); 
-const ProxyCallerServices = require("../services/proxyCallerServices"); 
-const { validateMovieSearch } = require("../middleware/validation/searchMoviesValidation");
+const { validateMovieId } = require('../middlewares/validations/movieIdValidation'); 
+const { validateMovieSearch } = require("../middlewares/validations/searchMoviesValidation");
+
+const proxyService = require("../services/ProxyCallerService"); 
 
 const router = express.Router();
 
-const proxyCallerServices = ProxyCallerServices();
-const moviesController = new MoviesController(proxyCallerServices);
+const moviesController = new MoviesController(proxyService);
 
 /**
  * @api {get} /movies/search Ricerca Film

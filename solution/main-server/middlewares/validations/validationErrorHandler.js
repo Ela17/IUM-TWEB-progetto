@@ -1,4 +1,4 @@
-// solution/main-server/middlewares/validations/validationErrorHandler.js
+const { validationResult } = require("express-validator");
 
 /**
  * @module validationErrorHandler
@@ -7,4 +7,21 @@
  * contenente i dettagli degli errori e passato al prossimo middleware di gestione errori.
  */
 
-// TODO
+const validationErrorHandler = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    const validationError = new Error("Parametri di ricerca non validi");
+    validationError.name = "Validation Error";
+    validationError.code = "VALIDATION_ERROR_SEARCH_MOVIES";
+    validationError.status = 400;
+
+    validationError.additionalDetails = errors.mapped();
+
+    return next(validationError);
+  }
+
+  next();
+};
+
+module.exports = { validationErrorHandler };
