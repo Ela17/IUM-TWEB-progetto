@@ -80,7 +80,7 @@
 						</goals>
 						<configuration>
 							<files>
-								<file>../../.env</file>
+								<file>.env</file>
 							</files>
 						</configuration>
 					</execution>
