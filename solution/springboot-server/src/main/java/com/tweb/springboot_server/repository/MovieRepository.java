@@ -72,7 +72,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecific
      * @param pageable Le informazioni di paginazione.
      * @return Una {@link Page} di {@link Movie} che corrispondono all'ID.
      */
-    Page<Movie> findByMovieId(Long id, Pageable pageable);
+    Page<Movie> findById(Long id, Pageable pageable);
     
     /**
      * Trova una pagina di film il cui nome contiene la stringa specificata, ignorando maiuscole/minuscole.

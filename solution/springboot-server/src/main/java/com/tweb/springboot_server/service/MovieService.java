@@ -195,7 +195,7 @@ public class MovieService {
         // Attori (Map<String, List<String>>) raggruppati per ruolo
         Map<String, List<String>> actorsMap = movie.getActors().stream()
                 .collect(Collectors.groupingBy(Actor::getRole,
-                        Collectors.mapping(Actor::getActor, Collectors.toList())));
+                        Collectors.mapping(Actor::getName, Collectors.toList())));
         dto.setActors(actorsMap);
 
         // Troupe (Map<String, List<String>>) raggruppata per ruolo

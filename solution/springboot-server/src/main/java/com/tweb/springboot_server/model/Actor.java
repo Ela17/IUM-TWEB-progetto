@@ -67,13 +67,13 @@ public class Actor {
      * Restituisce il nome dell'attore.
      * @return Il nome dell'attore.
      */
-    public String getActor() { return actor; }
+    public String getName() { return actor; }
 
     /**
      * Imposta il nome dell'attore.
      * @param actor Il nome dell'attore da impostare.
      */
-    public void setActor(String actor) { this.actor = actor; }
+    public void setName(String actor) { this.actor = actor; }
     
     /**
      * Restituisce il ruolo interpretato dall'attore.
