@@ -5,9 +5,6 @@ Assignment/
 # Environment files
 .env
 
-# Directory di jetbrains
-.idea/
-
 # File di cache di Python
 __pycache__/
 *.py[cod]

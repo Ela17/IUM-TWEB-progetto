@@ -90,11 +90,11 @@ def main():
     if len(sys.argv) > 1:
         data_path = sys.argv[1]
     else:
-        data_path = Path(__file__).resolve().parent.parent / 'data'
+        data_path = Path(__file__).resolve().parent.parent.parent / 'data'
 
     try:
         # Carica configurazioni
-        load_dotenv()
+        load_dotenv('.env')
         validate_environment()
 
         validate_data_directory(data_path)
