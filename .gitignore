@@ -4,7 +4,6 @@ Assignment/
 
 # Environment
 .env
-.env.database
 
 # File di cache di Python
 __pycache__/
