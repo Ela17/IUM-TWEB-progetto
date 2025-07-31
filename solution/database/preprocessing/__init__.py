@@ -4,15 +4,15 @@ Preprocessing e pulizia dati
 
 from .data_cleaning import DataCleaner, clean_data
 from .scripts.normalization import (
-    normalizza_descrizione,
-    normalizza_valutazioni, 
-    normalizza_titolo
+    normalize_description,
+    normalize_score, 
+    normalize_title
 )
 
 __all__ = [
     'DataCleaner',
     'clean_data',
-    'normalizza_descrizione',
-    'normalizza_valutazioni',
-    'normalizza_titolo'
+    'normalize_description',
+    'normalize_score',
+    'normalize_title'
 ]

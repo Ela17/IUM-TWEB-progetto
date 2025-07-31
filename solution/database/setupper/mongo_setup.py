@@ -5,7 +5,6 @@ import os
 import pandas as pd
 from pymongo import MongoClient
 import logging
-from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +102,7 @@ class MongoDBSetup:
             total_inserted = 0
             
             # Inserimento a batch
-            for i in tqdm(range(0, len(documents), self.batch_size), desc=f"Mongo {collection_name}"):
+            for i in range(0, len(documents), self.batch_size): # Rimosso tqdm()
                 batch = documents[i:i + self.batch_size]
                 try:
                     collection.insert_many(batch, ordered=False)
@@ -111,7 +110,7 @@ class MongoDBSetup:
                 except Exception as e:
                     logger.error(f"❌ Errore inserimento batch {i // self.batch_size + 1} in {collection_name}: {e}")
                     raise RuntimeError(f"Errore inserimento batch in {collection_name}: {e}")
-            
+                    
             logger.info(f"✅ {collection_name}: {total_inserted:,} inseriti")
             return total_inserted
         
