@@ -169,7 +169,7 @@ public class MovieController {
             Map<String, Object> filters = buildFiltersMap(filterDto);
             
             Page<MovieSummaryDto> moviePage = movieService.searchMovies(
-                filters, filterDto.getPage(), filterDto.getItemsPerPage()
+                filters, filterDto.getPage(), filterDto.getPerPage()
             );
 
             // Crea metadata di paginazione

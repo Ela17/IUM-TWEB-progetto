@@ -15,6 +15,7 @@ import com.tweb.springboot_server.model.*;
 import com.tweb.springboot_server.repository.MovieRepository;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -114,18 +115,71 @@ public class MovieService {
             Integer yearTo = (Integer) filters.get("year_to");
             Integer minDuration = (Integer) filters.get("min_duration");
             Integer maxDuration = (Integer) filters.get("max_duration");
+
+            String titlePattern = null;
+            if (title != null && !title.trim().isEmpty()) {
+                titlePattern = "%" + title.trim() + "%";
+            }
             
-            // Esegue la query con filtri
+            // Esegue la query con filtri (SENZA fetch joins che causa MultipleBagFetchException)
             Page<Movie> moviePage = movieRepository.searchMoviesWithFilters(
-                title, minRating, maxRating, yearFrom, yearTo,
+                title, titlePattern, minRating, maxRating, yearFrom, yearTo,
                 minDuration, maxDuration, pageable
             );
+
+            if (moviePage.isEmpty()) {
+                return moviePage.map(this::mapToMovieSummaryDto);
+            }
+
+            loadMovieCollections(moviePage.getContent());
 
             return moviePage.map(this::mapToMovieSummaryDto);
         } catch (Exception e) {
             logger.error("Error in searchMovies: {}", e.getMessage(), e);
             throw e;
         }
+    }
+
+    /**
+     * Carica le collezioni di poster e generi per una lista di film.
+     * Utilizza due query separate per evitare il problema MultipleBagFetchException.
+     * Modifica direttamente gli oggetti {@link Movie} passati come parametro.
+     *
+     * @param movies La lista di film per cui caricare poster e generi
+     */
+    private void loadMovieCollections(List<Movie> movies) {
+        if (movies == null || movies.isEmpty()) {
+            return;
+        }
+
+        List<Integer> movieIds = movies.stream()
+            .map(Movie::getId)
+            .collect(Collectors.toList());
+
+        // Carica poster e generi con due query separate
+        List<Movie> moviesWithPosters = movieRepository.findMoviesWithPosters(movieIds);
+        List<Movie> moviesWithGenres = movieRepository.findMoviesWithGenres(movieIds);
+
+        // Creazione mappe per accesso rapido
+        Map<Integer, List<Poster>> posterMap = moviesWithPosters.stream()
+                .collect(Collectors.toMap(
+                    Movie::getId, 
+                    Movie::getPosters,
+                    (existing, replacement) -> existing
+                ));
+
+        Map<Integer, List<Genre>> genreMap = moviesWithGenres.stream()
+                .collect(Collectors.toMap(
+                    Movie::getId, 
+                    Movie::getGenres,
+                    (existing, replacement) -> existing
+                ));
+
+        // Assegna poster e generi ai film originali
+        movies.forEach(movie -> {
+            movie.setPosters(posterMap.getOrDefault(movie.getId(), new ArrayList<>()));
+            movie.setGenres(genreMap.getOrDefault(movie.getId(), new ArrayList<>()));
+        });
     }
 
     /**
@@ -174,8 +228,8 @@ public class MovieService {
         dto.setDate(movie.getDate()); // Anno
         dto.setTagline(movie.getTagline());
         dto.setDescription(movie.getDescription());
-        dto.setMinute(movie.getMinute());
-        dto.setRating(movie.getRating());
+        dto.setMinute(cleanDoubleValue(movie.getMinute())); 
+        dto.setRating(cleanDoubleValue(movie.getRating()));
 
         // Poster URL (primo disponibile)
         if (movie.getPosters() != null && !movie.getPosters().isEmpty()) {
@@ -253,7 +307,7 @@ public class MovieService {
         dto.setId(movie.getId());
         dto.setName(movie.getName());
         dto.setDate(movie.getDate());
-        dto.setRating(movie.getRating());
+        dto.setRating(cleanDoubleValue(movie.getRating()));
 
         // Poster URL (primo disponibile)
         if (movie.getPosters() != null && !movie.getPosters().isEmpty()) {
@@ -263,5 +317,17 @@ public class MovieService {
         }
 
         return dto;
+    }
+
+    /**
+     * Pulisce un valore Double convertendo NaN e Infinity in null.
+     * @param value Il valore da pulire
+     * @return Il valore pulito o null se era NaN/Infinity
+     */
+    private Double cleanDoubleValue(Double value) {
+        if (value == null || value.isNaN() || value.isInfinite()) {
+            return null;
+        }
+        return value;
     }
 }

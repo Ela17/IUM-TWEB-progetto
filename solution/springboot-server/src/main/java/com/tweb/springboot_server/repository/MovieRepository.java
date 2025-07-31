@@ -23,26 +23,14 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpecificationExecutor<Movie> {
 
     /**
-     * Recupera i dettagli completi di un film tramite il suo ID, includendo tutte le relazioni
-     * tramite LEFT JOIN FETCH per caricare i dati correlati.
-     * Assicura che il film abbia un nome non nullo e non vuoto.
-     *
+     * Recupera i dettagli di un film tramite il suo ID.
+     * Carica tutte le relazioni tramite lazy loading quando vengono accedute nel Service.
+     * 
      * @param id L'ID del film da cercare.
      * @return Un {@link Optional} contenente l'entità {@link Movie} con tutti i dettagli,
      * o un {@link Optional#empty()} se non trovato o se il nome è nullo/vuoto.
      */
-    @Query("SELECT m FROM Movie m " +
-           "LEFT JOIN FETCH m.genres g " +
-           "LEFT JOIN FETCH m.posters p " +
-           "LEFT JOIN FETCH m.countries c " +
-           "LEFT JOIN FETCH m.languages l " +
-           "LEFT JOIN FETCH m.studios s " +
-           "LEFT JOIN FETCH m.themes t " +
-           "LEFT JOIN FETCH m.actors a " +
-           "LEFT JOIN FETCH m.crews cr " +
-           "LEFT JOIN FETCH m.releases r " +
-           "LEFT JOIN FETCH m.oscars o " +
-           "WHERE m.id = :id AND m.name IS NOT NULL AND m.name != ''")
+    @Query("SELECT m FROM Movie m WHERE m.id = :id AND m.name IS NOT NULL AND m.name != ''")
     Optional<Movie> findMovieDetailsById(@Param("id") Integer id);
 
     /**
@@ -99,7 +87,6 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
     
     /**
      * Cerca film applicando vari filtri come titolo, rating minimo/massimo, anno di produzione e durata.
-     * I risultati includono un JOIN FETCH sui poster per un caricamento ottimizzato.
      * Il nome del film non deve essere nullo o vuoto.
      *
      * @param title La stringa da cercare nel titolo del film (può essere {@code null} per ignorare).
@@ -113,10 +100,8 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
      * @return Una {@link Page} di {@link Movie} che soddisfano tutti i criteri di filtro.
      */
     @Query("SELECT DISTINCT m FROM Movie m " +
-           "LEFT JOIN FETCH m.genres g " +
-           "LEFT JOIN FETCH m.posters " +
            "WHERE m.name IS NOT NULL AND m.name != '' " +
-           "AND (:title IS NULL OR LOWER(m.name) LIKE LOWER(CONCAT('%', :title, '%'))) AND " +
+           "AND (:title IS NULL OR LOWER(m.name) LIKE LOWER(:titlePattern)) AND " +
            "(:minRating IS NULL OR m.rating >= :minRating) AND " +
            "(:maxRating IS NULL OR m.rating <= :maxRating) AND " +
            "(:yearFrom IS NULL OR m.date >= :yearFrom) AND " +
@@ -125,6 +110,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
            "(:maxDuration IS NULL OR m.minute <= :maxDuration)")
     Page<Movie> searchMoviesWithFilters(
         @Param("title") String title,
+        @Param("titlePattern") String titlePattern,
         @Param("minRating") Double minRating,
         @Param("maxRating") Double maxRating,
         @Param("yearFrom") Integer yearFrom,
@@ -132,6 +118,18 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
         @Param("minDuration") Integer minDuration,
         @Param("maxDuration") Integer maxDuration,
         Pageable pageable);
+
+    /**
+    * Carica i poster per una lista di film specificata.
+    */
+    @Query("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.posters WHERE m.id IN :movieIds")
+    List<Movie> findMoviesWithPosters(@Param("movieIds") List<Integer> movieIds);
+
+    /**
+    * Carica i generi per una lista di film specificata.
+    */
+    @Query("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.genres WHERE m.id IN :movieIds")
+    List<Movie> findMoviesWithGenres(@Param("movieIds") List<Integer> movieIds);
 
 }
 

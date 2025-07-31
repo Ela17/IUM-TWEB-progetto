@@ -290,16 +290,16 @@ public class MovieFilterRequestDto {
      * Restituisce il numero di elementi da visualizzare per pagina.
      * @return Il numero di elementi per pagina.
      */
-    public int getItemsPerPage() {
+    public int getPerPage() {
         return perPage;
     }
 
     /**
      * Imposta il numero di elementi da visualizzare per pagina.
-     * @param itemsPerPage Il numero di elementi per pagina da impostare.
+     * @param perPage Il numero di elementi per pagina da impostare.
      */
-    public void setItemsPerPage(int itemsPerPage) {
-        this.perPage = itemsPerPage;
+    public void setPerPage(int perPage) {
+        this.perPage = perPage;
     }
 
     /**
