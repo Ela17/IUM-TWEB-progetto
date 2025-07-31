@@ -40,7 +40,7 @@ def validate_environment():
     
     if missing_vars:
         logger.error(f"❌ Variabili d'ambiente mancanti: {', '.join(missing_vars)}")
-        logger.error("💡 Verifica il file .env.database")
+        logger.error("💡 Verifica il file .env")
         sys.exit(1)
     
     logger.info("✅ Tutte le variabili d'ambiente sono presenti")
@@ -90,11 +90,11 @@ def main():
     if len(sys.argv) > 1:
         data_path = sys.argv[1]
     else:
-        data_path = Path(__file__).resolve().parent.parent / 'data'
+        data_path = Path(__file__).resolve().parent.parent.parent / 'data'
 
     try:
         # Carica configurazioni
-        load_dotenv('database/.env.database')
+        load_dotenv('.env')
         validate_environment()
 
         validate_data_directory(data_path)

@@ -3,11 +3,9 @@ Setup e popolamento PostgreSQL
 """
 
 import os
-import sys
 import psycopg2
 from psycopg2.extras import execute_batch, RealDictCursor
 import pandas as pd
-from tqdm import tqdm
 import logging
 
 logger = logging.getLogger(__name__)
@@ -213,7 +211,7 @@ class PostgreSQLSetup:
             total_inserted = 0
             
             # Inserimento a batch
-            for i in tqdm(range(0, len(data), self.batch_size), desc=f"PG {table_name}", file=sys.stdout):
+            for i in range(0, len(data), self.batch_size):
                 batch = data[i:i + self.batch_size]
                 execute_batch(self.cursor, query, batch)
                 total_inserted += len(batch)
