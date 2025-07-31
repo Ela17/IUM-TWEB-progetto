@@ -18,13 +18,13 @@ public class Theme {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * L'ID del film a cui il tema è associato. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
 
     /**
      * Il nome del tema (es. "Amore", "Guerra", "Avventura").
@@ -49,13 +49,13 @@ public class Theme {
      * Restituisce l'identificatore unico del tema.
      * @return L'ID del tema.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del tema.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce il nome del tema.

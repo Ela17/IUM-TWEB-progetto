@@ -18,13 +18,13 @@ public class Poster {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * L'ID del film a cui il poster è associato. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
 
     /**
      * Il link (URL) all'immagine del poster.
@@ -49,13 +49,13 @@ public class Poster {
      * Restituisce l'identificatore unico del poster.
      * @return L'ID del poster.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del poster.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce il link (URL) del poster.

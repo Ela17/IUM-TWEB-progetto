@@ -19,13 +19,13 @@ public class Crew {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
     /**
      * L'ID del film a cui il membro della troupe è associato. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
     
     /**
      * Il ruolo del membro della troupe.
@@ -56,13 +56,13 @@ public class Crew {
      * Restituisce l'identificatore unico del membro della troupe.
      * @return L'ID del membro della troupe.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del membro della troupe.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
     
     /**
      * Restituisce il ruolo del membro della troupe.

@@ -18,13 +18,13 @@ public class Language {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
     /**
      * L'ID del film a cui la lingua è associata. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
     
     /**
      * Il tipo di lingua (es. "Original", "Dubbed", "Subtitled").
@@ -55,13 +55,13 @@ public class Language {
      * Restituisce l'identificatore unico della lingua.
      * @return L'ID della lingua.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
     
     /**
      * Imposta l'identificatore unico della lingua.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce il tipo di lingua.

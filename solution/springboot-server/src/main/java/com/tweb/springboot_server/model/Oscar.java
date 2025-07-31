@@ -20,7 +20,7 @@ public class Oscar {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * L'anno in cui è stato rilasciato il film.
@@ -68,7 +68,7 @@ public class Oscar {
      * L'ID del film a cui l'Oscar è associato. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
 
     /**
      * L'entità {@link Movie} a cui questo Oscar è associato.
@@ -87,13 +87,13 @@ public class Oscar {
      * Restituisce l'identificatore unico del record Oscar.
      * @return L'ID del record Oscar.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del record Oscar.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce l'anno in cui è stato rilasciato il film.

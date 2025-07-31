@@ -18,13 +18,13 @@ public class Studio {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * L'ID del film a cui lo studio è associato. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
 
     /**
      * Il nome dello studio di produzione.
@@ -49,13 +49,13 @@ public class Studio {
      * Restituisce l'identificatore unico dello studio.
      * @return L'ID dello studio.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico dello studio.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce il nome dello studio di produzione.

@@ -14,11 +14,10 @@ import java.util.List;
 public class Movie {
 
     /**
-     * Identificatore unico del film. È la chiave primaria auto-generata.
+     * Identificatore unico del film. È la chiave primaria.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * Il titolo del film.
@@ -48,7 +47,7 @@ public class Movie {
      * La durata del film in minuti.
      */
     @Column(name = "minute")
-    private Integer minute;
+    private Double minute;
 
     /**
      * La valutazione del film.
@@ -147,13 +146,13 @@ public class Movie {
      * Restituisce l'identificatore unico del film.
      * @return L'ID del film.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del film.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce il titolo del film.
@@ -207,13 +206,13 @@ public class Movie {
      * Restituisce la durata del film in minuti.
      * @return La durata del film.
      */
-    public Integer getMinute() { return minute; }
+    public Double getMinute() { return minute; }
 
     /**
      * Imposta la durata del film in minuti.
      * @param minute La durata da impostare.
      */
-    public void setMinute(Integer minute) { this.minute = minute; }
+    public void setMinute(Double minute) { this.minute = minute; }
 
     /**
      * Restituisce il rating medio del film.

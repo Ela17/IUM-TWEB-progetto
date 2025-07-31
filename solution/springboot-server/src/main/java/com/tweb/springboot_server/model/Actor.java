@@ -18,19 +18,19 @@ public class Actor {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
     
     /**
      * L'ID del film a cui l'attore è associato (è la chiave esterna).
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
     
     /**
      * Il nome dell'attore.
      */
-    @Column(name = "actor")
-    private String actor;
+    @Column(name = "name")
+    private String name;
     
     /**
      * Il ruolo interpretato dall'attore nel film.
@@ -55,25 +55,25 @@ public class Actor {
      * Restituisce l'identificatore unico dell'attore.
      * @return L'ID dell'attore.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico dell'attore.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
     
     /**
      * Restituisce il nome dell'attore.
      * @return Il nome dell'attore.
      */
-    public String getName() { return actor; }
+    public String getName() { return name; }
 
     /**
      * Imposta il nome dell'attore.
      * @param actor Il nome dell'attore da impostare.
      */
-    public void setName(String actor) { this.actor = actor; }
+    public void setName(String name) { this.name = name; }
     
     /**
      * Restituisce il ruolo interpretato dall'attore.

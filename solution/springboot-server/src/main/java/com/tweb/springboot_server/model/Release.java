@@ -20,13 +20,13 @@ public class Release {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * L'ID del film a cui il rilascio è associato. Questa colonna è la chiave esterna.
      */
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
 
     /**
      * Il paese di riferimento per questo rilascio.
@@ -69,13 +69,13 @@ public class Release {
      * Restituisce l'identificatore unico del rilascio.
      * @return L'ID del rilascio.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del rilascio.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
 
     /**
      * Restituisce il paese di riferimento per questo rilascio.

@@ -18,13 +18,13 @@ public class Genre {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
    
     /**
      * L'ID del film a cui il genere è associato. Questa colonna è la chiave esterna.
      */ 
     @Column(name = "id_movie")
-    private Long idMovie;
+    private Integer idMovie;
     
     /**
      * Il nome del genere (es. "Azione", "Commedia", "Drammatico").
@@ -49,13 +49,13 @@ public class Genre {
      * Restituisce l'identificatore unico del genere.
      * @return L'ID del genere.
      */
-    public Long getId() { return id; }
+    public Integer getId() { return id; }
 
     /**
      * Imposta l'identificatore unico del genere.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) { this.id = id; }
+    public void setId(Integer id) { this.id = id; }
     
     /**
      * Restituisce il nome del genere.
