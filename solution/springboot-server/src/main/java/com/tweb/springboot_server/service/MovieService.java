@@ -47,7 +47,7 @@ public class MovieService {
 
     /**
      * Recupera i dettagli completi di un film tramite il suo ID.
-     * Utilizza {@link MovieRepository#findMovieDetailsById(Long)} per ottenere l'entità
+     * Utilizza {@link MovieRepository#findMovieDetailsById(Integer)} per ottenere l'entità
      * {@link Movie} e poi la mappa a un {@link MovieDetailDto}.
      *
      * @param movieId L'ID del film da cercare.
@@ -55,7 +55,7 @@ public class MovieService {
      * o un {@link Optional#empty()} se non esiste.
      * @throws RuntimeException Se si verifica un errore durante l'accesso al database o la mappatura.
      */
-    public Optional<MovieDetailDto> getMovieDetails(Long movieId) {
+    public Optional<MovieDetailDto> getMovieDetails(Integer movieId) {
         try {
             Optional<Movie> movieOptional = movieRepository.findMovieDetailsById(movieId);
             return movieOptional.map(this::mapToMovieDetailDto);

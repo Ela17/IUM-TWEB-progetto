@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * essenziali di un film, come l'ID, il titolo, l'anno, il rating e l'URL del poster.
  */
 public class MovieSummaryDto {
-    private Long id;
+    private Integer id;
     private String name;
     private Integer date;   // Anno di uscita del film
     private Double rating;
@@ -23,7 +23,7 @@ public class MovieSummaryDto {
     public MovieSummaryDto() {
     }
 
-    public MovieSummaryDto(Long id, String name, Integer date, Double rating, String posterUrl) {
+    public MovieSummaryDto(Integer id, String name, Integer date, Double rating, String posterUrl) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -35,7 +35,7 @@ public class MovieSummaryDto {
      * Restituisce l'identificatore unico del film.
      * @return L'ID del film.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -75,7 +75,7 @@ public class MovieSummaryDto {
      * Imposta l'identificatore unico del film.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

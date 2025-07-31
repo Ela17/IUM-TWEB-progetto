@@ -24,7 +24,7 @@ public class SuggestionsResponse {
      * e l'URL del poster.
      */
     public static class MovieSuggestion {
-        private Long id;
+        private Integer id;
         private String name;
         
         @JsonProperty("poster_url")
@@ -33,7 +33,7 @@ public class SuggestionsResponse {
         public MovieSuggestion() {
         }
 
-        public MovieSuggestion(Long id, String name, String posterUrl) {
+        public MovieSuggestion(Integer id, String name, String posterUrl) {
             this.id = id;
             this.name = name;
             this.posterUrl = posterUrl;
@@ -43,7 +43,7 @@ public class SuggestionsResponse {
          * Restituisce l'identificatore unico del film suggerito.
          * @return L'ID del film.
          */
-        public Long getId() {
+        public Integer getId() {
             return id;
         }
 
@@ -51,7 +51,7 @@ public class SuggestionsResponse {
          * Imposta l'identificatore unico del film suggerito.
          * @param id L'ID da impostare.
          */
-        public void setId(Long id) {
+        public void setId(Integer id) {
             this.id = id;
         }
 

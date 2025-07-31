@@ -61,7 +61,7 @@ public class MovieController {
     public ResponseEntity<ApiResponse<MovieDetailDto>> getMovieDetails(
             @PathVariable 
             @Min(value = MovieConstants.MIN_MOVIE_ID, message = "Movie ID must be positive") 
-            Long movieId) {
+            Integer movieId) {
         try {
             Optional<MovieDetailDto> movieDetail = movieService.getMovieDetails(movieId);
 

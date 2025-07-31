@@ -12,12 +12,12 @@ import java.util.Map;
  */
 public class MovieDetailDto {
 
-    private Long id;
+    private Integer id;
     private String name;
     private Integer date;
     private String tagline;
     private String description;
-    private Integer minute;
+    private Double minute;
     private Double rating;
 
     /**
@@ -59,8 +59,8 @@ public class MovieDetailDto {
     public MovieDetailDto() {
     }
 
-    public MovieDetailDto(Long id, String name, Integer date, String tagline, String description,
-                          Integer minute, Double rating, String posterUrl, List<String> genres,
+    public MovieDetailDto(Integer id, String name, Integer date, String tagline, String description,
+                          Double minute, Double rating, String posterUrl, List<String> genres,
                           List<String> studios, List<String> themes, List<String> countries,
                           Map<String, List<String>> actors, Map<String, List<String>> crews,
                           Map<String, List<String>> languages, Map<String, List<ReleaseDetailDto>> releases,
@@ -88,7 +88,7 @@ public class MovieDetailDto {
      * Restituisce l'identificatore unico del film.
      * @return L'ID del film.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -128,7 +128,7 @@ public class MovieDetailDto {
      * Restituisce la durata del film in minuti.
      * @return La durata del film.
      */
-    public Integer getMinute() {
+    public Double getMinute() {
         return minute;
     }
 
@@ -224,7 +224,7 @@ public class MovieDetailDto {
      * Imposta l'identificatore unico del film.
      * @param id L'ID da impostare.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -264,7 +264,7 @@ public class MovieDetailDto {
      * Imposta la durata del film in minuti.
      * @param minute La durata da impostare.
      */
-    public void setMinute(Integer minute) {
+    public void setMinute(Double minute) {
         this.minute = minute;
     }
 

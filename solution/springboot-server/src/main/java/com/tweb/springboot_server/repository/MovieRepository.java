@@ -20,7 +20,7 @@ import java.util.Optional;
  * Importante: Spring Data JPA genera automaticamente un'implementazione a runtime.
  */
 @Repository
-public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
+public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpecificationExecutor<Movie> {
 
     /**
      * Recupera i dettagli completi di un film tramite il suo ID, includendo tutte le relazioni
@@ -43,7 +43,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecific
            "LEFT JOIN FETCH m.releases r " +
            "LEFT JOIN FETCH m.oscars o " +
            "WHERE m.id = :id AND m.name IS NOT NULL AND m.name != ''")
-    Optional<Movie> findMovieDetailsById(@Param("id") Long id);
+    Optional<Movie> findMovieDetailsById(@Param("id") Integer id);
 
     /**
      * Trova una lista di film il cui nome contiene la stringa specificata, ignorando maiuscole/minuscole.
@@ -72,7 +72,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecific
      * @param pageable Le informazioni di paginazione.
      * @return Una {@link Page} di {@link Movie} che corrispondono all'ID.
      */
-    Page<Movie> findById(Long id, Pageable pageable);
+    Page<Movie> findById(Integer id, Pageable pageable);
     
     /**
      * Trova una pagina di film il cui nome contiene la stringa specificata, ignorando maiuscole/minuscole.
