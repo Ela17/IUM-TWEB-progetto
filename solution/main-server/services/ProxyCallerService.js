@@ -11,7 +11,7 @@ const ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE"];
 
 /**
  * @class ProxyCallerService
- * @description Classe Signleton che gestisce le chiamate HTTP ai microservizi esterni 
+ * @description Classe Signleton che gestisce le chiamate HTTP ai microservizi esterni
  * (Spring Boot e un altro server Express).
  * Agisce come un livello di proxy centralizzato, incapsulando la logica di comunicazione
  * e la gestione degli errori per le richieste tra il Main Server e i servizi dipendenti.
@@ -57,7 +57,9 @@ class ProxyCallerService {
    */
   async callSpringBoot(endpoint, method = "GET", data = null) {
     if (!ALLOWED_METHODS.includes(method.toUpperCase())) {
-      throw createError(405, `HTTP method not allowed: ${method}`, {additionalDetails:{serviceType: "SPRING_BOOT_SERVER",}});
+      throw createError(405, `HTTP method not allowed: ${method}`, {
+        additionalDetails: { serviceType: "SPRING_BOOT_SERVER" },
+      });
     }
 
     const axiosCallConfig = {
@@ -96,7 +98,9 @@ class ProxyCallerService {
    */
   async callOtherExpress(endpoint, method = "GET", data = null) {
     if (!ALLOWED_METHODS.includes(method.toUpperCase())) {
-      throw createError(405, `HTTP method not allowed: ${method}`, {additionalDetails:{serviceType: "OTHER_EXPRESS_SERVER",}});
+      throw createError(405, `HTTP method not allowed: ${method}`, {
+        additionalDetails: { serviceType: "OTHER_EXPRESS_SERVER" },
+      });
     }
 
     const axiosCallConfig = {

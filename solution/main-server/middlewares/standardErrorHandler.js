@@ -53,23 +53,23 @@ function standardErrorHandler(err, req, res, next) {
   const logEntry = {
     metadata: {
       timestamp: new Date().toISOString(),
-      level: logLevel
+      level: logLevel,
     },
     error: {
       errorName: err.name,
       statusCode: statusCode,
       errorMessage: errorMessage,
       userMessage: userMessage,
-      errorCode: errorCode
+      errorCode: errorCode,
     },
     request: {
       method: req.method,
       url: req.originalUrl,
       userAgent: req.get("User-Agent"),
-      ip: req.ip
+      ip: req.ip,
     },
     additionalDetails: { ...additionalDetails },
-    stack: err.stack?.split("\n")
+    stack: err.stack?.split("\n"),
   };
 
   // Console logging basato sul livello di log

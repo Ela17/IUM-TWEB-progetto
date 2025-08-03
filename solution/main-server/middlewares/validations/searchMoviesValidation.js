@@ -1,6 +1,6 @@
 const { query } = require("express-validator");
 const { valTitle, valPage, valLimit } = require("./common");
-const {validationErrorHandler} =  require('./validationErrorHandler')
+const { validationErrorHandler } = require("./validationErrorHandler");
 
 /**
  * @module moviesValidation
@@ -44,6 +44,6 @@ const validateMovieSearch = [
   validationErrorHandler,
 ];
 
-module.exports = { 
-  validateMovieSearch, 
+module.exports = {
+  validateMovieSearch,
 };

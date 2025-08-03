@@ -1,9 +1,13 @@
 const express = require("express");
-const MoviesController = require("../controllers/moviesController"); 
-const { validateMovieId } = require('../middlewares/validations/movieIdValidation'); 
-const { validateMovieSearch } = require("../middlewares/validations/searchMoviesValidation");
+const MoviesController = require("../controllers/moviesController");
+const {
+  validateMovieId,
+} = require("../middlewares/validations/movieIdValidation");
+const {
+  validateMovieSearch,
+} = require("../middlewares/validations/searchMoviesValidation");
 
-const proxyService = require("../services/ProxyCallerService"); 
+const proxyService = require("../services/ProxyCallerService");
 
 const router = express.Router();
 
@@ -18,7 +22,7 @@ const moviesController = new MoviesController(proxyService);
 router.get(
   "/movies/search",
   validateMovieSearch, // middleware di validazione
-  moviesController.searchMovies.bind(moviesController) // Delega al controller
+  moviesController.searchMovies.bind(moviesController), // Delega al controller
 );
 
 /**
@@ -28,7 +32,7 @@ router.get(
  */
 router.get(
   "/movies/suggestions",
-  moviesController.getSuggestions.bind(moviesController) 
+  moviesController.getSuggestions.bind(moviesController),
 );
 
 /**
@@ -40,7 +44,7 @@ router.get(
 router.get(
   "/movies/:movieId",
   validateMovieId, // Middleware di validazione
-  moviesController.getMovieDetails.bind(moviesController)
+  moviesController.getMovieDetails.bind(moviesController),
 );
 
 module.exports = router;
