@@ -6,12 +6,12 @@
 // === VALIDAZIONE E LIMITI ===
 const VALIDATION_LIMITS = {
   // Messaggi
-  MESSAGE_MAX_LENGTH: 500,
+  MESSAGE_MAX_LENGTH: 1000,
   MESSAGE_MIN_LENGTH: 1,
   
   // Utenti
-  NICKNAME_MIN_LENGTH: 3,
-  NICKNAME_MAX_LENGTH: 20,
+  NICKNAME_MIN_LENGTH: 10,
+  NICKNAME_MAX_LENGTH: 25,
   
   // Stanze
   ROOM_NAME_MIN_LENGTH: 3,
@@ -49,7 +49,7 @@ const CLEANUP_CHAT_CONFIG = {
 const VALIDATION_PATTERNS = {
   UNIQUE_TIMESTAMP: /^\d+_\d{3}$/,
   ROOM_NAME: /^[a-zA-Z0-9_-]+$/,
-  NICKNAME: /^[a-zA-Z0-9_-]+$/,
+  USERNAME: /^[a-zA-Z_0-9]+$/
 };
 
 // === VALORI ENUM ===
