@@ -73,7 +73,7 @@ class MongoDBSetup:
             self.db = self.client[self.database]
 
             # Crea collezioni
-            collections = ['reviews', 'oscar_awards', 'messages']
+            collections = ['reviews', 'rooms', 'messages']
             for collection in collections:
                 try:
                     self.db.create_collection(collection)
@@ -102,7 +102,7 @@ class MongoDBSetup:
             total_inserted = 0
             
             # Inserimento a batch
-            for i in range(0, len(documents), self.batch_size): # Rimosso tqdm()
+            for i in range(0, len(documents), self.batch_size):
                 batch = documents[i:i + self.batch_size]
                 try:
                     collection.insert_many(batch, ordered=False)
@@ -122,28 +122,35 @@ class MongoDBSetup:
         logger.info("📊 Creando indici MongoDB...")
 
         try:
-            logger.info("📝 Indici per recensioni...")
+            logger.info("⭐ Indici per recensioni...")
             
             self.db.reviews.create_index("movie_title")
+            self.db.reviews.create_index("id_movie")
             self.db.reviews.create_index("critic_name")
             self.db.reviews.create_index("review_date")
             self.db.reviews.create_index("review_type")
             self.db.reviews.create_index("review_score")
             self.db.reviews.create_index("publisher_name")
-            self.db.reviews.create_index([("movie_title", 1), ("review_date", -1)])
+            self.db.reviews.create_index([("id_movie", 1), ("review_date", -1)])
+            self.db.reviews.create_index([("movie_title", 1), ("review_type", 1)])
             
             logger.info("✅ Indici recensioni creati")
 
             logger.info("💬 Indici per messaggi chat...")
-            
-            # ID messaggio univoco
-            self.db.messages.create_index("messageId", unique=True)
+
+            self.db.messages.create_index([("roomName", 1), ("uniqueTimestamp", -1)])
+            self.db.messages.create_index("uniqueTimestamp")
             self.db.messages.create_index("roomName")
-            self.db.messages.create_index("timestamp")
-            self.db.messages.create_index([("roomName", 1), ("timestamp", -1)])
-            self.db.messages.create_index("userName")
             
             logger.info("✅ Indici messaggi creati")
+
+            logger.info("🏠 Indici per stanze chat...")
+
+            self.db.rooms.create_index("roomName")
+            self.db.rooms.create_index("last_activity")
+
+            logger.info("✅ Indici stanze creati")
+
             logger.info("🚀 Tutti gli indici MongoDB creati - performance ottimizzate!")
             
         except Exception as e:
