@@ -1,7 +1,10 @@
 {
-  "name": "central-server",
+  "name": "main-server",
   "version": "0.0.0",
+  "description": "Central Express server acting as proxy/aggregator for cinema data management system. Coordinates access between PostgreSQL (static film data via Spring Boot), MongoDB (dynamic reviews via Express), and provides real-time chat via Socket.IO for film enthusiasts and journalists.",
   "private": true,
+  "main": "./bin/www",
+  "author": "Elena Derosas - 1049692",
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
@@ -18,10 +21,16 @@
     "express-validator": "^7.2.1",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "nodemon": "3.1.10",
     "prettier": "3.6.2"
+  },
+  "engines": {
+    "node": ">=22.15.0",
+    "npm": ">=9.0.0"
   }
 }
