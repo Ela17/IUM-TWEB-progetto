@@ -7,7 +7,7 @@ const { SOCKET_SYSTEM_EVENTS } = require("../constants/socketConstants");
  */
 class DisconnectionHandler {
   constructor() {
-    this.usersMetadataManager = getUsersMetadataManager();
+    this.usersMetadataManager = getUsersMetadataManager;
   }
 
   /**

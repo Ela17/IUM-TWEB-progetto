@@ -67,4 +67,4 @@ class ErrorSocketHandler {
   }
 }
 
-module.exports = (io) = new ErrorSocketHandler(io); // singleton
+module.exports = (io) => new ErrorSocketHandler(io); // singleton

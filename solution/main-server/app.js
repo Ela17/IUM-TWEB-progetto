@@ -4,7 +4,8 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var healthRouter = require("./routes/health");
-var moviesRouter = require("./routes/moviesRoutes");
+var moviesRouter = require("./routes/movies");
+var chatRouter = require("./routes/chat");
 
 var standardErrorHandler = require("./middlewares/standardErrorHandler");
 
@@ -30,7 +31,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", healthRouter);
-app.use("/api", moviesRouter);
+app.use("/api", moviesRouter); // solo dati JSON (REST API)
+app.use("/chat", chatRouter); // pagine + WebSocket
 
 app.use(function (req, res, next) {
   const error = new Error("Not Found");

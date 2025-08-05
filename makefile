@@ -9,7 +9,7 @@ MAIN_SERVER_DIR = solution/main-server
 # Regola predefinita: setup e avvio di tutti i componenti
 all: setup_all run_all
 
----
+
 
 ## Gestione dell'ambiente virtuale Python
 .PHONY: venv install_python_deps clean_venv
@@ -32,7 +32,7 @@ clean_venv:
 	rm -rf $(PYTHON_ENV_NAME)
 	@echo "Ambiente virtuale Python rimosso."
 
----
+
 
 ## Gestione del server Spring Boot (Java)
 .PHONY: compile_springboot run_springboot clean_springboot install_java_deps
@@ -64,7 +64,6 @@ clean_springboot:
 	cd $(SPRINGBOOT_DIR) && mvn clean
 	@echo "File di build di Spring Boot rimossi."
 
----
 
 ## Gestione del server principale (Express Node.js)
 .PHONY: install_main_server_deps run_main_server clean_main_server
@@ -72,7 +71,7 @@ clean_springboot:
 # Installa le dipendenze Node.js specificate in package.json.
 install_main_server_deps:
 	@echo "Installazione delle dipendenze Node.js per il server principale..."
-	cd $(MAIN_SERVER_DIR) && npm install
+	cd $(MAIN_SERVER_DIR) && npm install --production
 	@echo "Dipendenze Node.js installate."
 
 # Avvia il server principale (Node.js) in background.
@@ -87,7 +86,7 @@ clean_main_server:
 	rm -rf $(MAIN_SERVER_DIR)/node_modules
 	@echo "Dipendenze Node.js rimosse."
 
----
+
 
 ## Esecuzione di script Python
 .PHONY: run_db_setup
@@ -99,7 +98,7 @@ run_db_setup: install_python_deps
 	$(PYTHON) solution/database/databases_setup.py $(PATH_PARAM)
 	@echo "Setup del database completato."
 
----
+
 
 ## Regole composite per setup e avvio
 .PHONY: setup_all run_all
@@ -115,7 +114,7 @@ run_all: run_springboot run_main_server
 	@echo "Il makefile ha completato l'esecuzione. I server sono in background."
 	@echo "Potrebbe essere necessario terminare i processi manualmente (es. con 'killall java' o 'killall node')."
 
----
+
 
 ## Pulizia generale del progetto
 .PHONY: clean

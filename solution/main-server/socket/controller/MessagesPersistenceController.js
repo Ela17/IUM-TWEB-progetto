@@ -1,4 +1,4 @@
-const proxyCallerServices = require("../../services/proxyCallerServices");
+const proxyCallerServices = require("../../services/ProxyCallerService");
 const uniqueTimestampGenerator = require("../utils/uniqueTimestampGenerator");
 const {
   PERSISTENCE_MODES,
@@ -283,4 +283,4 @@ class MessagesPersistenceController {
   }
 }
 
-module.exports = MessagesPersistenceController(); // singleton
+module.exports = new MessagesPersistenceController(); // singleton

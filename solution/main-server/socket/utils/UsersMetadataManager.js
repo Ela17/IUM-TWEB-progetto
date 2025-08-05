@@ -102,7 +102,9 @@ class UsersMetadataManager {
 
     const userProfile = this.usersMetadata.get(socketId);
     if (!userProfile) {
-      console.warn(`⚠️ Attempted to update room for non-existent user: ${socketId}`);
+      console.warn(
+        `⚠️ Attempted to update room for non-existent user: ${socketId}`,
+      );
       return;
     }
 
@@ -150,8 +152,8 @@ class UsersMetadataManager {
   /**
    * Genera un nickname univoco basato su aggettivi e nomi a tema cinematografico.
    * Assicura che il nickname generato non sia già in uso da un altro utente connesso.
-   * 
-   * Nota: in scenari reali con un numero estremamente elevato di utenti, 
+   *
+   * Nota: in scenari reali con un numero estremamente elevato di utenti,
    * questa operazione potrebbe diventare inefficiente.
    *
    * @private

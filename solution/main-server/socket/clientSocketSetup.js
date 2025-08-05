@@ -1,5 +1,5 @@
-const getRoomEventsHandler = require("../eventsHandlers/RoomEventsHandler");
-const getMessageEventsHandler = require("../eventsHandlers/MessageEventsHandler");
+const getRoomEventsHandler = require("./eventHandlers/RoomEventsHandler");
+const getMessageEventsHandler = require("./eventHandlers/MessageEventsHandler");
 const { handleDisconnection } = require("./eventHandlers/DisconnectionHandler");
 
 /**
@@ -29,7 +29,6 @@ function setupClientSocket(
   try {
     console.log(`🎯 Setup base per client: ${clientSocket.id}`);
 
-    // STEP 1: Registriamo l'utente nel nostro sistema
     const userProfile = usersMetadataManager.registerUser(clientSocket.id);
 
     clientSocket.on("disconnect", (reason) => {
@@ -39,7 +38,6 @@ function setupClientSocket(
     roomEventsHandler.setupEventListeners(clientSocket, errorSocketHandler);
     messageEventsHandler.setupEventListeners(clientSocket, errorSocketHandler);
 
-    // STEP 3: Inviamo un messaggio di benvenuto semplice
     clientSocket.emit("welcome", {
       success: true,
       message: "Connesso con successo!",

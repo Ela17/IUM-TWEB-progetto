@@ -2,7 +2,7 @@ const socketIo = require("socket.io");
 const { socketConfig } = require("../config/index");
 const { setupClientSocket } = require("./clientSocketSetup");
 const getUsersMetadataManager = require("./utils/UsersMetadataManager");
-const getErrorSocketHandler = require("./utils/errorSocketHandler");
+const getErrorSocketHandler = require("./eventHandlers/ErrorSocketHandler");
 
 /**
  * @function createSocketServer
@@ -17,7 +17,7 @@ const getErrorSocketHandler = require("./utils/errorSocketHandler");
 function createSocketServer(httpServer, options = socketConfig) {
   try {
     const io = socketIo(httpServer, options);
-    const usersMetadataManager = getUsersMetadataManager();
+    const usersMetadataManager = getUsersMetadataManager;
     const errorSocketHandler = getErrorSocketHandler(io);
     console.log("User Manager configured");
 
@@ -32,7 +32,6 @@ function createSocketServer(httpServer, options = socketConfig) {
     });
 
     console.log("Server socket configurato");
-    return io;
   } catch (error) {
     console.error("++ CRITICO ++ , ERROR IN SETUP SOCKET SERVER", error);
   }

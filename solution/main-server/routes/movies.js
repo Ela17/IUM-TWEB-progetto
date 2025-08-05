@@ -1,5 +1,5 @@
 const express = require("express");
-const MoviesController = require("../controllers/moviesController");
+
 const {
   validateMovieId,
 } = require("../middlewares/validations/movieIdValidation");
@@ -8,6 +8,7 @@ const {
 } = require("../middlewares/validations/searchMoviesValidation");
 
 const proxyService = require("../services/ProxyCallerService");
+const MoviesController = require("../controllers/MoviesController");
 
 const router = express.Router();
 
@@ -45,6 +46,30 @@ router.get(
   "/movies/:movieId",
   validateMovieId, // Middleware di validazione
   moviesController.getMovieDetails.bind(moviesController),
+);
+
+/**
+ * @api {get} /movies/:movieId/reviews Recensioni Film
+ * @apiGroup Movies
+ * @apiDescription Recupera le recensioni per un film specifico con paginazione.
+ * Proxy → Other Express Server: `/reviews/movie/:movieId`
+ */
+router.get(
+  "/movies/:movieId/reviews",
+  validateMovieId,
+  moviesController.getMovieReviews.bind(moviesController),
+);
+
+/**
+ * @api {get} /movies/:movieId/reviews/stats Statistiche Recensioni Film
+ * @apiGroup Movies
+ * @apiDescription Recupera le statistiche aggregate delle recensioni per un film.
+ * Proxy → Other Express Server: `/reviews/movie/:movieId/stats`
+ */
+router.get(
+  "/movies/:movieId/reviews/stats",
+  validateMovieId,
+  moviesController.getMovieReviewsStats.bind(moviesController),
 );
 
 module.exports = router;

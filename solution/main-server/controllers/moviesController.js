@@ -1,12 +1,11 @@
-// solution/main-server/controllers/MoviesController.js
-
 const URLSearchParams = require("url").URLSearchParams;
 
 /**
  * @class MoviesController
  * @description Controller per la gestione delle operazioni relative ai film.
- * Incapsula la logica di business per la ricerca di film, il recupero dei dettagli
- * e l'ottenimento di suggerimenti, interagendo con i servizi esterni tramite il ProxyCallerServices.
+ * Agisce come proxy/aggregatore tra il frontend e i microservizi backend:
+ * - Spring Boot (PostgreSQL) per i dati statici dei film
+ * - Other Express Server (MongoDB) per le recensioni dinamiche
  */
 class MoviesController {
   constructor(proxyService) {
@@ -126,6 +125,49 @@ class MoviesController {
         await this.proxyCallerServices.callSpringBoot(endpoint);
 
       res.json(springResponse.data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @method getMovieReviews
+   * @description Recupera le recensioni per un film specifico con paginazione.
+   * Proxy diretto verso l'endpoint: `/reviews/movie/:movieId`
+   */
+  async getMovieReviews(req, res, next) {
+    try {
+      const movieId = parseInt(req.params.movieId);
+
+      const searchParams = new URLSearchParams();
+      if (req.query.page) searchParams.set("page", req.query.page);
+      if (req.query.sortBy) searchParams.set("sortBy", req.query.sortBy);
+      if (req.query.orderBy) searchParams.set("orderBy", req.query.orderBy);
+
+      const endpoint = `/reviews/movie/${movieId}?${searchParams.toString()}`;
+      const response =
+        await this.proxyCallerServices.callOtherExpress(endpoint);
+
+      res.json(response.data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @method getMovieReviewsStats
+   * @description Recupera le statistiche delle recensioni per un film.
+   * Proxy diretto verso il tuo endpoint: `/reviews/movie/:movieId/stats`
+   */
+  async getMovieReviewsStats(req, res, next) {
+    try {
+      const movieId = parseInt(req.params.movieId);
+
+      const endpoint = `/reviews/movie/${movieId}/stats`;
+      const response =
+        await this.proxyCallerServices.callOtherExpress(endpoint);
+
+      res.json(response.data);
     } catch (error) {
       next(error);
     }
