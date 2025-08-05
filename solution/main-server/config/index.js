@@ -33,7 +33,7 @@ const getEnvAsIntOrDefault = (key, defaultValue) =>
  */
 const serverConfig = {
   port: getEnvAsIntOrDefault("MAIN_SERVER_PORT", 3000),
-  enviroment: getEnvOrDefault("NODE_ENV", "development"),
+  environment: getEnvOrDefault("NODE_ENV", "development"),
 };
 
 /**
@@ -67,7 +67,7 @@ const socketConfig = {
  * @namespace corsConfig
  * @description Configurazione CORS per Express
  */
-corsConfig = {
+const corsConfig = {
   origin: [
     getEnvOrDefault("OTHER_EXPRESS_SERVER_URL", "http://localhost:3001"),
     getEnvOrDefault("SPRING_BOOT_SERVER_URL", "http://localhost:8081"),
@@ -76,10 +76,10 @@ corsConfig = {
   credentials: true, // Permette invio cookies/auth headers
 };
 
-morganConfig = "dev";
+const morganConfig = "dev";
 
-jsonConfig = {};
-urlencodedConfig = { extended: true };
+const jsonConfig = {};
+const urlencodedConfig = { extended: true };
 
 module.exports = {
   serverConfig,

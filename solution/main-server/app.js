@@ -1,7 +1,15 @@
 var express = require("express");
 var path = require("path");
+var cors = require("cors");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+
+const {
+  corsConfig,
+  morganConfig,
+  jsonConfig,
+  urlencodedConfig,
+} = require("./config");
 
 var healthRouter = require("./routes/health");
 var moviesRouter = require("./routes/movies");
@@ -24,9 +32,10 @@ app.engine(
 );
 app.set("view engine", "hbs");
 
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(logger(morganConfig));
+app.use(cors(corsConfig));
+app.use(express.json(jsonConfig));
+app.use(express.urlencoded(urlencodedConfig));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
