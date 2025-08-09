@@ -1,58 +1,15 @@
-## Punnti chiave per l'implementazione del progetto:
-
-### Front-end
-La pagina web deve essere realizzata con HTML, Javascript, CSS e Handlebars e deve consentire di interrogare ed esplorare i dati relativi ai film. Questa pagina web deve fornire un'interfaccia utente per consentire a fan e giornalisti di accedere ai dati sui film. Le principali funzionalità richieste includono:
-- Query dei dati: La pagina deve permettere agli utenti di eseguire query sui dati.
-- Esplorazione dei dati: Oltre alla possibilità di interrogare, la pagina web deve consentire agli utenti di esplorare i dati disponibili.
-- Interfaccia utente: La pagina web deve fornire un'interfaccia utente accessibile e facile da usare per i fan e giornalisti.
-- Visualizzazione dei risultati: La pagina deve presentare i risultati delle query in un formato chiaro e comprensibile. 
-
-In sintesi, la pagina web deve essere progettata per facilitare l'accesso e l'analisi dei dati sui film da parte di diversi tipi di utenti.
-
----
-
-### Server
-
-- Javascript (Express): Alcuni server devono essere implementati in Javascript utilizzando il framework Express. In particolare è richiesto un server centrale implementato in Express che comunichi con altri server per l'accesso al database.
-- Java (Spring Boot): Alcuni server devono essere implementati in Java utilizzando Spring Boot. Almeno uno dei server che comunicano con il server centrale deve essere scritto in Java Spring Boot.
-- Python (Flask): Alcuni server possono essere implementati in Python usando il framework Flask.
-
----
-
-### Database
-
-- Dati dinamici: I dati con un tasso di cambiamento elevato, come le recensioni e gli incassi, devono essere memorizzati in un database MongoDB.
-- Dati statici: I dati più statici, come le informazioni sugli attori, i loro film e i vincitori degli Oscar, devono essere memorizzati in un database PostGres.
-
----
-
-### Visualizzazione Dati: Guida Jupyter Notebook
-
-I Jupyter Notebook devono includere una vasta gamma di visualizzazioni e non limitarsi a un solo tipo di grafico, come i grafici a barre. È necessario includere anche alcune visualizzazioni geografiche. In generale, si richiede di utilizzare una varietà di tipi di visualizzazione per l'analisi dei dati.
-
-In sintesi, le visualizzazioni richieste nel Jupyter Notebook sono:
-- Varietà di visualizzazioni: Non limitarsi a un solo tipo di grafico, come i grafici a barre.
-- Visualizzazioni geografiche: Includere anche alcune visualizzazioni geografiche.
-
-L'obiettivo è quello di mostrare una comprensione approfondita dei dati attraverso diverse rappresentazioni grafiche. I Jupyter Notebook devono essere forniti in formato eseguito, mostrando tutti i grafici e le tabelle, senza la necessità di eseguirli durante la valutazione.
-
----
-
-### Chat
-
-Viene richiesto un sistema di chat tra fan ed esperti per discutere di argomenti specifici. Questo sistema di chat deve essere implementato utilizzando socket.io.
-
-Caratteristiche principali del sistema di chat richiesto:
-- Implementazione: Il sistema di chat deve essere implementato usando la libreria socket.io.
-- Stanze tematiche: Le discussioni devono essere organizzate in stanze tematiche specifiche, ad esempio, stanze dedicate a un particolare film o attore.
-- Partecipanti: Il sistema di chat è pensato per consentire la comunicazione tra fan ed esperti (giornalisti).
-
----
-
 ## 🟢 ISTRUZIONI AVVIO SISTEMA
 
 ### 1. **(Consigliato) Crea e attiva un virtual environment Python**
 
+Questo è un passo fortemente consigliato per gestire le dipendenze in modo isolato.
+
+**Con makefile**
+```bash
+make venv
+```
+
+**Comando alternativo da terminale:**
 **Con Git Bash, WSL o terminale Linux/Mac:**
 ```bash
 python3 -m venv .venv
@@ -65,36 +22,151 @@ python -m venv .venv
 source .venv/Scripts/activate
 ```
 
-> **Se non vuoi usare un virtual environment, puoi saltare questo passaggio, ma è fortemente consigliato!**
+> Se non vuoi usare un virtual environment, puoi saltare questo passaggio, ma è fortemente consigliato!
 
 ---
 
 ### 2. **Installa Bash se non lo hai già**
 
-- Su Windows puoi usare [Git Bash](https://gitforwindows.org/) oppure WSL.
+- Su Windows puoi usare [Git Bash](https://gitforwindows.org/) oppure WSL per eseguire i comandi da terminale.
 
 ---
 
-### 3. **Avvia lo script di setup**
+### 3. **Avvia il setup dei db (da fare una volta sola)**
 
+Questo setup popola i database con i dati iniziali dai file CSV puliti e normalizzati.
+
+**Con makefile**
 Apri il terminale nella cartella del progetto e lancia:
 
 ```bash
-bash ./execute.sh
+make run_db_setup path_data_csv
+```
+
+dove `path_data_csv` è il path alla directory dove conservi i csv originali.
+Se lo lasci vuoto, il sistema utilizzerà il path di default `./data`
+
+**Comando alternativo da terminale**
+Apri il terminale nella cartella del progetto e lancia:
+
+```bash
+python3 solution/database/databases_setup.py path_data_csv
 ```
 
 ---
 
-### 4. **Segui le istruzioni a schermo**
+### 4. **Avvia tutti i server**
 
-- Scegli l’azione desiderata dal menu.
-- Inserisci le variabili richieste per i database.
-- Inserisci il percorso dei file CSV quando richiesto.
+Questo comando avvierà tutti i server necessari per il corretto funzionamento del sistema.
+
+1. Esporta le variabili d'ambiente per il database:
+```bash
+export POSTGRES_USER="il_tuo_utente" # necessario solo se non è quello di default (postgres)
+export POSTGRES_PASSWORD="la_tua_password"
+```
+In alternativa, puoi configurare queste variabili nel file `solution/springboot-server/src/main/resources/application.properties`.
+Senza questo primo passaggio, il server Spring Boot non può collegarsi al database.
+
+2. Avvia i server in background:
+**Con makefile**
+Apri il terminale nella cartella del progetto e lancia:
+```bash
+make run_all
+```
+Questo comando installerà prima le dipendenze necessarie e poi avvierà tutti i servizi in background.
+
+**Comandi alternativi da terminale**
+```bash
+# Spring Boot Server
+cd solution/springboot-server && mvn package -DskipTests && java -jar target/*.jar &
+# Express Mongo Server
+cd ../express-mongo-server && npm install --production && npm start &
+# Main Server
+cd ../main-server && npm install --production && npm start &
+```
 
 ---
 
-### 5. **Note importanti**
+### 5. Avvia i singoli server
 
-- Se vuoi usare un virtual environment, **attivalo prima** di eseguire lo script.
+Se preferisci avviare ogni server singolarmente in terminali separati, puoi usare i seguenti comandi.
+
+##### **Avvio del server Spring Boot (Java)**
+1. Esporta le variabili d'ambiente per il database:
+```bash
+export POSTGRES_USER="il_tuo_utente" # necessario solo se non è quello di default (postgres)
+export POSTGRES_PASSWORD="la_tua_password"
+```
+In alternativa, puoi configurare queste variabili nel file `solution/springboot-server/src/main/resources/application.properties`.
+Senza questo primo passaggio, il server Spring Boot non può collegarsi al database.
+
+2. Compila e avvia il server:
+**Con makefile**
+```bash
+run_springboot
+```
+
+**Comando alternativo da terminale**
+```bash
+cd solution/springboot-server
+mvn package -DskipTests
+java -jar target/*.jar &
+```
+
+##### **Avvio del server Express (Node.js) per MongoDB**
+**Con makefile**
+```bash
+run_express_server
+```
+
+**Comando alternativo da terminale**
+```bash
+cd solution/express-mongo-server
+npm install --production
+npm start &
+```
+
+##### **Avvio del server principale (Node.js)**
+**Con makefile**
+```bash
+run_main_server
+```
+
+**Comando alternativo da terminale**
+```bash
+cd solution/main-server
+npm install --production
+npm start &
+```
+
+---
+
+### 6. **Pulizia del sistema**
+
+Per pulire i file temporanei, le cache e le dipendenze generate, esegui:
+
+**Con makefile**
+```bash
+make clean
+```
+
+**Comandi alternativi da terminale:**
+```bash
+rm -rf .venv
+cd solution/springboot-server && mvn clean
+cd ../express-mongo-server && rm -rf node_modules
+cd ../main-server && rm -rf node_modules
+find . -type f -name "*.pyc" -delete
+find . -type d -name "__pycache__" -delete
+rm -rf .pytest_cache .mypy_cache
+```
+
+---
+
+### 7. **Note importanti**
+
 - Se non hai i database MongoDB e PostgreSQL già creati, creali prima di avviare il setup.
+- Assicurati di avere i file `.env` nelle directories `solution/database`, `solution/main-server` e `solution/express-mongo-server`. Puoi copiare il contenuto dei file `.env.template` e personalizzarlo con le tue variabili d'ambiente.
+- Se vuoi installare subito tutte le dipendenze, lancia `make setup_all` (ma viene fatto automaticamente all'avvio dei server).
+
 
