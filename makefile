@@ -5,11 +5,11 @@ PIP = $(PYTHON_ENV_NAME)/bin/pip
 REQUIREMENTS = requirements.txt
 SPRINGBOOT_DIR = solution/springboot-server
 MAIN_SERVER_DIR = solution/main-server
+EXPRESS_SERVER_DIR = solution/express-mongo-server
 
 # Regola predefinita: setup e avvio di tutti i componenti
 all: setup_all run_all
 
----
 
 ## Gestione dell'ambiente virtuale Python
 .PHONY: venv install_python_deps clean_venv
@@ -32,7 +32,6 @@ clean_venv:
 	rm -rf $(PYTHON_ENV_NAME)
 	@echo "Ambiente virtuale Python rimosso."
 
----
 
 ## Gestione del server Spring Boot (Java)
 .PHONY: compile_springboot run_springboot clean_springboot install_java_deps
@@ -64,7 +63,28 @@ clean_springboot:
 	cd $(SPRINGBOOT_DIR) && mvn clean
 	@echo "File di build di Spring Boot rimossi."
 
----
+
+## Gestione del secondo server Express (Express Node.js)
+.PHONY: install_express_server_deps run_express_server clean_express_server
+
+# Installa le dipendenze Node.js specificate in package.json.
+install_express_server_deps:
+	@echo "Installazione delle dipendenze Node.js per il server express..."
+	cd $(EXPRESS_SERVER_DIR) && npm install --production
+	@echo "Dipendenze Node.js installate."
+
+# Avvia il server express (Node.js) in background.
+run_express_server: install_express_server_deps
+	@echo "Avvio del server express (Node.js)..."
+	cd $(EXPRESS_SERVER_DIR) && npm start &
+	@echo "Server express avviato in background."
+
+# Pulisce le dipendenze Node.js rimuovendo la cartella node_modules.
+clean_express_server:
+	@echo "Pulizia delle dipendenze Node.js..."
+	rm -rf $(EXPRESS_SERVER_DIR)/node_modules
+	@echo "Dipendenze Node.js rimosse."
+
 
 ## Gestione del server principale (Express Node.js)
 .PHONY: install_main_server_deps run_main_server clean_main_server
@@ -72,7 +92,7 @@ clean_springboot:
 # Installa le dipendenze Node.js specificate in package.json.
 install_main_server_deps:
 	@echo "Installazione delle dipendenze Node.js per il server principale..."
-	cd $(MAIN_SERVER_DIR) && npm install
+	cd $(MAIN_SERVER_DIR) && npm install --production
 	@echo "Dipendenze Node.js installate."
 
 # Avvia il server principale (Node.js) in background.
@@ -87,7 +107,6 @@ clean_main_server:
 	rm -rf $(MAIN_SERVER_DIR)/node_modules
 	@echo "Dipendenze Node.js rimosse."
 
----
 
 ## Esecuzione di script Python
 .PHONY: run_db_setup
@@ -99,31 +118,29 @@ run_db_setup: install_python_deps
 	$(PYTHON) solution/database/databases_setup.py $(PATH_PARAM)
 	@echo "Setup del database completato."
 
----
 
 ## Regole composite per setup e avvio
 .PHONY: setup_all run_all
 
 # Target per installare tutte le dipendenze di tutti i componenti
-setup_all: install_python_deps install_java_deps install_main_server_deps
+setup_all: install_python_deps install_java_deps install_express_server_deps install_main_server_deps
 	@echo "Tutte le dipendenze sono state installate."
 
 # Target per avviare tutti i servizi del progetto.
 # I server vengono avviati in background.
-run_all: run_springboot run_main_server
+run_all: run_springboot run_express_server run_main_server
 	@echo "Tutti i servizi sono stati avviati."
 	@echo "Il makefile ha completato l'esecuzione. I server sono in background."
 	@echo "Potrebbe essere necessario terminare i processi manualmente (es. con 'killall java' o 'killall node')."
 
----
 
 ## Pulizia generale del progetto
 .PHONY: clean
 
 # Pulisce tutti i file temporanei, cache e dipendenze generate da tutti i componenti.
-clean: clean_venv clean_springboot clean_main_server
+clean: clean_venv clean_springboot clean_express_server clean_main_server
 	@echo "Pulizia dei file temporanei e dei cache Python..."
 	find . -type f -name "*.pyc" -delete
 	find . -type d -name "__pycache__" -delete
-	rm -rf .pytest_cache .mypy_cache # Rimuove cache di pytest e mypy se presenti
+	rm -rf .pytest_cache .mypy_cache
 	@echo "Pulizia generale completata."
