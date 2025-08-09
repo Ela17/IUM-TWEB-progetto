@@ -10,7 +10,7 @@
  * - Formattazione della risposta finale
  */
 
-const { reviewModel } = require("../models/reviewModel");
+const reviewModel = require("../models/reviewModel");
 const { ENUMS, VALIDATION_LIMITS } = require("../config/constants");
 
 /**
@@ -36,17 +36,16 @@ exports.getReviewsByMovieId = async function (req, res, next) {
 
     const orderBy = req.query.orderBy === "asc" ? 1 : -1;
 
-    // chiamata al model
     const pagination = {
       page: page,
       limit: VALIDATION_LIMITS.DEFAULT_PAGE_SIZE,
       sortBy: sortBy,
-      sortOrder: orderBy,
+      sortOrder: orderBy
     };
 
     const reviewsById = await reviewModel.getReviewsByMovieId(
       movieId,
-      pagination,
+      pagination
     );
 
     if (reviewsById.reviews.length === 0) {

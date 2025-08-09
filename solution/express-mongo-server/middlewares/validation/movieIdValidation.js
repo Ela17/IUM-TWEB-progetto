@@ -1,5 +1,5 @@
 const { valMovieId, valPage } = require("./common");
-const { validationErrorHandler } = require("./validationErrorHandler");
+const validationErrorHandler = require("./validationErrorHandler");
 
 /**
  * @module MovieIdValidation
@@ -8,8 +8,8 @@ const { validationErrorHandler } = require("./validationErrorHandler");
  * che la richiesta venga processata dal controller.
  */
 
-validateMovieId = [valMovieId, valPage, validationErrorHandler];
+const validateMovieId = [valMovieId, validationErrorHandler];
 
 module.exports = {
-  validateMovieId,
+  validateMovieId
 };
