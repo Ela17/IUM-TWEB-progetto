@@ -117,27 +117,6 @@ const TIMING_CONFIG = Object.freeze({
   PING_INTERVAL: 25000, // 25 secondi - intervallo ping Socket.IO
 });
 
-// ============================================================================
-// ERROR CODES
-// ============================================================================
-
-/**
- * @enum {string}
- * @readonly
- * @description Codici di errore standardizzati per il sistema di chat
- */
-const CHAT_ERROR_CODES = Object.freeze({
-  VALIDATION_ERROR_MESSAGE_DATA: "VALIDATION_ERROR_MESSAGE_DATA",
-  VALIDATION_ERROR_ROOM_DATA: "VALIDATION_ERROR_ROOM_DATA",
-  VALIDATION_ERROR_USER_DATA: "VALIDATION_ERROR_USER_DATA",
-  SERVICE_UNAVAILABLE_MONGODB: "SERVICE_UNAVAILABLE_MONGODB",
-  ROOM_NOT_FOUND: "ROOM_NOT_FOUND",
-  USER_NOT_FOUND: "USER_NOT_FOUND",
-  ROOM_ALREADY_EXISTS: "ROOM_ALREADY_EXISTS",
-  UNAUTHORIZED_ACTION: "UNAUTHORIZED_ACTION",
-  QUEUE_OVERFLOW: "QUEUE_OVERFLOW",
-});
-
 module.exports = {
   STATS_OPERATIONS,
   ROOM_EVENTS,
@@ -150,6 +129,4 @@ module.exports = {
 
   MESSAGE_LIMITS,
   TIMING_CONFIG,
-
-  CHAT_ERROR_CODES,
 };

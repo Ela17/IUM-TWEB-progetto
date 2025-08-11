@@ -1,35 +1,48 @@
-// solution/main-server/middlewares/validations/common.js
-
-const { query, param } = require("express-validator");
-
 /**
- * @module common
- * @description Modulo che definisce pattern di validazione comuni riutilizzabili in tutta l'applicazione.
+ * @fileoverview Modulo che definisce pattern di validazione comuni riutilizzabili in tutta l'applicazione.
  * Questi validatori sono basati su `express-validator` e possono essere importati e usati
  * in vari middleware di validazione specifici per le rotte.
  */
 
+const { query, param } = require("express-validator");
+const { MOVIE_VALIDATION_LIMITS } = require("../../config/constants");
+
 const valTitle = query("title")
   .optional()
   .trim()
-  .isLength({ min: 2, max: 100 })
-  .withMessage("Il titolo deve essere tra 2 e 100 caratteri");
+  .isLength({
+    min: MOVIE_VALIDATION_LIMITS.TITLE_MIN_LENGTH,
+    max: MOVIE_VALIDATION_LIMITS.TITLE_MAX_LENGTH,
+  })
+  .withMessage(
+    `Title must be between ${MOVIE_VALIDATION_LIMITS.TITLE_MIN_LENGTH} and ${MOVIE_VALIDATION_LIMITS.TITLE_MAX_LENGTH} characters`,
+  );
 
 const valPage = query("page")
   .optional()
-  .isInt({ min: 1, max: 10000 })
-  .withMessage("La pagina deve essere un numero tra 1 e 10000")
+  .isInt({
+    min: MOVIE_VALIDATION_LIMITS.PAGE_MIN,
+    max: MOVIE_VALIDATION_LIMITS.PAGE_MAX,
+  })
+  .withMessage(
+    `Page must be a number between ${MOVIE_VALIDATION_LIMITS.PAGE_MIN} and ${MOVIE_VALIDATION_LIMITS.PAGE_MAX}`,
+  )
   .toInt();
 
 const valLimit = query("limit")
   .optional()
-  .isInt({ min: 1, max: 100 })
-  .withMessage("Il limite deve essere un numero tra 1 e 100")
+  .isInt({
+    min: MOVIE_VALIDATION_LIMITS.LIMIT_MIN,
+    max: MOVIE_VALIDATION_LIMITS.LIMIT_MAX,
+  })
+  .withMessage(
+    `Limit must be a number between ${MOVIE_VALIDATION_LIMITS.LIMIT_MIN} and ${MOVIE_VALIDATION_LIMITS.LIMIT_MAX}`,
+  )
   .toInt();
 
 const valMovieId = param("movieId")
-  .isInt({ min: 1 })
-  .withMessage("ID film deve essere un numero positivo")
+  .isInt({ min: MOVIE_VALIDATION_LIMITS.MOVIE_ID_MIN })
+  .withMessage("Movie ID must be a positive number")
   .toInt();
 
 module.exports = {

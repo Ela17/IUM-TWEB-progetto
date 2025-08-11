@@ -1,8 +1,10 @@
-var express = require("express");
-var path = require("path");
-var cors = require("cors");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const express = require("express");
+const path = require("path");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 
 const {
   corsConfig,
@@ -11,13 +13,13 @@ const {
   urlencodedConfig,
 } = require("./config");
 
-var healthRouter = require("./routes/health");
-var moviesRouter = require("./routes/movies");
-var chatRouter = require("./routes/chat");
+const healthRouter = require("./routes/health");
+const moviesRouter = require("./routes/movies");
+const chatRouter = require("./routes/chat");
 
-var standardErrorHandler = require("./middlewares/standardErrorHandler");
+const standardErrorHandler = require("./middlewares/standardErrorHandler");
 
-var app = express();
+const app = express();
 
 app.set("views", path.join(__dirname, "views"));
 const { engine } = require("express-handlebars");
@@ -38,6 +40,8 @@ app.use(express.json(jsonConfig));
 app.use(express.urlencoded(urlencodedConfig));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use("/", healthRouter);
 app.use("/api", moviesRouter); // solo dati JSON (REST API)

@@ -7,18 +7,48 @@ const {
   validateMovieSearch,
 } = require("../middlewares/validations/searchMoviesValidation");
 
-const proxyService = require("../services/ProxyCallerService");
-const MoviesController = require("../controllers/MoviesController");
+const moviesController = require("../controllers/MoviesController");
 
 const router = express.Router();
 
-const moviesController = new MoviesController(proxyService);
-
 /**
- * @api {get} /movies/search Ricerca Film
- * @apiGroup Movies
- * @apiDescription Permette di cercare film basandosi su vari parametri (titolo, genere, anno, rating, paginazione).
- * Il middleware `validateMovieSearch` valida i parametri della query prima che la richiesta sia gestita dal controller.
+ * @swagger
+ * /movies/search:
+ *   get:
+ *     summary: Ricerca Film
+ *     description: Permette di cercare film basandosi su vari parametri (titolo, genere, anno, rating, paginazione).
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         description: Titolo del film.
+ *       - in: query
+ *         name: genre
+ *         schema:
+ *           type: string
+ *         description: Genere del film.
+ *       - in: query
+ *         name: year
+ *         schema:
+ *           type: integer
+ *         description: Anno di uscita del film.
+ *       - in: query
+ *         name: rating
+ *         schema:
+ *           type: number
+ *         description: Valutazione minima del film.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Numero di pagina per la paginazione.
+ *     responses:
+ *       200:
+ *         description: Risultati della ricerca ottenuti con successo.
+ *       400:
+ *         description: Parametri di ricerca non validi.
  */
 router.get(
   "/movies/search",
@@ -27,9 +57,22 @@ router.get(
 );
 
 /**
- * @api {get} /movies/suggestions Suggerimenti Film
- * @apiGroup Movies
- * @apiDescription Fornisce suggerimenti di film basati su una stringa di query parziale.
+ * @swagger
+ * /movies/suggestions:
+ *   get:
+ *     summary: Suggerimenti Film
+ *     description: Fornisce suggerimenti di film basati su una stringa di query parziale.
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Stringa di ricerca parziale per i suggerimenti.
+ *     responses:
+ *       200:
+ *         description: Suggerimenti ottenuti con successo.
  */
 router.get(
   "/movies/suggestions",
@@ -37,10 +80,26 @@ router.get(
 );
 
 /**
- * @api {get} /movies/:movieId Dettagli Film
- * @apiGroup Movies
- * @apiDescription Recupera i dettagli completi di un film, inclusi recensioni e statistiche aggregate.
- * Il middleware `validateMovieId` valida l'ID del film prima che la richiesta sia gestita dal controller.
+ * @swagger
+ * /movies/{movieId}:
+ *   get:
+ *     summary: Dettagli Film
+ *     description: Recupera i dettagli completi di un film, inclusi recensioni e statistiche aggregate.
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: path
+ *         name: movieId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del film.
+ *     responses:
+ *       200:
+ *         description: Dettagli del film recuperati con successo.
+ *       400:
+ *         description: ID del film non valido.
+ *       404:
+ *         description: Film non trovato.
  */
 router.get(
   "/movies/:movieId",
@@ -49,10 +108,31 @@ router.get(
 );
 
 /**
- * @api {get} /movies/:movieId/reviews Recensioni Film
- * @apiGroup Movies
- * @apiDescription Recupera le recensioni per un film specifico con paginazione.
- * Proxy → Other Express Server: `/reviews/movie/:movieId`
+ * @swagger
+ * /movies/{movieId}/reviews:
+ *   get:
+ *     summary: Recensioni Film
+ *     description: Recupera le recensioni per un film specifico con paginazione.
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: path
+ *         name: movieId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del film.
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Numero di pagina per la paginazione delle recensioni.
+ *     responses:
+ *       200:
+ *         description: Recensioni del film recuperate con successo.
+ *       400:
+ *         description: ID del film o parametri non validi.
+ *       404:
+ *         description: Film non trovato.
  */
 router.get(
   "/movies/:movieId/reviews",
@@ -61,10 +141,26 @@ router.get(
 );
 
 /**
- * @api {get} /movies/:movieId/reviews/stats Statistiche Recensioni Film
- * @apiGroup Movies
- * @apiDescription Recupera le statistiche aggregate delle recensioni per un film.
- * Proxy → Other Express Server: `/reviews/movie/:movieId/stats`
+ * @swagger
+ * /movies/{movieId}/reviews/stats:
+ *   get:
+ *     summary: Statistiche Recensioni Film
+ *     description: Recupera le statistiche aggregate delle recensioni per un film.
+ *     tags: [Movies]
+ *     parameters:
+ *       - in: path
+ *         name: movieId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del film.
+ *     responses:
+ *       200:
+ *         description: Statistiche delle recensioni recuperate con successo.
+ *       400:
+ *         description: ID del film non valido.
+ *       404:
+ *         description: Film o recensioni non trovate.
  */
 router.get(
   "/movies/:movieId/reviews/stats",

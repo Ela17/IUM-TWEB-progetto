@@ -1,6 +1,7 @@
 const { query } = require("express-validator");
 const { valTitle, valPage, valLimit } = require("./common");
 const { validationErrorHandler } = require("./validationErrorHandler");
+const { MOVIE_VALIDATION_LIMITS } = require("../../config/constants");
 
 /**
  * @module moviesValidation
@@ -11,26 +12,46 @@ const { validationErrorHandler } = require("./validationErrorHandler");
 
 const valYearFrom = query("year_from")
   .optional()
-  .isInt({ min: 1900, max: 2050 })
-  .withMessage("Min year must be between 1900 and 2050")
+  .isInt({
+    min: MOVIE_VALIDATION_LIMITS.YEAR_MIN,
+    max: MOVIE_VALIDATION_LIMITS.YEAR_MAX,
+  })
+  .withMessage(
+    `Min year must be between ${MOVIE_VALIDATION_LIMITS.YEAR_MIN} and ${MOVIE_VALIDATION_LIMITS.YEAR_MAX}`,
+  )
   .toInt();
 
 const valYearTo = query("year_to")
   .optional()
-  .isInt({ min: 1900, max: 2050 })
-  .withMessage("Max year must be between 1900 and 2050")
+  .isInt({
+    min: MOVIE_VALIDATION_LIMITS.YEAR_MIN,
+    max: MOVIE_VALIDATION_LIMITS.YEAR_MAX,
+  })
+  .withMessage(
+    `Max year must be between ${MOVIE_VALIDATION_LIMITS.YEAR_MIN} and ${MOVIE_VALIDATION_LIMITS.YEAR_MAX}`,
+  )
   .toInt();
 
 const valMinRating = query("min_rating")
   .optional()
-  .isFloat({ min: 0, max: 5 })
-  .withMessage("Min rating must be between 0 and 5")
+  .isFloat({
+    min: MOVIE_VALIDATION_LIMITS.RATING_MIN,
+    max: MOVIE_VALIDATION_LIMITS.RATING_MAX,
+  })
+  .withMessage(
+    `Min rating must be between ${MOVIE_VALIDATION_LIMITS.RATING_MIN} and ${MOVIE_VALIDATION_LIMITS.RATING_MAX}`,
+  )
   .toFloat();
 
 const valMaxRating = query("max_rating")
   .optional()
-  .isFloat({ min: 0, max: 5 })
-  .withMessage("Max rating must be between 0 and 5")
+  .isFloat({
+    min: MOVIE_VALIDATION_LIMITS.RATING_MIN,
+    max: MOVIE_VALIDATION_LIMITS.RATING_MAX,
+  })
+  .withMessage(
+    `Max rating must be between ${MOVIE_VALIDATION_LIMITS.RATING_MIN} and ${MOVIE_VALIDATION_LIMITS.RATING_MAX}`,
+  )
   .toFloat();
 
 const validateMovieSearch = [

@@ -7,8 +7,6 @@ const getErrorSocketHandler = require("./eventHandlers/ErrorSocketHandler");
 /**
  * @function createSocketServer
  * @description Creazione del socket server su server http.
- *
- *
  * @param {http.Server} httpServer - Il server HTTP su cui montare Socket.IO
  * @param {Object} [options=socketConfig] - Configurazione Socket.IO (CORS, transports, etc.)
  * @returns {Server} io - L'istanza del server Socket.IO configurata e pronta all'uso
