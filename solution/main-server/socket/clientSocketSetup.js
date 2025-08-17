@@ -1,5 +1,6 @@
 const getRoomEventsHandler = require("./eventHandlers/RoomEventsHandler");
 const getMessageEventsHandler = require("./eventHandlers/MessageEventsHandler");
+const usersMetadataManager = require("./utils/UsersMetadataManager")
 const { handleDisconnection } = require("./eventHandlers/DisconnectionHandler");
 
 /**
@@ -14,13 +15,11 @@ const { handleDisconnection } = require("./eventHandlers/DisconnectionHandler");
  *
  * @param {Socket} clientSocket - La socket del client appena connesso
  * @param {Server} io - L'istanza Socket.IO globale
- * @param {Object} usersMetadataManager - Il singleton per gestire i metadati utente
  * @throws {Error} Rilancia eventuali errori incontrati durante la configurazione iniziale per la gestione centralizzata.
  */
 function setupClientSocket(
   clientSocket,
   io,
-  usersMetadataManager,
   errorSocketHandler,
 ) {
   const roomEventsHandler = getRoomEventsHandler(io);

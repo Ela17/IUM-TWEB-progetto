@@ -44,7 +44,7 @@ const getChatHistory = async (req, res, next) => {
     console.log(`📜 Fetching chat history for room: ${roomName}`); // Endpoint reale del secondo server Express-MongoDB
 
     const endpoint = `/api/messages/${encodeURIComponent(roomName)}?page=${page}`;
-    const chatResponse = await this.proxyService.callOtherExpress(endpoint);
+    const chatResponse = await proxyService.callOtherExpress(endpoint);
 
     res.json(chatResponse.data);
   } catch (error) {
@@ -80,7 +80,7 @@ const createRoom = async (req, res, next) => {
     };
 
     const endpoint = "/api/rooms";
-    const createResponse = await this.proxyService.callOtherExpress(
+    const createResponse = await proxyService.callOtherExpress(
       endpoint,
       "POST",
       roomData,
@@ -110,7 +110,7 @@ const getRoomsList = async (req, res, next) => {
     console.log("📋 Fetching list of chat rooms");
 
     const endpoint = "/api/rooms/all";
-    const roomsResponse = await this.proxyService.callOtherExpress(endpoint);
+    const roomsResponse = await proxyService.callOtherExpress(endpoint);
 
     res.json(roomsResponse.data);
   } catch (error) {
@@ -135,7 +135,7 @@ const deleteRoom = async (req, res, next) => {
     // Endpoint reale PUT /api/rooms/:roomName
 
     const endpoint = `/api/rooms/${encodeURIComponent(roomName)}`;
-    const updateResponse = await this.proxyService.callOtherExpress(
+    const updateResponse = await proxyService.callOtherExpress(
       endpoint,
       "PUT",
     );
@@ -173,7 +173,7 @@ const syncMessageToOtherServer = async (messageData) => {
     };
 
     const endpoint = "/api/messages";
-    const syncResponse = await this.proxyService.callOtherExpress(
+    const syncResponse = await proxyService.callOtherExpress(
       endpoint,
       "POST",
       messagePayload,

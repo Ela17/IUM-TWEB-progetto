@@ -27,12 +27,9 @@ const maxQueueSize = TIMING_CONFIG.MAX_QUEUE_SIZE;
  * Se il sistema è in modalità "normal", tenta il salvataggio diretto su MongoDB.
  * In modalità "recovery", il messaggio viene accodato localmente.
  * Un `uniqueTimestamp` viene generato e aggiunto al `messageData` prima del salvataggio.
- * @param {object} messageData - L'oggetto contenente i dati del messaggio.
- * @param {string} messageData.roomName - Il nome della stanza della chat.
- * @param {string} messageData.userName - Il nome dell'utente che ha inviato il messaggio.
- * @param {string} messageData.message - Il contenuto del messaggio.
- * @throws {Error} Se i dati del messaggio non sono validi (ValidationError).
- * @throws {Error} Se si verifica un errore generico durante il salvataggio.
+ * @param {Object} messageData - L'oggetto contenente i dati del messaggio
+ * @returns {Promise<void>} Promise che si risolve quando il messaggio è elaborato
+ * @throws {ValidationError} Se i dati del messaggio non sono validi
  */
 const saveMessage = async (messageData) => {
   try {
@@ -88,9 +85,12 @@ const formatMessage = (messageData) => {
 
 /**
  * @function validateMessageData
- * @description Valida i dati di un messaggio.
- * @param {object} messageData - L'oggetto contenente i dati del messaggio da validare.
- * @returns {{isValid: boolean, errors: string[]}} Un oggetto che indica se il messaggio è valido e una lista di errori.
+ * @description Valida i dati di un messaggio prima del salvataggio
+ * @param {Object} messageData - L'oggetto contenente i dati del messaggio da validare
+ * @param {string} messageData.roomName - Il nome della stanza della chat
+ * @param {string} messageData.userName - Il nome dell'utente che ha inviato il messaggio
+ * @param {string} messageData.message - Il contenuto del messaggio
+ * @returns {{isValid: boolean, errors: string[]}} Risultato della validazione con lista errori
  */
 const validateMessageData = (messageData) => {
   const errors = [];

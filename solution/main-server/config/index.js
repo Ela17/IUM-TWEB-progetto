@@ -28,8 +28,10 @@ const getEnvAsIntOrDefault = (key, defaultValue) =>
   parseInt(process.env[key]) || defaultValue;
 
 /**
- * @namespace serverConfig
+ * @typedef {Object} ServerConfig
  * @description Configurazione del server Express principale
+ * @property {number} port - Porta su cui il server è in ascolto
+ * @property {string} environment - Ambiente di esecuzione (development/production)
  */
 const serverConfig = {
   port: getEnvAsIntOrDefault("MAIN_SERVER_PORT", 3000),
@@ -37,8 +39,24 @@ const serverConfig = {
 };
 
 /**
- * @namespace servicesConfig
+ * @typedef {Object} SpringBootConfig
+ * @description Configurazione per il servizio Spring Boot
+ * @property {string} url - URL del servizio Spring Boot
+ * @property {number} timeout - Timeout per le richieste in millisecondi
+ */
+
+/**
+ * @typedef {Object} OtherExpressConfig
+ * @description Configurazione per il servizio MongoDB Express
+ * @property {string} url - URL del servizio MongoDB Express
+ * @property {number} timeout - Timeout per le richieste in millisecondi
+ */
+
+/**
+ * @typedef {Object} ServicesConfig
  * @description Configurazione dei microservizi esterni
+ * @property {SpringBootConfig} springBoot - Configurazione per il servizio Spring Boot
+ * @property {OtherExpressConfig} otherExpress - Configurazione per il servizio MongoDB Express
  */
 const servicesConfig = {
   springBoot: {
@@ -47,12 +65,19 @@ const servicesConfig = {
   },
 
   otherExpress: {
-    // mongoDB
     url: getEnvOrDefault("OTHER_EXPRESS_SERVER_URL", "http://localhost:3001"),
     timeout: getEnvAsIntOrDefault("OTHER_EXPRESS_SERVER_TIMEOUT", 5000), // MongoDB è più veloce
   },
 };
 
+/**
+ * @typedef {Object} SocketConfig
+ * @description Configurazione Socket.IO per la chat in tempo reale
+ * @property {Object} cors - Configurazione CORS per Socket.IO
+ * @property {string[]} cors.origin - URL consentiti per le connessioni Socket.IO
+ * @property {string[]} cors.methods - Metodi HTTP consentiti per Socket.IO
+ * @property {boolean} cors.credentials - Se permettere l'invio di credenziali
+ */
 const socketConfig = {
   cors: {
     origin: [
@@ -64,8 +89,11 @@ const socketConfig = {
 };
 
 /**
- * @namespace corsConfig
- * @description Configurazione CORS per Express
+ * @typedef {Object} CorsConfig
+ * @description Configurazione CORS per Express middleware
+ * @property {string[]} origin - URL consentiti per le richieste cross-origin
+ * @property {string[]} methods - Metodi HTTP consentiti
+ * @property {boolean} credentials - Se permettere l'invio di cookies/auth headers
  */
 const corsConfig = {
   origin: [
@@ -76,9 +104,23 @@ const corsConfig = {
   credentials: true, // Permette invio cookies/auth headers
 };
 
+/**
+ * @type {string} MorganConfig
+ * @description Configurazione per il middleware Morgan (HTTP request logger)
+ */
 const morganConfig = "dev";
 
+/**
+ * @type {Object} JsonConfig
+ * @description per il middleware express.json()
+ */
 const jsonConfig = {};
+
+/**
+ * @typedef {Object} UrlencodedConfig
+ * @description Configurazione per il middleware express.urlencoded()
+ * @property {boolean} extended - Se utilizzare il parser esteso per oggetti complessi
+ */
 const urlencodedConfig = { extended: true };
 
 module.exports = {

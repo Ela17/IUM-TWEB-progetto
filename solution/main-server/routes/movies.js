@@ -53,7 +53,7 @@ const router = express.Router();
 router.get(
   "/movies/search",
   validateMovieSearch, // middleware di validazione
-  moviesController.searchMovies.bind(moviesController), // Delega al controller
+  moviesController.searchMovies // Delega al controller
 );
 
 /**
@@ -76,7 +76,7 @@ router.get(
  */
 router.get(
   "/movies/suggestions",
-  moviesController.getSuggestions.bind(moviesController),
+  moviesController.getSuggestions
 );
 
 /**
@@ -104,7 +104,7 @@ router.get(
 router.get(
   "/movies/:movieId",
   validateMovieId, // Middleware di validazione
-  moviesController.getMovieDetails.bind(moviesController),
+  moviesController.getMovieDetails
 );
 
 /**
@@ -137,7 +137,7 @@ router.get(
 router.get(
   "/movies/:movieId/reviews",
   validateMovieId,
-  moviesController.getMovieReviews.bind(moviesController),
+  moviesController.getMovieReviews
 );
 
 /**
@@ -165,7 +165,7 @@ router.get(
 router.get(
   "/movies/:movieId/reviews/stats",
   validateMovieId,
-  moviesController.getMovieReviewsStats.bind(moviesController),
+  moviesController.getMovieReviewsStats
 );
 
 module.exports = router;

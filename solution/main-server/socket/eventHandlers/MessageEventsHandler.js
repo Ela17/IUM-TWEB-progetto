@@ -1,4 +1,4 @@
-const getMessagePersistenceController = require("../controller/MessagesPersistenceController");
+const messagePersistenceController = require("../controller/MessagesPersistenceController");
 const {
   SOCKET_MESSAGE_EVENTS,
   CHAT_ERROR_CODES,
@@ -13,7 +13,6 @@ const {
 class MessageEventsHandler {
   constructor(io) {
     this.io = io;
-    this.messagePersistenceController = getMessagePersistenceController();
   }
 
   /**
@@ -46,7 +45,7 @@ class MessageEventsHandler {
           .to(roomName)
           .emit(SOCKET_MESSAGE_EVENTS.ROOM_MESSAGE_RECEIVED, messageData);
 
-        this.messagePersistenceController.saveMessage(messageData);
+        messagePersistenceController.saveMessage(messageData);
       } catch (error) {
         error.socket = clientSocket;
         error.event = SOCKET_MESSAGE_EVENTS.ROOM_MESSAGE;

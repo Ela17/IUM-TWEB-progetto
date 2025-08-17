@@ -34,7 +34,7 @@ const searchMovies = async (req, res, next) => {
       searchParams.set("max_rating", req.query.max_rating);
 
     const endpoint = `/api/movies/search?${searchParams.toString()}`;
-    const springResponse = await this.proxyService.callSpringBoot(endpoint);
+    const springResponse = await proxyce.callSpringBoot(endpoint);
 
     res.json(springResponse.data);
   } catch (error) {
@@ -62,9 +62,9 @@ const getMovieDetails = async (req, res, next) => {
 
     const [movieResult, reviewsResults, reviewsStats] =
       await Promise.allSettled([
-        this.proxyService.callSpringBoot(`/api/movies/${movieId}`),
-        this.proxyService.callOtherExpress(`/api/reviews/movie/${movieId}`),
-        this.proxyService.callOtherExpress(
+        proxyService.callSpringBoot(`/api/movies/${movieId}`),
+        proxyService.callOtherExpress(`/api/reviews/movie/${movieId}`),
+        proxyService.callOtherExpress(
           `/api/reviews/movie/${movieId}/stats`,
         ),
       ]);
@@ -113,7 +113,7 @@ const getSuggestions = async (req, res, next) => {
     if (req.query.q) searchParams.set("q", req.query.q);
 
     const endpoint = `/api/movies/suggestions?${searchParams.toString()}`;
-    const springResponse = await this.proxyService.callSpringBoot(endpoint);
+    const springResponse = await proxyService.callSpringBoot(endpoint);
 
     res.json(springResponse.data);
   } catch (error) {
@@ -139,7 +139,7 @@ const getMovieReviews = async (req, res, next) => {
     if (req.query.orderBy) searchParams.set("orderBy", req.query.orderBy);
 
     const endpoint = `/reviews/movie/${movieId}?${searchParams.toString()}`;
-    const response = await this.proxyService.callOtherExpress(endpoint);
+    const response = await proxyService.callOtherExpress(endpoint);
 
     res.json(response.data);
   } catch (error) {
@@ -148,7 +148,7 @@ const getMovieReviews = async (req, res, next) => {
 };
 
 /**
- * @method getMovieReviewsStats
+ * @function getMovieReviewsStats
  * @description Recupera le statistiche delle recensioni per un film.
  * Proxy diretto verso il tuo endpoint: `/reviews/movie/:movieId/stats`
  * @param {Object} req - L'oggetto Request contenente l'ID del film nei params.
@@ -160,7 +160,7 @@ const getMovieReviewsStats = async (req, res, next) => {
     const movieId = parseInt(req.params.movieId);
 
     const endpoint = `/reviews/movie/${movieId}/stats`;
-    const response = await this.proxyService.callOtherExpress(endpoint);
+    const response = await proxyService.callOtherExpress(endpoint);
 
     res.json(response.data);
   } catch (error) {
