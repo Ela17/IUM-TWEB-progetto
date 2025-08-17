@@ -1,4 +1,4 @@
-const getUsersMetadataManager = require("../utils/UsersMetadataManager");
+const usersMetadataManager = require("../utils/UsersMetadataManager");
 const { SOCKET_SYSTEM_EVENTS } = require("../constants/socketConstants");
 
 /**
@@ -6,9 +6,7 @@ const { SOCKET_SYSTEM_EVENTS } = require("../constants/socketConstants");
  * @description Gestisce gli eventi di disconnessione degli utenti dal sistema di chat.
  */
 class DisconnectionHandler {
-  constructor() {
-    this.usersMetadataManager = getUsersMetadataManager;
-  }
+  constructor() {}
 
   /**
    * @method setupEventListeners
@@ -31,14 +29,14 @@ class DisconnectionHandler {
   handleDisconnection(clientSocket, reason) {
     console.log(`🔌 Disconnection ${clientSocket.id}, reason: ${reason}`);
 
-    const userProfile = this.usersMetadataManager.getUserProfile(
+    const userProfile = usersMetadataManager.getUserProfile(
       clientSocket.id,
     );
 
     if (userProfile) {
       console.log(`👋 User ${userProfile.userName} disconnecting...`);
 
-      this.usersMetadataManager.removeUser(clientSocket.id);
+      usersMetadataManager.removeUser(clientSocket.id);
 
       console.log(`✅ User ${userProfile.userName} removed from system`);
     } else {
@@ -57,12 +55,12 @@ class DisconnectionHandler {
   handleConnectionError(clientSocket, error) {
     console.error(`❌ Connection error for ${clientSocket.id}:`, error.message);
 
-    const userProfile = this.usersMetadataManager.getUserProfile(
+    const userProfile = usersMetadataManager.getUserProfile(
       clientSocket.id,
     );
 
     if (userProfile) {
-      this.usersMetadataManager.removeUser(clientSocket.id);
+      usersMetadataManager.removeUser(clientSocket.id);
       console.log(
         `🧹 Cleaned up user ${userProfile.userName} after connection error`,
       );

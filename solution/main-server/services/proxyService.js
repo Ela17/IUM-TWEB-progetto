@@ -1,5 +1,6 @@
 /**
  * @fileoverview Servizio proxy per le chiamate HTTP ai microservizi esterni.
+ * 
  * Modulo che gestisce le chiamate a Spring Boot e Other Express Server.
  * Agisce come livello di proxy centralizzato per la comunicazione tra servizi.
  */
@@ -43,11 +44,13 @@ const prepareError = (axiosError, serviceType) => {
  * @function callSpringBoot
  * @description Effettua una chiamata HTTP al microservizio Spring Boot.
  * Questo servizio è responsabile della gestione dei "dati statici" e accede al DB PostgreSQL.
- * @param {string} endpoint - L'endpoint specifico da chiamare sul server Spring Boot (es. '/api/movies/123').
- * @param {string} [method='GET'] - Il metodo HTTP da utilizzare (GET, POST, PUT, DELETE, PATCH).
- * @param {Object|null} [data=null] - Il payload della richiesta per i metodi POST/PUT/PATCH.
- * @returns {Promise<import('axios').AxiosResponse>} Una Promise che si risolve con la risposta Axios.
- * @throws {Error} Lancia un errore se la chiamata fallisce, arricchito con `serviceType`.
+ * @param {string} endpoint - L'endpoint specifico da chiamare
+ * @param {string} [method='GET'] - Il metodo HTTP da utilizzare
+ * @param {Object|null} [data=null] - Il payload della richiesta
+ * @returns {Promise<import('axios').AxiosResponse>} Promise che si risolve con la risposta Axios
+ * @throws {Error} Se il metodo HTTP non è supportato
+ * @throws {Error} Se la connessione al servizio Spring Boot fallisce
+ * @throws {Error} Se il servizio Spring Boot restituisce un errore HTTP
  */
 const callSpringBoot = async (endpoint, method = "GET", data = null) => {
   if (!ALLOWED_METHODS.includes(method.toUpperCase())) {

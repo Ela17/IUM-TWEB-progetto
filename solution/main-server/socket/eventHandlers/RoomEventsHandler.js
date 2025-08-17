@@ -1,4 +1,4 @@
-const getUsersMetadataManager = require("../utils/UsersMetadataManager");
+const usersMetadataManager = require("../utils/UsersMetadataManager");
 const {
   SOCKET_ROOM_EVENTS,
   ROOM_EVENTS,
@@ -14,7 +14,6 @@ const {
 class RoomEventsHandler {
   constructor(io) {
     this.io = io;
-    this.usersMetadataManager = getUsersMetadataManager();
   }
 
   /**
@@ -44,7 +43,7 @@ class RoomEventsHandler {
         );
 
         clientSocket.join(roomName);
-        this.usersMetadataManager.updateCurrentRoom(
+        usersMetadataManager.updateCurrentRoom(
           clientSocket.id,
           roomName,
           ROOM_EVENTS.JOIN,
@@ -85,7 +84,7 @@ class RoomEventsHandler {
         const { roomName, userName } = data;
 
         clientSocket.join(roomName);
-        this.usersMetadataManager.updateCurrentRoom(
+        usersMetadataManager.updateCurrentRoom(
           clientSocket.id,
           roomName,
           ROOM_EVENTS.JOIN,
@@ -131,7 +130,7 @@ class RoomEventsHandler {
         );
 
         clientSocket.leave(roomName);
-        this.usersMetadataManager.updateCurrentRoom(
+        usersMetadataManager.updateCurrentRoom(
           clientSocket.id,
           roomName,
           ROOM_EVENTS.LEAVE,

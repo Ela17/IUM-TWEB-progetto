@@ -15,7 +15,7 @@ const router = express.Router();
  *       200:
  *         description: Pagina della chat servita correttamente.
  */
-router.get("/", chatController.getChatPage.bind(chatController));
+router.get("/", chatController.getChatPage);
 
 /**
  * @swagger
@@ -39,7 +39,7 @@ router.get("/", chatController.getChatPage.bind(chatController));
  */
 router.get(
   "/messages/:roomName",
-  chatController.getChatHistory.bind(chatController),
+  chatController.getChatHistory,
 );
 
 /**
@@ -65,7 +65,7 @@ router.get(
  *       400:
  *         description: Richiesta non valida.
  */
-router.post("/rooms", chatController.createRoom.bind(chatController));
+router.post("/rooms", chatController.createRoom);
 
 /**
  * @swagger
@@ -89,7 +89,7 @@ router.post("/rooms", chatController.createRoom.bind(chatController));
  *                   name:
  *                     type: string
  */
-router.get("/rooms", chatController.getRoomsList.bind(chatController));
+router.get("/rooms", chatController.getRoomsList);
 
 /**
  * @swagger
@@ -111,6 +111,6 @@ router.get("/rooms", chatController.getRoomsList.bind(chatController));
  *       404:
  *         description: Stanza non trovata.
  */
-router.put("/rooms/:roomName", chatController.deleteRoom.bind(chatController));
+router.put("/rooms/:roomName", chatController.deleteRoom);
 
 module.exports = router;

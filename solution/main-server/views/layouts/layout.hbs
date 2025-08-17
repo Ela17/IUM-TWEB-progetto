@@ -1,9 +1,50 @@
-<html>
-  <head>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="/stylesheets/style.css" />
-  </head>
-  <body>
-    {{{body}}}
-  </body>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/main.css">
+
+    <!-- Page-specific CSS -->
+    {{#content "styles"}}{{/content}}
+</head>
+<body>
+    <!-- Navigation Header -->
+    {{> navbar}}
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        {{{body}}}
+    </main>
+
+    <!-- Footer Component -->
+    {{> footer}}
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay d-none">
+        <div class="text-center">
+            <div class="spinner-border text-cinema-gold mb-3" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-white">Loading...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Main JavaScript -->
+    <script src="/js/main.js"></script>
+
+    <!-- Page-specific JavaScript -->
+    {{#content "scripts"}}{{/content}}
+</body>
 </html>

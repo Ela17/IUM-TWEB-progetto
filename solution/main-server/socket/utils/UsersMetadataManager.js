@@ -1,3 +1,10 @@
+/**
+ * @file socket/utils/UsersMetadataManager.js
+ * @description Gestisce i metadati degli utenti connessi al sistema di chat.
+ * Questa classe è un singleton responsabile di mantenere un registro aggiornato
+ * di tutti gli utenti attivi, le loro stanze e le statistiche globali.
+ */
+
 const {
   STATS_OPERATIONS,
   ROOM_EVENTS,
@@ -6,15 +13,15 @@ const {
 /**
  * @class UsersMetadataManager
  * @description Gestisce i metadati degli utenti connessi al sistema di chat.
+ * 
  * Questa classe è un singleton responsabile di mantenere un registro aggiornato
  * di tutti gli utenti attivi, i loro profili, le stanze a cui sono collegati
  * e le statistiche globali sulle connessioni.
  *
- * @property {Map<string, object>} usersMetadata - Una mappa che memorizza i profili degli utenti,
- * dove la chiave è il `socketId` e il valore è l'oggetto profilo utente.
- * @property {object} stats - Oggetto contenente le statistiche sulle connessioni.
- * @property {number} stats.totalConnectionsEver - Il numero totale di connessioni gestite dal sistema dall'avvio.
- * @property {number} stats.currentConnections - Il numero di utenti attualmente connessi.
+ * @property {Map<string, object>} usersMetadata - Mappa dei profili utente per socketId
+ * @property {object} stats - Statistiche sulle connessioni
+ * @property {number} stats.totalConnectionsEver - Numero totale di connessioni gestite
+ * @property {number} stats.currentConnections - Numero di utenti attualmente connessi
  */
 class UsersMetadataManager {
   constructor() {
@@ -27,12 +34,11 @@ class UsersMetadataManager {
   }
 
   /**
-   * Registra un nuovo utente quando si connette al sistema.
-   * Genera un nickname unico e crea un profilo utente completo con i metadati iniziali.
-   * Aggiorna le statistiche delle connessioni.
-   *
-   * @param {string} socketId - L'ID univoco della socket fornito da Socket.IO per la nuova connessione.
-   * @returns {object} Il profilo completo dell'utente appena registrato.
+   * @method registerUser
+   * @description Registra un nuovo utente quando si connette al sistema
+   * @param {string} socketId - L'ID univoco della socket fornito da Socket.IO
+   * @returns {Object} Il profilo completo dell'utente appena registrato
+   * @throws {Error} Se la generazione del nickname univoco fallisce
    */
   registerUser(socketId) {
     const uniqueNickname = this._generateUniqueNickname();
@@ -54,7 +60,8 @@ class UsersMetadataManager {
   }
 
   /**
-   * Rimuove un utente dal sistema quando si disconnette.
+   * @method removeUser
+   * @description Rimuove un utente dal sistema quando si disconnette.
    * Elimina il profilo utente dalla mappa dei metadati e aggiorna le statistiche delle connessioni.
    * Se l'utente non è registrato, viene emesso un avviso.
    *
@@ -79,7 +86,8 @@ class UsersMetadataManager {
   }
 
   /**
-   * Recupera il profilo completo di un utente tramite il suo ID di socket.
+   * @method getUserProfile
+   * @description Recupera il profilo completo di un utente tramite il suo ID di socket.
    *
    * @param {string} socketId - L'ID della socket dell'utente da cercare.
    * @returns {object|null} Il profilo completo dell'utente se trovato, altrimenti `null`.
@@ -89,7 +97,8 @@ class UsersMetadataManager {
   }
 
   /**
-   * Aggiorna la stanza corrente di un utente.
+   * @method updateCurrentRoom
+   * @description Aggiorna la stanza corrente di un utente.
    * Utilizzato quando un utente entra ('join') o esce ('leave') da una stanza.
    *
    * @param {string} socketId - L'ID della socket dell'utente.
@@ -130,8 +139,9 @@ class UsersMetadataManager {
   }
 
   /**
-   * Recupera il conteggio degli utenti attivi per ogni stanza.
-   * Questo metodo itera su tutti gli utenti connessi e aggrega il numero
+   * @method getActiveUsersPerRoom
+   * @description Recupera il conteggio degli utenti attivi per ogni stanza.
+   * Itera su tutti gli utenti connessi e aggrega il numero
    * di utenti per ogni stanza in cui si trovano.
    *
    * @returns {object} Un oggetto in cui le chiavi sono i nomi delle stanze
@@ -150,7 +160,8 @@ class UsersMetadataManager {
   }
 
   /**
-   * Genera un nickname univoco basato su aggettivi e nomi a tema cinematografico.
+   * @method _generateUniqueNickname
+   * @description Genera un nickname univoco basato su aggettivi e nomi a tema cinematografico.
    * Assicura che il nickname generato non sia già in uso da un altro utente connesso.
    *
    * Nota: in scenari reali con un numero estremamente elevato di utenti,
@@ -213,7 +224,8 @@ class UsersMetadataManager {
   }
 
   /**
-   * Aggiorna le statistiche interne del sistema (connessioni totali e attuali).
+   * @method _updateStats
+   * @description Aggiorna le statistiche interne del sistema (connessioni totali e attuali).
    *
    * @private
    * @param operation - Il tipo di operazione: 'add' per una nuova connessione, 'remove' per una disconnessione.
