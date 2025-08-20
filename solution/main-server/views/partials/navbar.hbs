@@ -50,7 +50,7 @@
                     <!-- Search Results Container -->
                     <div id="search-results" class="search-results d-none">
                         <div class="search-results-content">
-                            <!-- Results will be populated here by JavaScript -->
+                            
                         </div>
                     </div>
                 </div>
@@ -76,27 +76,7 @@
                     <small>Online</small>
                 </div>
 
-                <!-- User Menu (opzionale) -->
-                {{#if user}}
-                <div class="dropdown">
-                    <button class="btn btn-outline-light dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i>
-                        <span class="d-none d-sm-inline ms-1">{{user.name}}</span>
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                        <li><a class="dropdown-item" href="/favorites">My Favorites</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                    </ul>
-                </div>
-                {{else}}
-                <div class="d-flex gap-2">
-                    <a href="/login" class="btn btn-outline-light btn-sm">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                    </a>
-                </div>
-                {{/if}}
+                
             </div>
         </div>
     </div>
