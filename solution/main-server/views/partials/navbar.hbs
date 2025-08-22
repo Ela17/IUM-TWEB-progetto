@@ -21,18 +21,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{#if isMovies}}active{{/if}}" href="/movies">
+                    <a class="nav-link {{#if isMovies}}active{{/if}}" href="/api/movies/search">
                         <i class="bi bi-search me-1"></i>Movies
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{#if isActors}}active{{/if}}" href="/actors">
-                        <i class="bi bi-people me-1"></i>Actors
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {{#if isAwards}}active{{/if}}" href="/awards">
-                        <i class="bi bi-trophy me-1"></i>Awards
                     </a>
                 </li>
                 <li class="nav-item">
@@ -42,7 +32,7 @@
                 </li>
             </ul>
 
-            <!-- Right side: Search + Theme Toggle + User -->
+            <!-- Right side: Search + Theme Toggle + Chat Status -->
             <div class="d-flex align-items-center gap-3">
                 <!-- Quick Search -->
                 <div id="quick-search" class="position-relative">
@@ -50,7 +40,7 @@
                     <!-- Search Results Container -->
                     <div id="search-results" class="search-results d-none">
                         <div class="search-results-content">
-                            
+                            <!-- Popolato dinamicamente da searchManager.js -->
                         </div>
                     </div>
                 </div>
@@ -71,9 +61,11 @@
                 </button>
 
                 <!-- Chat Status Indicator -->
-                <div id="chat-indicator" class="text-light">
-                    <i class="bi bi-circle-fill text-success"></i>
-                    <small>Online</small>
+                <div id="chat-indicator" class="text-light d-flex align-items-center">
+                    <i class="bi bi-circle-fill text-success me-1"></i>
+                    <small>
+                        <span id="online-users">0</span> online
+                    </small>
                 </div>
 
                 

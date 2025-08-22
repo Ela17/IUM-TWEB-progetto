@@ -81,32 +81,71 @@ function standardErrorHandler(err, req, res, next) {
     console.info("INFO:", JSON.stringify(logEntry, null, 2));
   }
 
-  // Creazione della risposta standardizzata
-  const response = {
-    success: false,
-    error: {
-      message: userMessage,
-      code: errorCode,
-      statusCode: statusCode,
-    },
-    metadata: {
-      timestamp: new Date().toISOString(),
-      path: req.originalUrl,
-      method: req.method,
-    },
-    additionalDetails: { ...additionalDetails },
-  };
+  // GESTIONE RISPOSTA: HTML vs JSON
 
-  if (process.env.NODE_ENV === "development") {
-    response.debug = {
-      originalMessage: err.message,
-      errorName: err.name,
-      stack: err.stack?.split("\n").slice(0, 10), // Limita lo stack trace per leggibilità
+  // Determina se la richiesta è per una API (JSON) o una pagina web (HTML)
+  const acceptsJson = req.accepts(['html', 'json']) === 'json' || req.originalUrl.startsWith('/api');
+  const isApiRequest = req.originalUrl.startsWith('/api') || req.xhr || req.get('Content-Type') === 'application/json';
+  
+  if (isApiRequest || acceptsJson) {
+    // RISPOSTA JSON PER API
+    const response = {
+      success: false,
+      error: {
+        message: userMessage,
+        code: errorCode,
+        statusCode: statusCode,
+      },
+      metadata: {
+        timestamp: new Date().toISOString(),
+        path: req.originalUrl,
+        method: req.method,
+      },
+      additionalDetails: { ...additionalDetails }
     };
-  }
 
-  // Invio della risposta al client
-  res.status(statusCode).json(response);
+    if (process.env.NODE_ENV === "development") {
+      response.debug = {
+        originalMessage: err.message,
+        errorName: err.name,
+        stack: err.stack?.split("\n").slice(0, 10)
+      };
+    }
+
+    // Invio della risposta JSON al client
+    res.status(statusCode).json(response);
+    
+  } else {
+    // RENDER PAGINA HTML DI ERRORE
+    
+    // Titoli specifici per ogni tipo di errore
+    let title = "Error";
+    switch (statusCode) {
+      case 404:
+        title = "Page Not Found";
+        break;
+      case 403:
+        title = "Access Denied";
+        break;
+      case 500:
+        title = "Server Error";
+        break;
+      default:
+        title = `Error ${statusCode}`;
+    }
+    
+    // Dati per il template error.hbs
+    const templateData = {
+      title: `${title} - CinemaHub`,
+      status: statusCode,
+      message: userMessage,
+      isDevelopment: process.env.NODE_ENV === "development",
+      stack: process.env.NODE_ENV === "development" ? err.stack : null
+    };
+    
+    // Render della pagina di errore
+    res.status(statusCode).render('pages/error', templateData);
+  }
 }
 
 module.exports = standardErrorHandler;

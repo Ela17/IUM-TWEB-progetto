@@ -1,5 +1,6 @@
 /**
- * @fileoverview Script principale per gestire l'interattività del layout di CinemaHub.
+ * @fileoverview Script principale per CinemaHub
+ * @description Coordina tutti i moduli dell'applicazione
  */
 
 /**
@@ -216,7 +217,7 @@ class CinemaHub {
    * @method performLiveSearch
    * @param {string} query - La stringa di ricerca.
    * @description Esegue una ricerca live asincrona, utilizzando la cache per evitare richieste ripetute.
-   * Richiede l'API `/api/search` e visualizza i risultati.
+   * Richiede l'API `/api/movies/suggestions` e visualizza i risultati.
    */
   async performLiveSearch(query) {
     // Prima constrolla in cache
@@ -228,16 +229,18 @@ class CinemaHub {
     try {
       this.showSearchLoading();
       
-      const response = await axios.get(`/api/search`, {
+      const response = await axios.get(`/api/movies/suggestions`, {
         params: { 
-          q: query, 
-          limit: 5,
-          include: 'movies,actors'
+          q: query
         },
         timeout: 5000
       });
 
-      const results = response.data;
+      const results = {
+        query: query,
+        movies: response.data || []
+      };
+
       this.searchCache.set(query, results);
       this.displaySearchResults(results);
       
@@ -250,17 +253,15 @@ class CinemaHub {
   }
 
   /**
-   * @async
-   * @method performLiveSearch
-   * @param {string} query - La stringa di ricerca.
-   * @description Esegue una ricerca live asincrona, utilizzando la cache per evitare richieste ripetute.
-   * Richiede l'API `/api/search` e visualizza i risultati.
+   * @method performQuickSearch
+   * @description Esegue una ricerca completa reindirizzando l'utente alla pagina dei risultati.
+   * Richiede l'API `/api/movies/search?title` e visualizza i risultati.
    */
   performQuickSearch() {
     const query = document.getElementById('search-input').value.trim();
     if (query) {
       this.addToSearchHistory(query);
-      window.location.href = `/movies?search=${encodeURIComponent(query)}`;
+      window.location.href = `/api/movies/search?title=${encodeURIComponent(query)}`;
     }
   }
 
@@ -282,13 +283,12 @@ class CinemaHub {
 
     let html = '<div class="search-results-content">';
 
-    // Sezione Film
     if (results.movies && results.movies.length > 0) {
       html += '<div class="search-category">';
       html += '<h6>Movies</h6>';
       results.movies.forEach((movie, index) => {
         html += `
-          <a href="/movies/${movie.id}" class="search-item" data-index="${index}">
+          <a href="/api/movies/${movie.id}" class="search-item" data-index="${index}">
             <img src="${movie.poster_url || '/images/no-poster.jpg'}" 
                 alt="${this.escapeHtml(movie.name)}" 
                 class="search-item-image"
@@ -299,29 +299,6 @@ class CinemaHub {
                 ${movie.year || 'Unknown year'} • 
                 <i class="bi bi-star-fill text-cinema-gold"></i> ${movie.rating || 'N/A'}
                 ${movie.duration ? ` • ${movie.duration}min` : ''}
-              </small>
-            </div>
-          </a>
-        `;
-      });
-      html += '</div>';
-    }
-
-    // Sezione Attori
-    if (results.actors && results.actors.length > 0) {
-      html += '<div class="search-category">';
-      html += '<h6>Actors</h6>';
-      results.actors.forEach((actor, index) => {
-        html += `
-          <a href="/actors/${encodeURIComponent(actor.name)}" class="search-item" data-index="${index + (results.movies?.length || 0)}">
-            <div class="search-item-image bg-light d-flex align-items-center justify-content-center">
-              <i class="bi bi-person fs-4 text-muted"></i>
-            </div>
-            <div class="search-item-info">
-              <h6>${this.highlightSearchTerm(actor.name, results.query)}</h6>
-              <small>
-                ${actor.movie_count || 0} movies
-                ${actor.popular_movies ? ` • Known for: ${actor.popular_movies.slice(0, 2).join(', ')}` : ''}
               </small>
             </div>
           </a>
@@ -490,13 +467,53 @@ class CinemaHub {
         this.updateChatIndicator(false);
       });
 
-      this.socket.on('user_count_update', (count) => {
-        this.updateOnlineUsersCount(count);
+      this.socket.on('welcome', (data) => {
+        console.log('🎯 Welcome message received:', data);
+        if (data.success) {
+          this.currentUser = {
+            userName: data.userName,
+            socketId: data.socketId
+          };
+          this.showNotification(`Welcome ${data.userName}!`, 'success');
+        }
+      });
+
+      this.socket.on('room_creation_result', (data) => {
+        if (data.success) {
+          console.log(`🎬 Room "${data.roomName}" created successfully`);
+          this.currentRoom = data.roomName;
+          this.showNotification(`Room "${data.roomName}" created!`, 'success');
+        }
+      });
+
+      this.socket.on('room_joined', (data) => {
+        console.log(`🚪 Joined room: ${data.roomName}`);
+        this.currentRoom = data.roomName;
+        this.showNotification(`Joined room: ${data.roomName}`, 'info');
+      });
+
+      this.socket.on('user_joined', (data) => {
+        console.log(`👋 ${data.userName} joined ${data.roomName}`);
+        this.showNotification(`${data.userName} joined the room`, 'info');
+      });
+
+      this.socket.on('user_left', (data) => {
+        console.log(`👋 ${data.userName} left ${data.roomName}`);
+        this.showNotification(`${data.userName} left the room`, 'info');
+      });
+
+      this.socket.on('room_message_received', (data) => {
+        console.log(`💬 Message in ${data.roomName} from ${data.userName}: ${data.message}`);
+        this.handleIncomingMessage(data);
       });
 
       this.socket.on('error', (error) => {
         console.error('Socket error:', error);
         this.showNotification('Chat connection error', 'error');
+      });
+
+      this.socket.on('user_count_update', (count) => {
+        this.updateOnlineUsersCount(count);
       });
 
       this.socket.on('notification', (data) => {
@@ -505,6 +522,71 @@ class CinemaHub {
 
     } catch (error) {
       console.error('Socket initialization failed:', error);
+    }
+  }
+
+  /**
+   * @method joinRoom
+   * @param {string} roomName - Nome della stanza
+   * @param {string} userName - Nome utente
+   * @description Unisce l'utente a una stanza specifica
+   */
+  joinRoom(roomName, userName) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('join_room', {
+        roomName: roomName,
+        userName: userName
+      });
+    }
+  }
+
+  /**
+   * @method createRoom
+   * @param {string} roomName - Nome della stanza
+   * @param {string} userName - Nome utente
+   * @param {string} topic - Argomento della stanza
+   * @description Crea una nuova stanza
+   */
+  createRoom(roomName, userName, topic = '') {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('create_room', {
+        roomName: roomName,
+        userName: userName,
+        topic: topic
+      });
+    }
+  }
+
+  /**
+   * @method leaveRoom
+   * @param {string} roomName - Nome della stanza
+   * @param {string} userName - Nome utente
+   * @description Lascia una stanza
+   */
+  leaveRoom(roomName, userName) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('leave_room', {
+        roomName: roomName,
+        userName: userName
+      });
+      this.currentRoom = null;
+    }
+  }
+
+  /**
+   * @method sendMessage
+   * @param {string} roomName - Nome della stanza
+   * @param {string} userName - Nome utente
+   * @param {string} message - Messaggio da inviare
+   * @description Invia un messaggio alla stanza
+   */
+  sendMessage(roomName, userName, message) {
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('room_message', {
+        roomName: roomName,
+        userName: userName,
+        message: message
+      });
     }
   }
 
@@ -1007,6 +1089,41 @@ window.getCurrentTheme = function() {
     return window.cinemaHub.getCurrentTheme();
   }
   return 'light';
+};
+
+/**
+ * @function joinRoom
+ * @param {string} roomName - Nome della stanza
+ * @param {string} userName - Nome utente
+ */
+window.joinRoom = function(roomName, userName) {
+  if (window.cinemaHub) {
+    window.cinemaHub.joinRoom(roomName, userName);
+  }
+};
+
+/**
+ * @function createRoom
+ * @param {string} roomName - Nome della stanza
+ * @param {string} userName - Nome utente
+ * @param {string} topic - Argomento della stanza
+ */
+window.createRoom = function(roomName, userName, topic = '') {
+  if (window.cinemaHub) {
+    window.cinemaHub.createRoom(roomName, userName, topic);
+  }
+};
+
+/**
+ * @function sendMessage
+ * @param {string} roomName - Nome della stanza
+ * @param {string} userName - Nome utente
+ * @param {string} message - Messaggio da inviare
+ */
+window.sendMessage = function(roomName, userName, message) {
+  if (window.cinemaHub) {
+    window.cinemaHub.sendMessage(roomName, userName, message);
+  }
 };
 
 // ======================

@@ -1,2 +1,164 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+{{!-- 
+  Homepage di CinemaHub
+  Questa pagina sostituisce il {{{body}}} nel layout.hbs
+--}}
+
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="container">
+    <h1 class="display-3 fw-bold mb-4">
+      <i class="bi bi-camera-reels me-3 text-cinema-gold"></i>
+      Welcome to CinemaHub
+    </h1>
+    <p class="lead fs-4 mb-4">
+      The ultimate platform for movie fans and journalists to explore, analyze, and discuss cinema
+    </p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="/api/movies/search" class="btn btn-cinema-gold btn-lg hover-lift">
+        <i class="bi bi-search me-2"></i>
+        Explore Movies
+      </a>
+      <a href="/chat" class="btn btn-outline-light btn-lg hover-lift">
+        <i class="bi bi-chat-dots me-2"></i>
+        Join Discussion
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+  
+  <!-- Features Section -->
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+      <h2 class="display-5 fw-bold" style="color: var(--text-primary)">What You Can Do</h2>
+      <p class="lead" style="color: var(--text-secondary)">Powerful tools for fans and professionals</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+      <div class="card movie-card border-0 h-100">
+        <div class="card-body text-center p-4">
+          <i class="bi bi-search feature-icon text-cinema-gold mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title" style="color: var(--text-primary)">Movie Search</h5>
+          <p class="card-text" style="color: var(--text-secondary)">
+            Search through thousands of movies with detailed filters. 
+            Find exactly what you're looking for.
+          </p>
+          <a href="/api/movies/search" class="btn btn-outline-primary hover-lift">
+            Start Searching <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+      <div class="card movie-card border-0 h-100">
+        <div class="card-body text-center p-4">
+          <i class="bi bi-chat-dots feature-icon text-cinema-gold mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title" style="color: var(--text-primary)">Live Chat</h5>
+          <p class="card-text" style="color: var(--text-secondary)">
+            Join real-time discussions about movies with fans and journalists from around the world.
+          </p>
+          <a href="/chat" class="btn btn-outline-primary hover-lift">
+            Enter Chat <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  
+  <!-- Stats Section usando stats-card esistente -->
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+      <h3 class="fw-bold" style="color: var(--text-primary)">Our Database</h3>
+      <p style="color: var(--text-secondary)">Comprehensive cinema data at your fingertips</p>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card bg-cinema-gold" style="color: #000;">
+        <h2 class="display-6 fw-bold">940K+</h2>
+        <h5>Movies</h5>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card">
+        <h2 class="display-6 fw-bold">5.7M+</h2>
+        <h5>Actor Records</h5>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card bg-cinema-gold" style="color: #000;">
+        <h2 class="display-6 fw-bold">10K+</h2>
+        <h5>Oscar Awards</h5>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card">
+        <h2 class="display-6 fw-bold" id="online-users-display">
+          {{#if onlineUsers}}{{onlineUsers}}{{else}}127{{/if}}
+        </h2>
+        <h5>Users Online</h5>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Community Section -->
+  <div class="row">
+    <div class="col-12 text-center mb-4">
+      <h3 class="fw-bold" style="color: var(--text-primary)">Join the Community</h3>
+      <p class="lead" style="color: var(--text-secondary)">Connect with fellow movie enthusiasts and industry experts</p>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+      <div class="card movie-card">
+        <div class="card-body">
+          <h5 class="card-title" style="color: var(--text-primary)">
+            <i class="bi bi-chat-dots text-cinema-gold me-2"></i>
+            Live Chat
+          </h5>
+          <p class="card-text" style="color: var(--text-secondary)">
+            Join real-time discussions about your favorite movies, actors, and industry trends 
+            with fans and journalists from around the world.
+          </p>
+          <a href="/chat" class="btn btn-primary hover-lift">
+            <i class="bi bi-arrow-right-circle me-2"></i>
+            Enter Chat Room
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- JavaScript specifico per la homepage -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Aggiorna il contatore utenti online in tempo reale
+    if (window.cinemaHub && window.cinemaHub.socket) {
+      window.cinemaHub.socket.on('user_count_update', function(count) {
+        const display = document.getElementById('online-users-display');
+        if (display) {
+          display.textContent = count;
+        }
+      });
+    }
+    
+    // Animazione delle statistiche usando IntersectionObserver
+    const statItems = document.querySelectorAll('.stats-card h2');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = 'pulse 0.8s ease forwards';
+        }
+      });
+    });
+    
+    statItems.forEach(item => observer.observe(item));
+    
+    console.log('🎬 Homepage loaded successfully');
+  });
+</script>

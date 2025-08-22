@@ -1,7 +1,3 @@
-/* 
- * Palette colori CinemaHub
- */
-
 :root {
   /* COLORI BASE SISTEMA */
   --primary-color: #007bff;
@@ -14,105 +10,59 @@
   --cinema-gold: #d4af37;
   --cinema-red: #e50914;
   
-  /* LIGHT MODE (Default) */
+  /* DIMENSIONI E SPAZIATURE */
+  --navbar-height: 76px;
+  --footer-height: 200px;
+  --border-radius: 0.375rem;
+  --transition: all 0.3s ease;
+  
+  /* FONT */
+  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* LIGHT MODE */
+:root,
+[data-theme="light"] {
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-tertiary: #e9ecef;
   --text-primary: #212529;
   --text-secondary: #6c757d;
-  --text-muted: #adb5bd;
+  --text-muted: #495057;
   --border-color: #dee2e6;
   --shadow-color: rgba(0, 0, 0, 0.1);
+  --box-shadow: 0 4px 6px var(--shadow-color);
   
   /* Colori cinema per light mode */
   --cinema-dark-bg: #2c3e50;
   --cinema-light-bg: #ecf0f1;
   --cinema-accent: #34495e;
-  
-  /*   DIMENSIONI E SPAZIATURE   */
-  --navbar-height: 76px;
-  --footer-height: 200px;
-  --border-radius: 0.375rem;
+}
+
+/* DARK MODE */
+[data-theme="dark"] {
+  --bg-primary: #141414;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #2f2f2f;
+  --text-primary: #ffffff;
+  --text-secondary: #d0d7de;
+  --text-muted: #8b949e;
+  --border-color: #404040;
+  --shadow-color: rgba(0, 0, 0, 0.3);
   --box-shadow: 0 4px 6px var(--shadow-color);
-  --transition: all 0.3s ease;
   
-  /*   FONT   */
-  --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Colori cinema per dark mode */
+  --cinema-dark-bg: #141414;
+  --cinema-light-bg: #2f2f2f;
+  --cinema-accent: #404040;
 }
 
-/*   DARK MODE   */
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Sfondo e superfici */
-    --bg-primary: #141414;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2f2f2f;
-    
-    /* Testo */
-    --text-primary: #ffffff;
-    --text-secondary: #b3b3b3;
-    --text-muted: #666666;
-    
-    /* Bordi e ombre */
-    --border-color: #404040;
-    --shadow-color: rgba(0, 0, 0, 0.3);
-    
-    /* Colori cinema per dark mode */
-    --cinema-dark-bg: #141414;
-    --cinema-light-bg: #2f2f2f;
-    --cinema-accent: #404040;
-  }
-
-  :root:not([data-theme]) .theme-icon-sun {
-    display: none;
-  }
-  
-  :root:not([data-theme]) .theme-icon-moon {
-    display: inline-block;
-  }
+/* THEME TOGGLE */
+.theme-icon-sun {
+  display: inline-block;
 }
 
-/*   THEME TOGGLE BUTTON   */
-.theme-toggle {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--border-radius);
-  transition: var(--transition);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  backdrop-filter: blur(10px);
-}
-
-.theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: var(--cinema-gold);
-  color: var(--cinema-gold);
-  transform: scale(1.05);
-}
-
-.theme-toggle-icon {
-  font-size: 1rem;
-  transition: var(--transition);
-}
-
-.theme-toggle:hover .theme-toggle-icon {
-  transform: rotate(180deg);
-}
-
-/* Animazione per l'icona del tema */
-.theme-icon-sun,
 .theme-icon-moon {
-  transition: all 0.3s ease;
-}
-
-/* Nasconde l'icona opposta basandosi sul tema corrente */
-[data-theme="light"] .theme-icon-moon,
-:root:not([data-theme]) .theme-icon-moon {
   display: none;
 }
 
@@ -120,37 +70,11 @@
   display: none;
 }
 
-/*   OVERRIDE MANUALE PER DARK MODE   */
-[data-theme="dark"] {
-  --bg-primary: #141414;
-  --bg-secondary: #1a1a1a;
-  --bg-tertiary: #2f2f2f;
-  --text-primary: #ffffff;
-  --text-secondary: #b3b3b3;
-  --text-muted: #666666;
-  --border-color: #404040;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --cinema-dark-bg: #141414;
-  --cinema-light-bg: #2f2f2f;
-  --cinema-accent: #404040;
+[data-theme="dark"] .theme-icon-moon {
+  display: inline-block;
 }
 
-[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --text-muted: #adb5bd;
-  --border-color: #dee2e6;
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --cinema-dark-bg: #2c3e50;
-  --cinema-light-bg: #ecf0f1;
-  --cinema-accent: #34495e;
-}
-
-/*   APPLICAZIONE DELLE VARIABILI   */
-
+/* APPLICAZIONE DELLE VARIABILI */
 * {
   box-sizing: border-box;
 }
@@ -170,7 +94,7 @@ body {
   padding-top: 2rem;
 }
 
-/*   NAVBAR   */
+/* NAVBAR */
 .navbar {
   background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
   backdrop-filter: blur(10px);
@@ -219,9 +143,49 @@ body {
   width: 80%;
 }
 
-/*   SEARCH   */
+/* THEME TOGGLE BUTTON */
+.theme-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  backdrop-filter: blur(10px);
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--cinema-gold);
+  color: var(--cinema-gold);
+  transform: scale(1.05);
+}
+
+.theme-toggle-icon {
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.theme-toggle:hover .theme-toggle-icon {
+  transform: rotate(180deg);
+}
+
+/* SEARCH */
 #quick-search {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+#quick-search form {
+  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 #search-input {
@@ -233,13 +197,6 @@ body {
 
 #search-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
-}
-
-#search-input:focus {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: var(--cinema-gold);
-  color: white;
-  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
 }
 
 .search-results {
@@ -312,7 +269,7 @@ body {
   color: var(--text-secondary);
 }
 
-/*   MOVIE CARDS   */
+/* MOVIE CARDS */
 .movie-card {
   background: var(--bg-primary);
   border-radius: var(--border-radius);
@@ -376,7 +333,7 @@ body {
   font-size: 0.9rem;
 }
 
-/*   STATS CARDS   */
+/* STATS CARDS */
 .stats-card {
   background: linear-gradient(135deg, var(--primary-color), #0056b3);
   color: white;
@@ -402,7 +359,47 @@ body {
   margin-bottom: 0;
 }
 
-/*   FOOTER   */
+/* HOMEPAGE SPECIFICO */
+.hero-section {
+  background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
+  color: white;
+  padding: 4rem 0;
+  margin: -2rem -15px 3rem -15px;
+  text-align: center;
+  padding-top: 100px !important;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding-top: 100px !important;
+    padding-bottom: 60px;
+  }
+
+  .hero-section .lead {
+    font-size: 1.1rem !important;
+  }
+
+  .hero-section .d-flex {
+    padding: 0 15px;
+  }
+}
+
+.btn-cinema-gold {
+  background-color: var(--cinema-gold);
+  border-color: var(--cinema-gold);
+  color: #000;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn-cinema-gold:hover {
+  background-color: #b8941f;
+  border-color: #b8941f;
+  color: #000;
+  transform: translateY(-2px);
+}
+
+/* FOOTER */
 footer {
   background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
   margin-top: auto;
@@ -411,7 +408,7 @@ footer {
 
 footer a {
   transition: var(--transition);
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 footer a:hover {
@@ -419,9 +416,13 @@ footer a:hover {
   text-decoration: none;
 }
 
-/*   CHAT INDICATOR   */
+footer .text-muted {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* CHAT INDICATOR */
 #chat-indicator {
-  font-size: 0.6rem;
+  font-size: 0.8rem;
   animation: pulse 2s infinite;
 }
 
@@ -431,7 +432,7 @@ footer a:hover {
   100% { opacity: 1; transform: scale(1); }
 }
 
-/*   LOADING E TOAST   */
+/* LOADING E TOAST */
 .loading-overlay {
   position: fixed;
   top: 0;
@@ -468,7 +469,21 @@ footer a:hover {
   border-bottom: 1px solid var(--border-color);
 }
 
-/*   UTILITY CLASSES   */
+/* FORM CONTROLS */
+.form-control:focus,
+.form-select:focus,
+#search-input:focus,
+.btn:focus {
+  border-color: var(--cinema-gold);
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+  color: white;
+}
+
+#search-input:focus {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* UTILITY CLASSES */
 .text-cinema-gold {
   color: var(--cinema-gold) !important;
 }
@@ -507,7 +522,7 @@ footer a:hover {
   overflow: hidden;
 }
 
-/*   RESPONSIVE   */
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .main-content {
     padding-top: 1rem;
@@ -551,14 +566,7 @@ footer a:hover {
   }
 }
 
-/*   ACCESSIBILITY   */
+/* ACCESSIBILITÃ€ */
 html {
   scroll-behavior: smooth;
-}
-
-.btn:focus,
-.form-control:focus,
-.form-select:focus {
-  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
-  border-color: var(--cinema-gold);
 }
