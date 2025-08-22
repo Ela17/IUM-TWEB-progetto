@@ -59,19 +59,19 @@
 
 /* THEME TOGGLE */
 .theme-icon-sun {
-  display: inline-block;
+  display: none;
 }
 
 .theme-icon-moon {
-  display: none;
+  display: inline-block;
 }
 
 [data-theme="dark"] .theme-icon-sun {
-  display: none;
+  display: inline-block;
 }
 
 [data-theme="dark"] .theme-icon-moon {
-  display: inline-block;
+  display: none;
 }
 
 /* APPLICAZIONE DELLE VARIABILI */
@@ -143,6 +143,14 @@ body {
   width: 80%;
 }
 
+/* NAVBAR COLLAPSE - Solo su mobile */
+.navbar-collapse {
+  background: transparent;
+  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
 /* THEME TOGGLE BUTTON */
 .theme-toggle {
   background: rgba(255, 255, 255, 0.1);
@@ -199,6 +207,7 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* SEARCH RESULTS - Solo posizionamento essenziale */
 .search-results {
   position: absolute;
   top: 100%;
@@ -369,21 +378,6 @@ body {
   padding-top: 100px !important;
 }
 
-@media (max-width: 768px) {
-  .hero-section {
-    padding-top: 100px !important;
-    padding-bottom: 60px;
-  }
-
-  .hero-section .lead {
-    font-size: 1.1rem !important;
-  }
-
-  .hero-section .d-flex {
-    padding: 0 15px;
-  }
-}
-
 .btn-cinema-gold {
   background-color: var(--cinema-gold);
   border-color: var(--cinema-gold);
@@ -522,51 +516,7 @@ footer .text-muted {
   overflow: hidden;
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .main-content {
-    padding-top: 1rem;
-  }
-  
-  .navbar-brand {
-    font-size: 1.2rem;
-  }
-  
-  .search-results {
-    position: fixed;
-    top: calc(var(--navbar-height) + 0.5rem);
-    left: 1rem;
-    right: 1rem;
-  }
-  
-  .movie-card img {
-    height: 250px;
-  }
-  
-  .stats-card {
-    padding: 1.5rem;
-  }
-  
-  .stats-card .display-4 {
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 576px) {
-  .movie-card img {
-    height: 200px;
-  }
-  
-  .movie-card-body {
-    padding: 1rem;
-  }
-  
-  .stats-card {
-    padding: 1rem;
-  }
-}
-
-/* ACCESSIBILITÃ€ */
+/* ACCESSIBILITÀ */
 html {
   scroll-behavior: smooth;
 }
