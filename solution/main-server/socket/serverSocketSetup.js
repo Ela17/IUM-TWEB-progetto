@@ -1,6 +1,6 @@
 const socketIo = require("socket.io");
 const { socketConfig } = require("../config/index");
-const { setupClientSocket } = require("./clientSocketSetup");
+const setupClientSocket = require("./clientSocketSetup");
 const usersMetadataManager = require("./utils/UsersMetadataManager");
 const getErrorSocketHandler = require("./eventHandlers/ErrorSocketHandler");
 

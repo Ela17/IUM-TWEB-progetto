@@ -15,7 +15,8 @@ const router = express.Router();
 router.get("/", function (req, res, next) {
   res.render("pages/index", { 
     title: "CinemaHub - Your Cinema Data Hub",
-    currentPage: "home"
+    currentPage: "home",
+    isHomepage: true
   });
 });
 
@@ -34,7 +35,25 @@ router.get("/movies", function (req, res, next) {
   res.render("pages/movies", { 
     title: "Movies Catalogue - CinemaHub",
     description: "Discover amazing movies from our curated collections",
-    currentPage: "movies"
+    currentPage: "movies",
+    isMoviesPage: true
+  });
+});
+
+/**
+ * @swagger
+ * /movie-details:
+ *   get:
+ *     summary: Dettagli singolo film
+ *     tags: [Pages]
+ *     responses:
+ *       200
+ */
+router.get("/movies", function (req, res, next) {
+  res.render("pages/movies", { 
+    title: "Movie Details - CinemaHub",
+    currentPage: "movies",
+    isMovieDetailsPage: true
   });
 });
 

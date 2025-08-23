@@ -3,121 +3,108 @@
   Questa pagina sostituisce il {{{body}}} nel layout.hbs
 --}}
 
-{{#extend "layout"}}
-  
-  {{#content "styles"}}
-    <!-- Page-specific CSS -->
-    <link rel="stylesheet" href="/css/homepage.css">
-  {{/content}}
-
-  <!-- Hero Section -->
-  <div class="hero-section">
-    <div class="container">
-      <h1 class="display-3 fw-bold mb-4">
-        <i class="bi bi-camera-reels me-3 text-cinema-gold"></i>
-        Welcome to CinemaHub
-      </h1>
-      <p class="lead fs-4 mb-4">
-        Access and analyze film data for fans and journalists
-      </p>
-      <div class="d-flex justify-content-center gap-3">
-        <a href="/movies" class="btn btn-cinema-gold btn-lg hover-lift">
-          <i class="bi bi-search me-2"></i>
-          Search Movies
-        </a>
-        <a href="/chat" class="btn btn-outline-light btn-lg hover-lift">
-          <i class="bi bi-chat-dots me-2"></i>
-          Join Discussion
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main Content -->
+<!-- Hero Section -->
+<div class="hero-section">
   <div class="container">
-    
-    <!-- Features Section -->
-    <div class="row mb-5">
-      <div class="col-12 text-center mb-4">
-        <h2 class="display-5 fw-bold" style="color: var(--text-primary)">Core Features</h2>
-        <p class="lead" style="color: var(--text-secondary)">Essential tools for film data access and discussion</p>
-      </div>
-      
-      <div class="col-md-6 mb-4">
-        <div class="card movie-card border-0 h-100">
-          <div class="card-body text-center p-4">
-            <i class="bi bi-search feature-icon text-cinema-gold mb-3" style="font-size: 3rem;"></i>
-            <h5 class="card-title" style="color: var(--text-primary)">Movie Database</h5>
-            <p class="card-text" style="color: var(--text-secondary)">
-              Search and explore comprehensive film data with advanced filtering capabilities.
-              Access information about movies, cast, crew, and production details.
-            </p>
-            <a href="/movies" class="btn btn-outline-primary hover-lift">
-              Start Exploring <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6 mb-4">
-        <div class="card movie-card border-0 h-100">
-          <div class="card-body text-center p-4">
-            <i class="bi bi-chat-dots feature-icon text-cinema-gold mb-3" style="font-size: 3rem;"></i>
-            <h5 class="card-title" style="color: var(--text-primary)">Live Chat</h5>
-            <p class="card-text" style="color: var(--text-secondary)">
-              Real-time discussions between fans and journalists about films, reviews, 
-              and industry insights in topic-based rooms.
-            </p>
-            <a href="/chat" class="btn btn-outline-primary hover-lift">
-              Join Discussion <i class="bi bi-arrow-right ms-1"></i>
-            </a>
-          </div>
-        </div>
-      </div>
+    <h1 class="display-3 fw-bold mb-4">
+      <i class="bi bi-camera-reels me-3 text-cinema-gold"></i>
+      Welcome to CinemaHub
+    </h1>
+    <p class="lead fs-4 mb-4">
+      Access and analyze film data for fans and journalists
+    </p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="/movies" class="btn btn-cinema-gold btn-lg hover-lift">
+        <i class="bi bi-search me-2"></i>
+        Search Movies
+      </a>
+      <a href="/chat" class="btn btn-outline-light btn-lg hover-lift">
+        <i class="bi bi-chat-dots me-2"></i>
+        Join Discussion
+      </a>
     </div>
-    
-    <!-- Stats Section -->
-    <div class="row mb-5">
-      <div class="col-12 text-center mb-4">
-        <h3 class="fw-bold" style="color: var(--text-primary)">Our Database</h3>
-        <p style="color: var(--text-secondary)">Comprehensive cinema data at your fingertips</p>
-      </div>
-      
-      <div class="col-md-3 col-6 mb-3">
-        <div class="stats-card bg-cinema-gold" style="color: #000;">
-          <h2 class="display-6 fw-bold">940K+</h2>
-          <h5>Movies</h5>
-        </div>
-      </div>
-      
-      <div class="col-md-3 col-6 mb-3">
-        <div class="stats-card">
-          <h2 class="display-6 fw-bold">5.7M+</h2>
-          <h5>Actor Records</h5>
-        </div>
-      </div>
-      
-      <div class="col-md-3 col-6 mb-3">
-        <div class="stats-card bg-cinema-gold" style="color: #000;">
-          <h2 class="display-6 fw-bold">10K+</h2>
-          <h5>Oscar Awards</h5>
-        </div>
-      </div>
-      
-      <div class="col-md-3 col-6 mb-3">
-        <div class="stats-card">
-          <h2 class="display-6 fw-bold" id="online-users-display">
-            {{#if onlineUsers}}{{onlineUsers}}{{else}}0{{/if}}
-          </h2>
-          <h5>Users Online</h5>
-        </div>
-      </div>
-    </div>
-    
   </div>
+</div>
 
-  {{#content "scripts"}}
-    <script src="/js/homepage.js"></script>
-  {{/content}}
+<!-- Main Content -->
+<div class="container">
+  
+  <!-- Features Section -->
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+      <h2 class="display-5 fw-bold" style="color: var(--text-primary)">Core Features</h2>
+      <p class="lead" style="color: var(--text-secondary)">Essential tools for film data access and discussion</p>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+      <div class="card movie-card border-0 h-100">
+        <div class="card-body text-center p-4">
+          <i class="bi bi-search feature-icon text-cinema-gold mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title" style="color: var(--text-primary)">Movie Database</h5>
+          <p class="card-text" style="color: var(--text-secondary)">
+            Search and explore comprehensive film data with advanced filtering capabilities.
+            Access information about movies, cast, crew, and production details.
+          </p>
+          <a href="/movies" class="btn btn-outline-primary hover-lift">
+            Start Exploring <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
 
-{{/extend}}
+    <div class="col-md-6 mb-4">
+      <div class="card movie-card border-0 h-100">
+        <div class="card-body text-center p-4">
+          <i class="bi bi-chat-dots feature-icon text-cinema-gold mb-3" style="font-size: 3rem;"></i>
+          <h5 class="card-title" style="color: var(--text-primary)">Live Chat</h5>
+          <p class="card-text" style="color: var(--text-secondary)">
+            Real-time discussions between fans and journalists about films, reviews, 
+            and industry insights in topic-based rooms.
+          </p>
+          <a href="/chat" class="btn btn-outline-primary hover-lift">
+            Join Discussion <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Stats Section -->
+  <div class="row mb-5">
+    <div class="col-12 text-center mb-4">
+      <h3 class="fw-bold" style="color: var(--text-primary)">Our Database</h3>
+      <p style="color: var(--text-secondary)">Comprehensive cinema data at your fingertips</p>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card bg-cinema-gold" style="color: #000;">
+        <h2 class="display-6 fw-bold">940K+</h2>
+        <h5>Movies</h5>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card">
+        <h2 class="display-6 fw-bold">5.7M+</h2>
+        <h5>Actor Records</h5>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card bg-cinema-gold" style="color: #000;">
+        <h2 class="display-6 fw-bold">10K+</h2>
+        <h5>Oscar Awards</h5>
+      </div>
+    </div>
+    
+    <div class="col-md-3 col-6 mb-3">
+      <div class="stats-card">
+        <h2 class="display-6 fw-bold" id="online-users-display">
+          {{#if onlineUsers}}{{onlineUsers}}{{else}}0{{/if}}
+        </h2>
+        <h5>Users Online</h5>
+      </div>
+    </div>
+  </div>
+  
+</div>

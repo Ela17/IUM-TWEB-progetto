@@ -10,7 +10,19 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/main.css">
-    {{{block "styles"}}}
+
+    {{#if isHomepage}}
+        <link rel="stylesheet" href="/css/homepage.css">
+    {{/if}}
+    {{#if isMoviesPage}}
+        <link rel="stylesheet" href="/css/movies.css">
+    {{/if}}
+    {{#if isMovieDetailsPage}}
+        <link rel="stylesheet" href="/css/movie-details.css">
+    {{/if}}
+    {{#if isChatPage}}
+        <link rel="stylesheet" href="/css/chat.css">
+    {{/if}}
 </head>
 <body>
     <!-- Navigation Header -->
@@ -41,6 +53,18 @@
 
     <!-- Main JavaScript -->
     <script src="/js/main.js"></script>
-    {{{block "scripts"}}}
+
+    {{#if isHomepage}}
+        <script src="/js/homepage.js"></script>
+    {{/if}}
+    {{#if isMoviesPage}}
+        <script src="/js/movies.js"></script>
+    {{/if}}
+    {{#if isMovieDetailsPage}}
+        <script src="/js/movie-details.js"></script>
+    {{/if}}
+    {{#if isChatPage}}
+        <script src="/js/chat.js"></script>
+    {{/if}}
 </body>
 </html>

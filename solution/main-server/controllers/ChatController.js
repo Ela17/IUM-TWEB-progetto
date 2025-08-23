@@ -17,6 +17,7 @@ const getChatPage = async (req, res, next) => {
   try {
     res.render("pages/chat", {
       title: "Cinema Chat",
+      isChatPage: true,
       serverUrl:
         process.env.OTHER_EXPRESS_SERVER_URL || "http://localhost:3001",
     });
