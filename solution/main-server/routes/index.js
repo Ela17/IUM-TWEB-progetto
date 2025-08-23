@@ -32,28 +32,9 @@ router.get("/", function (req, res, next) {
  */
 router.get("/movies", function (req, res, next) {
   res.render("pages/movies", { 
-    title: "Movie Catalog - CinemaHub",
+    title: "Movies Catalogue - CinemaHub",
     description: "Discover amazing movies from our curated collections",
     currentPage: "movies"
-  });
-});
-
-/**
- * @swagger
- * /chat:
- *   get:
- *     summary: Pagina chat
- *     description: Serve la pagina principale della chat con Socket.IO
- *     tags: [Pages]
- *     responses:
- *       200:
- *         description: Pagina chat servita con successo
- */
-router.get("/chat", function (req, res, next) {
-  res.render("pages/chat", { 
-    title: "Cinema Chat - CinemaHub",
-    description: "Real-time chat for movie discussions",
-    currentPage: "chat"
   });
 });
 

@@ -9,15 +9,13 @@ const proxyService = require("../services/proxyService");
 /**
  * @function getChatPage
  * @description Serve la pagina principale della chat.
- * Segue il pattern della lezione del professore: res.render('index', { title: 'My Chat' })
- * per servire la pagina con Socket.IO configurato.
  * @param {Object} req - L'oggetto Request.
  * @param {Object} res - L'oggetto Response per renderizzare la pagina.
  * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
  */
 const getChatPage = async (req, res, next) => {
   try {
-    res.render("chat", {
+    res.render("pages/chat", {
       title: "Cinema Chat",
       serverUrl:
         process.env.OTHER_EXPRESS_SERVER_URL || "http://localhost:3001",

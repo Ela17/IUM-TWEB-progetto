@@ -1,10 +1,10 @@
 <!-- Contenuto principale dell'errore -->
 <div class="container">
-  <div class="text-center py-5">
+  <div class="text-center py-5 error-page-container">
     
     <!-- Icona di errore basata sul tipo di status -->
     <div class="mb-4">
-      <i class="bi bi-exclamation-circle-fill text-warning" style="font-size: 6rem;"></i>
+      <i class="bi bi-exclamation-circle-fill text-cinema-gold" style="font-size: 6rem;"></i>
     </div>
     
     <!-- Codice di errore -->
@@ -41,12 +41,12 @@
     
     <!-- Suggerimenti -->
     <div class="mt-4">
-      <p class="text-muted mb-3">You can also try:</p>
+      <p class="text-secondary mb-3">You can also try:</p>
       <div class="d-flex justify-content-center gap-2 flex-wrap">
         <a href="/movies" class="btn btn-sm btn-outline-secondary hover-lift">
-          <i class="bi bi-search me-1"></i>Movies Catalog
+          <i class="bi bi-search me-1"></i>Movies Catalogue
         </a>
-        <a href="chat" class="btn btn-sm btn-outline-secondary hover-lift">
+        <a href="/chat" class="btn btn-sm btn-outline-secondary hover-lift">
           <i class="bi bi-chat-dots me-1"></i>Live Chat
         </a>
         <a href="/api-docs" class="btn btn-sm btn-outline-secondary hover-lift">
@@ -57,20 +57,6 @@
         </button>
       </div>
     </div>
-    
-    <!-- Dettagli tecnici (solo in development) -->
-    {{#if isDevelopment}}
-      {{#if stack}}
-        <div class="mt-5 text-start mx-auto" style="max-width: 800px;">
-          <div class="bg-dark border rounded p-4">
-            <h5 class="mb-3 text-danger">
-              <i class="bi bi-bug me-2"></i>Technical Details (Development Mode)
-            </h5>
-            <div class="bg-secondary rounded p-3 font-monospace small text-light overflow-auto" style="max-height: 200px; white-space: pre-wrap;">{{stack}}</div>
-          </div>
-        </div>
-      {{/if}}
-    {{/if}}
     
   </div>
 </div>
