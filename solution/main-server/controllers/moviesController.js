@@ -34,7 +34,7 @@ const searchMovies = async (req, res, next) => {
       searchParams.set("max_rating", req.query.max_rating);
 
     const endpoint = `/api/movies/search?${searchParams.toString()}`;
-    const springResponse = await proxyce.callSpringBoot(endpoint);
+    const springResponse = await proxyService.callSpringBoot(endpoint);
 
     res.json(springResponse.data);
   } catch (error) {

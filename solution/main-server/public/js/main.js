@@ -50,7 +50,6 @@ class CinemaHub {
   /**
    * @method getCurrentTheme
    * @returns {string} Il tema corrente ('light' o 'dark').
-   * @description Ottiene il tema correntemente attivo.
    */
   getCurrentTheme() {
     return this.themeManager ? this.themeManager.getCurrentTheme() : 'light';
@@ -59,7 +58,6 @@ class CinemaHub {
   /**
    * @method setTheme
    * @param {string} theme - Il tema da applicare ('light' o 'dark').
-   * @description Forza l'applicazione di un tema specifico.
    */
   setTheme(theme) {
     if (this.themeManager) {
@@ -74,10 +72,9 @@ class CinemaHub {
   /**
    * @method setupEventListeners
    * @description Configura tutti i listener di eventi per l'interfaccia utente.
-   * Include la gestione della ricerca, lo scroll della navbar, e il cambio di visibilità della pagina.
    */
   setupEventListeners() {
-    // invio del form di ricerca
+    // Invio del form di ricerca
     const searchForm = document.getElementById('quick-search');
     if (searchForm) {
       searchForm.addEventListener('submit', (e) => {
@@ -86,14 +83,14 @@ class CinemaHub {
       });
     }
 
-    // input di ricerca in tempo reale
+    // Input di ricerca in tempo reale
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         this.handleSearchInput(e.target.value);
       });
 
-      // Nasconde risultati della ricerca quando si clicca fuori dall'area
+      // Nasconde risultati quando si clicca fuori
       document.addEventListener('click', (e) => {
         const searchResults = document.getElementById('search-results');
         if (!searchInput.contains(e.target) && 
@@ -102,25 +99,20 @@ class CinemaHub {
         }
       });
 
-      // navigazione con tastiera nei risultati di ricerca
+      // Navigazione con tastiera
       searchInput.addEventListener('keydown', (e) => {
         this.handleSearchKeyNavigation(e);
       });
     }
 
-    // Navbar scroll
+    // Navbar scroll effect
     window.addEventListener('scroll', () => {
       this.handleNavbarScroll();
     });
 
-    // cambio di visibilità della pagina
+    // Visibilità pagina per socket
     document.addEventListener('visibilitychange', () => {
       this.handleVisibilityChange();
-    });
-
-    // ridimensionamento della finestra
-    window.addEventListener('resize', () => {
-      this.handleWindowResize();
     });
   }
 
@@ -130,7 +122,7 @@ class CinemaHub {
 
   /**
    * @method initializeSearch
-   * @description Prepara la funzionalità di ricerca, inclusa l'inizializzazione della cache e dello storico.
+   * @description Prepara la funzionalità di ricerca.
    */
   initializeSearch() {
     this.searchCache = new Map();
@@ -141,8 +133,6 @@ class CinemaHub {
   /**
    * @method handleSearchInput
    * @param {string} query - La stringa di ricerca inserita dall'utente.
-   * @description Gestisce l'input dell'utente con un debounce per evitare richieste API eccessive.
-   * Avvia la ricerca live dopo 300ms di inattività.
    */
   handleSearchInput(query) {
     clearTimeout(this.searchTimeout);
@@ -160,7 +150,6 @@ class CinemaHub {
   /**
    * @method handleSearchKeyNavigation
    * @param {KeyboardEvent} e - L'evento di pressione del tasto.
-   * @description Permette la navigazione nei risultati di ricerca tramite tasti freccia e Enter.
    */
   handleSearchKeyNavigation(e) {
     const searchResults = document.getElementById('search-results');
@@ -199,7 +188,6 @@ class CinemaHub {
   /**
    * @method updateSearchSelection
    * @param {NodeList} items - La lista degli elementi dei risultati di ricerca.
-   * @description Aggiorna la selezione visuale degli elementi di ricerca durante la navigazione con la tastiera.
    */
   updateSearchSelection(items) {
     items.forEach((item, index) => {
@@ -216,11 +204,9 @@ class CinemaHub {
    * @async
    * @method performLiveSearch
    * @param {string} query - La stringa di ricerca.
-   * @description Esegue una ricerca live asincrona, utilizzando la cache per evitare richieste ripetute.
-   * Richiede l'API `/api/movies/suggestions` e visualizza i risultati.
    */
   async performLiveSearch(query) {
-    // Prima constrolla in cache
+    // Controlla cache
     if (this.searchCache.has(query)) {
       this.displaySearchResults(this.searchCache.get(query));
       return;
@@ -230,9 +216,7 @@ class CinemaHub {
       this.showSearchLoading();
       
       const response = await axios.get(`/api/movies/suggestions`, {
-        params: { 
-          q: query
-        },
+        params: { q: query },
         timeout: 5000
       });
 
@@ -254,60 +238,54 @@ class CinemaHub {
 
   /**
    * @method performQuickSearch
-   * @description Esegue una ricerca completa reindirizzando l'utente alla pagina dei risultati.
-   * Richiede l'API `/api/movies/search?title` e visualizza i risultati.
+   * @description Esegue una ricerca completa reindirizzando alla pagina dei risultati.
    */
   performQuickSearch() {
     const query = document.getElementById('search-input').value.trim();
     if (query) {
       this.addToSearchHistory(query);
-      window.location.href = `/api/movies/search?title=${encodeURIComponent(query)}`;
+      window.location.href = `/movies?search=${encodeURIComponent(query)}`;
     }
   }
 
   /**
    * @method displaySearchResults
-   * @param {object} results - I risultati di ricerca contenenti array di film e attori.
-   * @description Visualizza i risultati di ricerca nel dropdown.
+   * @param {object} results - I risultati di ricerca.
    */
   displaySearchResults(results) {
     const resultsContainer = document.getElementById('search-results');
     
-    if (!results || (!results.movies?.length && !results.actors?.length)) {
+    if (!results || !results.movies?.length) {
       this.displaySearchEmpty();
       return;
     }
 
-    // Reset
     this.selectedSearchIndex = -1;
 
     let html = '<div class="search-results-content">';
-
-    if (results.movies && results.movies.length > 0) {
-      html += '<div class="search-category">';
-      html += '<h6>Movies</h6>';
-      results.movies.forEach((movie, index) => {
-        html += `
-          <a href="/api/movies/${movie.id}" class="search-item" data-index="${index}">
-            <img src="${movie.poster_url || '/images/no-poster.jpg'}" 
-                alt="${this.escapeHtml(movie.name)}" 
-                class="search-item-image"
-                onerror="this.src='/images/no-poster.jpg'">
-            <div class="search-item-info">
-              <h6>${this.highlightSearchTerm(movie.name, results.query)}</h6>
-              <small>
-                ${movie.year || 'Unknown year'} • 
-                <i class="bi bi-star-fill text-cinema-gold"></i> ${movie.rating || 'N/A'}
-                ${movie.duration ? ` • ${movie.duration}min` : ''}
-              </small>
-            </div>
-          </a>
-        `;
-      });
-      html += '</div>';
-    }
-
-    html += '</div>';
+    html += '<div class="search-category">';
+    html += '<h6>Movies</h6>';
+    
+    results.movies.forEach((movie, index) => {
+      html += `
+        <a href="/api/movies/${movie.id}" class="search-item" data-index="${index}">
+          <img src="${movie.poster_url || '/images/no-poster.jpg'}" 
+              alt="${this.escapeHtml(movie.name)}" 
+              class="search-item-image"
+              onerror="this.src='/images/no-poster.jpg'">
+          <div class="search-item-info">
+            <h6>${this.highlightSearchTerm(movie.name, results.query)}</h6>
+            <small>
+              ${movie.year || 'Unknown year'} • 
+              <i class="bi bi-star-fill text-cinema-gold"></i> ${movie.rating || 'N/A'}
+              ${movie.duration ? ` • ${movie.duration}min` : ''}
+            </small>
+          </div>
+        </a>
+      `;
+    });
+    
+    html += '</div></div>';
 
     if (resultsContainer) {
       resultsContainer.innerHTML = html;
@@ -317,7 +295,6 @@ class CinemaHub {
 
   /**
    * @method displaySearchEmpty
-   * @description Visualizza un messaggio quando la ricerca non produce risultati.
    */
   displaySearchEmpty() {
     const resultsContainer = document.getElementById('search-results');
@@ -335,8 +312,7 @@ class CinemaHub {
 
   /**
    * @method displaySearchError
-   * @param {string} message - Il messaggio di errore da visualizzare.
-   * @description Visualizza un messaggio di errore in caso di fallimento della ricerca.
+   * @param {string} message - Il messaggio di errore.
    */
   displaySearchError(message) {
     const resultsContainer = document.getElementById('search-results');
@@ -356,7 +332,6 @@ class CinemaHub {
 
   /**
    * @method showSearchLoading
-   * @description Mostra un'indicazione di caricamento nei risultati di ricerca.
    */
   showSearchLoading() {
     const resultsContainer = document.getElementById('search-results');
@@ -371,18 +346,10 @@ class CinemaHub {
     }
   }
 
-  /**
-   * @method hideSearchLoading
-   * @description Nasconde l'indicazione di caricamento.
-   */
   hideSearchLoading() {
-    // Lo stato di caricamento verrà sostituito dai risultati o nascosto
+    // Lo stato di caricamento verrà sostituito dai risultati
   }
 
-  /**
-   * @method showSearchResults
-   * @description Rende visibile il contenitore dei risultati di ricerca.
-   */
   showSearchResults() {
     const resultsContainer = document.getElementById('search-results');
     if (resultsContainer) {
@@ -390,10 +357,6 @@ class CinemaHub {
     }
   }
 
-  /**
-   * @method hideSearchResults
-   * @description Nasconde il contenitore dei risultati di ricerca.
-   */
   hideSearchResults() {
     const resultsContainer = document.getElementById('search-results');
     if (resultsContainer) {
@@ -406,7 +369,7 @@ class CinemaHub {
    * @method highlightSearchTerm
    * @param {string} text - Il testo originale.
    * @param {string} term - Il termine da evidenziare.
-   * @returns {string} Il testo con il termine di ricerca evidenziato con un tag `<mark>`.
+   * @returns {string} Il testo con il termine evidenziato.
    */
   highlightSearchTerm(text, term) {
     if (!term || !text) return this.escapeHtml(text);
@@ -417,13 +380,12 @@ class CinemaHub {
 
   /**
    * @method addToSearchHistory
-   * @param {string} query - La query di ricerca da aggiungere allo storico.
-   * @description Aggiunge una query allo storico delle ricerche, gestendo la duplicazione e il limite massimo.
+   * @param {string} query - La query da aggiungere allo storico.
    */
   addToSearchHistory(query) {
     this.searchHistory = this.searchHistory.filter(item => item !== query);
     this.searchHistory.unshift(query);
-    this.searchHistory = this.searchHistory.slice(0, 10); // Keep only last 10
+    this.searchHistory = this.searchHistory.slice(0, 10);
     localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
   }
 
@@ -433,7 +395,7 @@ class CinemaHub {
 
   /**
    * @method initializeSocket
-   * @description Inizializza la connessione con Socket.IO e configura i listener per gli eventi in tempo reale.
+   * @description Inizializza la connessione Socket.IO.
    */
   initializeSocket() {
     if (typeof io === 'undefined') {
@@ -529,7 +491,6 @@ class CinemaHub {
    * @method joinRoom
    * @param {string} roomName - Nome della stanza
    * @param {string} userName - Nome utente
-   * @description Unisce l'utente a una stanza specifica
    */
   joinRoom(roomName, userName) {
     if (this.socket && this.socket.connected) {
@@ -545,7 +506,6 @@ class CinemaHub {
    * @param {string} roomName - Nome della stanza
    * @param {string} userName - Nome utente
    * @param {string} topic - Argomento della stanza
-   * @description Crea una nuova stanza
    */
   createRoom(roomName, userName, topic = '') {
     if (this.socket && this.socket.connected) {
@@ -561,7 +521,6 @@ class CinemaHub {
    * @method leaveRoom
    * @param {string} roomName - Nome della stanza
    * @param {string} userName - Nome utente
-   * @description Lascia una stanza
    */
   leaveRoom(roomName, userName) {
     if (this.socket && this.socket.connected) {
@@ -578,7 +537,6 @@ class CinemaHub {
    * @param {string} roomName - Nome della stanza
    * @param {string} userName - Nome utente
    * @param {string} message - Messaggio da inviare
-   * @description Invia un messaggio alla stanza
    */
   sendMessage(roomName, userName, message) {
     if (this.socket && this.socket.connected) {
@@ -593,7 +551,6 @@ class CinemaHub {
   /**
    * @method updateChatIndicator
    * @param {boolean} connected - Stato della connessione.
-   * @description Aggiorna l'indicatore visivo dello stato della connessione alla chat.
    */
   updateChatIndicator(connected) {
     const indicator = document.getElementById('chat-indicator');
@@ -613,7 +570,6 @@ class CinemaHub {
   /**
    * @method updateOnlineUsersCount
    * @param {number} count - Il numero di utenti online.
-   * @description Aggiorna il contatore degli utenti online con un'animazione.
    */
   updateOnlineUsersCount(count) {
     const counter = document.getElementById('online-users');
@@ -630,12 +586,12 @@ class CinemaHub {
   }
 
   // ===================
-  // INTERAZIONI UI
+  // UI INTERACTIONS
   // ===================
 
   /**
    * @method handleNavbarScroll
-   * @description Gestisce l'effetto di scroll sulla navbar, applicando uno sfondo sfumato e un effetto di sfocatura.
+   * @description Gestisce l'effetto di scroll sulla navbar.
    */
   handleNavbarScroll() {
     const navbar = document.querySelector('.navbar');
@@ -658,17 +614,14 @@ class CinemaHub {
 
   /**
    * @method handleVisibilityChange
-   * @description Gestisce gli eventi di visibilità della pagina (quando l'utente cambia tab).
-   * Emette un segnale al server per indicare l'inattività o l'attività dell'utente.
+   * @description Gestisce cambio di visibilità della pagina per socket.
    */
   handleVisibilityChange() {
     if (document.hidden) {
-      // La pagina è nascosta - conserva risorse
       if (this.socket && this.socket.connected) {
         this.socket.emit('user_inactive');
       }
     } else {
-      // La pagina è visibile - ripristina l'attività
       if (this.socket && this.socket.connected) {
         this.socket.emit('user_active');
       }
@@ -676,31 +629,9 @@ class CinemaHub {
   }
 
   /**
-   * @method handleWindowResize
-   * @description Gestisce il ridimensionamento della finestra per adattare la posizione dei risultati di ricerca su schermi mobile.
-   */
-  handleWindowResize() {
-    const searchResults = document.getElementById('search-results');
-    if (searchResults && !searchResults.classList.contains('d-none')) {
-      if (window.innerWidth <= 768) {
-        searchResults.style.position = 'fixed';
-        searchResults.style.top = '70px';
-        searchResults.style.left = '1rem';
-        searchResults.style.right = '1rem';
-      } else {
-        searchResults.style.position = 'absolute';
-        searchResults.style.top = '100%';
-        searchResults.style.left = '0';
-        searchResults.style.right = '0';
-      }
-    }
-  }
-
-  /**
    * @method showNotification
    * @param {string} message - Il messaggio della notifica.
-   * @param {string} [type='info'] - Il tipo di notifica (success, error, warning, info).
-   * @description Mostra una notifica all'utente tramite un toast di Bootstrap.
+   * @param {string} [type='info'] - Il tipo di notifica.
    */
   showNotification(message, type = 'info') {
     const toastHtml = `
@@ -725,14 +656,12 @@ class CinemaHub {
     
     toastContainer.insertAdjacentHTML('beforeend', toastHtml);
     
-    // Mostra il toast
     const toastElement = toastContainer.lastElementChild;
     const toast = new bootstrap.Toast(toastElement, {
       delay: type === 'error' ? 5000 : 3000
     });
     toast.show();
     
-    // Rimuovi il toast dopo la visualizzazione
     toastElement.addEventListener('hidden.bs.toast', () => {
       toastElement.remove();
     });
@@ -741,7 +670,7 @@ class CinemaHub {
   /**
    * @method getIconForType
    * @param {string} type - Il tipo di notifica.
-   * @returns {string} La classe dell'icona Bootstrap corrispondente.
+   * @returns {string} La classe dell'icona Bootstrap.
    */
   getIconForType(type) {
     const icons = {
@@ -757,14 +686,9 @@ class CinemaHub {
   // UTILITY METHODS
   // ======================
 
-  /**
-   * @method showLoading
-   * @description Mostra l'overlay di caricamento.
-   */
   showLoading() {
     let overlay = document.getElementById('loading-overlay');
     if (!overlay) {
-      // Crea l'overlay se non esiste
       overlay = document.createElement('div');
       overlay.id = 'loading-overlay';
       overlay.className = 'loading-overlay';
@@ -781,10 +705,6 @@ class CinemaHub {
     overlay.classList.remove('d-none');
   }
 
-  /**
-   * @method hideLoading
-   * @description Nasconde l'overlay di caricamento.
-   */
   hideLoading() {
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
@@ -795,8 +715,7 @@ class CinemaHub {
   /**
    * @method escapeHtml
    * @param {string} text - Il testo da sanificare.
-   * @returns {string} Il testo con i caratteri HTML speciali convertiti in entità.
-   * @description Sanifica una stringa per prevenire attacchi XSS (Cross-Site Scripting).
+   * @returns {string} Il testo sanificato.
    */
   escapeHtml(text) {
     const div = document.createElement('div');
@@ -806,82 +725,28 @@ class CinemaHub {
 
   /**
    * @method escapeRegex
-   * @param {string} text - La stringa da sanificare.
-   * @returns {string} La stringa con i caratteri speciali di regex preceduti da un backslash.
-   * @description Converte una stringa in un pattern regex sicuro.
+   * @param {string} text - La stringa da sanificare per regex.
+   * @returns {string} La stringa sanificata.
    */
   escapeRegex(text) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
 
-  /**
-   * @method formatNumber
-   * @param {number} num - Il numero da formattare.
-   * @returns {string} Il numero formattato con separatori per le migliaia.
-   */
   formatNumber(num) {
     return new Intl.NumberFormat('en-US').format(num);
   }
 
-  /**
-   * @method truncateText
-   * @param {string} text - Il testo da troncare.
-   * @param {number} [maxLength=100] - La lunghezza massima del testo.
-   * @returns {string} Il testo troncato, con "..." alla fine se necessario.
-   */
   truncateText(text, maxLength = 100) {
     if (!text || text.length <= maxLength) return text;
     return text.substring(0, maxLength).trim() + '...';
   }
 
-  /**
-   * @method debounce
-   * @param {Function} func - La funzione da ritardare.
-   * @param {number} delay - Il ritardo in millisecondi.
-   * @returns {Function} Una versione della funzione che esegue solo dopo un certo periodo di inattività.
-   */
   debounce(func, delay) {
     let timeoutId;
     return (...args) => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => func.apply(this, args), delay);
     };
-  }
-
-  /**
-   * @method scrollToElement
-   * @param {Element} element - L'elemento a cui scrollare.
-   * @param {number} [offset=0] - L'offset aggiuntivo da applicare.
-   * @description Esegue uno scroll animato verso un elemento specificato.
-   */
-  scrollToElement(element, offset = 0) {
-    if (!element) return;
-    
-    const rect = element.getBoundingClientRect();
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const targetTop = rect.top + scrollTop - offset;
-    
-    window.scrollTo({
-      top: targetTop,
-      behavior: 'smooth'
-    });
-  }
-
-  /**
-   * @method isInViewport
-   * @param {Element} element - L'elemento da controllare.
-   * @returns {boolean} `true` se l'elemento è visibile nel viewport, altrimenti `false`.
-   */
-  isInViewport(element) {
-    if (!element) return false;
-    
-    const rect = element.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
   }
 }
 
@@ -900,84 +765,54 @@ class ThemeManager {
     this.init();
   }
 
-  /**
-   * @method init
-   * @description Inizializza il theme manager.
-   */
   init() {
-    // Carica il tema salvato o usa la preferenza del sistema
     this.loadTheme();
     
-    // Aggiungi event listener al toggle
     if (this.themeToggle) {
       this.themeToggle.addEventListener('click', () => this.toggleTheme());
     }
     
-    // Ascolta i cambiamenti delle preferenze del sistema
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      // Solo se non c'è una preferenza salvata esplicitamente
       if (!localStorage.getItem('theme')) {
         this.setTheme(e.matches ? 'dark' : 'light');
       }
     });
   }
 
-  /**
-   * @method loadTheme
-   * @description Carica il tema salvato o applica la preferenza del sistema.
-   */
   loadTheme() {
     const savedTheme = localStorage.getItem('theme');
     
     if (savedTheme) {
-      // Usa il tema salvato
       this.setTheme(savedTheme);
     } else {
-      // Usa la preferenza del sistema
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this.setTheme(systemPrefersDark ? 'dark' : 'light');
     }
   }
 
-  /**
-   * @method setTheme
-   * @param {string} theme - Il tema da applicare ('light' o 'dark').
-   * @description Applica il tema specificato all'interfaccia.
-   */
   setTheme(theme) {
-    // Applica il tema al documento
     document.documentElement.setAttribute('data-theme', theme);
     
-    // Aggiorna il testo del button (opzionale)
     if (this.themeText) {
-      this.themeText.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      this.themeText.textContent = theme === 'light' ? 'Dark' : 'Light';
     }
     
-    // Aggiorna il tooltip
     if (this.themeToggle) {
       this.themeToggle.setAttribute('title', 
-        theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+        theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
       );
     }
     
     console.log(`🎨 Theme set to: ${theme}`);
   }
 
-  /**
-   * @method toggleTheme
-   * @description Cambia il tema corrente tra light e dark.
-   */
   toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     
-    // Applica il nuovo tema
     this.setTheme(newTheme);
-    
-    // Salva la preferenza
     localStorage.setItem('theme', newTheme);
     
-    // Animazione di feedback
     if (this.themeToggle) {
       this.themeToggle.style.transform = 'scale(0.95)';
       setTimeout(() => {
@@ -985,17 +820,10 @@ class ThemeManager {
       }, 150);
     }
     
-    // Toast di conferma (opzionale)
     this.showThemeToast(newTheme);
   }
 
-  /**
-   * @method showThemeToast
-   * @param {string} theme - Il tema appena applicato.
-   * @description Mostra un toast di conferma per il cambio tema.
-   */
   showThemeToast(theme) {
-    // Usa il sistema di notifiche globale se disponibile
     if (window.cinemaHub) {
       const icon = theme === 'dark' ? '🌙' : '☀️';
       window.cinemaHub.showNotification(
@@ -1005,20 +833,10 @@ class ThemeManager {
     }
   }
 
-  /**
-   * @method getCurrentTheme
-   * @returns {string} Il tema corrente ('light' o 'dark').
-   * @description Ottiene il tema correntemente attivo.
-   */
   getCurrentTheme() {
     return document.documentElement.getAttribute('data-theme') || 'light';
   }
 
-  /**
-   * @method forceTheme
-   * @param {string} theme - Il tema da forzare.
-   * @description Forza l'applicazione di un tema specifico e lo salva.
-   */
   forceTheme(theme) {
     this.setTheme(theme);
     localStorage.setItem('theme', theme);
@@ -1026,51 +844,27 @@ class ThemeManager {
 }
 
 // =================================
-// FUNZIONI GLOBALI PER IL LAYOUT
+// FUNZIONI GLOBALI
 // =================================
 
-/**
- * @function showLoading
- * @description Funzione globale per mostrare l'overlay di caricamento.
- * Delega la chiamata all'istanza della classe `CinemaHub`.
- */
 window.showLoading = function() {
   if (window.cinemaHub) {
     window.cinemaHub.showLoading();
   }
 };
 
-/**
- * @function hideLoading
- * @description Funzione globale per nascondere l'overlay di caricamento.
- * Delega la chiamata all'istanza della classe `CinemaHub`.
- */
 window.hideLoading = function() {
   if (window.cinemaHub) {
     window.cinemaHub.hideLoading();
   }
 };
 
-/**
- * @function showNotification
- * @param {string} message - Il messaggio della notifica.
- * @param {string} [type='info'] - Il tipo di notifica.
- * @description Funzione globale per mostrare una notifica.
- * Delega la chiamata all'istanza della classe `CinemaHub`.
- */
 window.showNotification = function(message, type = 'info') {
   if (window.cinemaHub) {
     window.cinemaHub.showNotification(message, type);
   }
 };
 
-/**
- * @function formatNumber
- * @param {number} num - Il numero da formattare.
- * @returns {string} Il numero formattato.
- * @description Funzione globale per formattare i numeri.
- * Delega la chiamata all'istanza della classe `CinemaHub`.
- */
 window.formatNumber = function(num) {
   if (window.cinemaHub) {
     return window.cinemaHub.formatNumber(num);
@@ -1091,35 +885,18 @@ window.getCurrentTheme = function() {
   return 'light';
 };
 
-/**
- * @function joinRoom
- * @param {string} roomName - Nome della stanza
- * @param {string} userName - Nome utente
- */
 window.joinRoom = function(roomName, userName) {
   if (window.cinemaHub) {
     window.cinemaHub.joinRoom(roomName, userName);
   }
 };
 
-/**
- * @function createRoom
- * @param {string} roomName - Nome della stanza
- * @param {string} userName - Nome utente
- * @param {string} topic - Argomento della stanza
- */
 window.createRoom = function(roomName, userName, topic = '') {
   if (window.cinemaHub) {
     window.cinemaHub.createRoom(roomName, userName, topic);
   }
 };
 
-/**
- * @function sendMessage
- * @param {string} roomName - Nome della stanza
- * @param {string} userName - Nome utente
- * @param {string} message - Messaggio da inviare
- */
 window.sendMessage = function(roomName, userName, message) {
   if (window.cinemaHub) {
     window.cinemaHub.sendMessage(roomName, userName, message);
@@ -1130,28 +907,17 @@ window.sendMessage = function(roomName, userName, message) {
 // INIZIALIZZAZIONE
 // ======================
 
-/**
- * @description Inizializza l'applicazione `CinemaHub` quando il DOM è completamente caricato.
- * L'istanza viene assegnata a `window.cinemaHub` per renderla accessibile globalmente.
- */
 document.addEventListener('DOMContentLoaded', function() {
   window.cinemaHub = new CinemaHub();
   console.log('🎬 CinemaHub layout initialized');
 });
 
-/**
- * @description Gestisce l'evento di chiusura della pagina per disconnettere il socket in modo pulito.
- */
 window.addEventListener('beforeunload', function() {
   if (window.cinemaHub && window.cinemaHub.socket) {
     window.cinemaHub.socket.disconnect();
   }
 });
 
-/**
- * @description Gestisce l'evento di ritorno della connessione a internet.
- * Mostra una notifica e tenta di riconnettere il socket.
- */
 window.addEventListener('online', function() {
   if (window.cinemaHub) {
     window.cinemaHub.showNotification('Connection restored', 'success');
@@ -1161,22 +927,15 @@ window.addEventListener('online', function() {
   }
 });
 
-/**
- * @description Gestisce l'evento di perdita della connessione a internet.
- * Mostra una notifica all'utente.
- */
 window.addEventListener('offline', function() {
   if (window.cinemaHub) {
     window.cinemaHub.showNotification('Connection lost', 'warning');
   }
 });
 
-/**
- * @description Aggiunge animazioni CSS personalizzate all'head del documento.
- */
+// CSS personalizzate
 const style = document.createElement('style');
 style.textContent = `
-  /* Animazioni base */
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -1187,7 +946,6 @@ style.textContent = `
     to { transform: translateX(0); opacity: 1; }
   }
   
-  /* Aggiorna gli stili esistenti per usare le CSS Custom Properties */
   .search-item.active {
     background-color: var(--bg-tertiary) !important;
     color: var(--text-primary) !important;
@@ -1202,9 +960,9 @@ style.textContent = `
     font-weight: 600;
   }
   
-  /* Focus states migliorati per accessibilità */
   .theme-toggle:focus,
-  .search-item:focus {
+  .search-item:focus,
+  #search-input:focus {
     outline: 2px solid var(--cinema-gold);
     outline-offset: 2px;
   }

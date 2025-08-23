@@ -207,7 +207,7 @@ body {
   color: rgba(255, 255, 255, 0.7);
 }
 
-/* SEARCH RESULTS - Solo posizionamento essenziale */
+/* SEARCH RESULTS */
 .search-results {
   position: absolute;
   top: 100%;
@@ -391,6 +391,54 @@ body {
   border-color: #b8941f;
   color: #000;
   transform: translateY(-2px);
+}
+
+/* MOVIES PAGE */
+
+.movies-header {
+  background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.collection-filter {
+  transition: var(--transition);
+}
+
+.collection-filter.active {
+  background: var(--cinema-gold);
+  border-color: var(--cinema-gold);
+  color: #000;
+}
+
+.collection-filter:hover:not(.active) {
+  border-color: var(--cinema-gold);
+  color: var(--cinema-gold);
+}
+
+.movie-rating-badge {
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 20px !important;
+  font-size: 0.85rem;
+}
+
+.movie-genre-badge {
+  background: var(--cinema-gold) !important;
+  color: #000 !important;
+  font-size: 0.75rem;
+  backdrop-filter: blur(10px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .movies-header .display-4 {
+    font-size: 2rem;
+  }
+  
+  .collection-filter {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
+  }
 }
 
 /* FOOTER */

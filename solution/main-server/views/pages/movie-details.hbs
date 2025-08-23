@@ -1,0 +1,285 @@
+{{!-- 
+  Pagina dettagli film di CinemaHub
+  Mostra informazioni complete, cast, crew e recensioni
+--}}
+
+<!-- Movie Hero Section -->
+<div class="movie-hero-section" id="movie-hero">
+  <div class="movie-backdrop"></div>
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-4 text-center">
+        <div class="movie-poster-container">
+          <img id="movie-poster" src="" alt="" class="movie-poster img-fluid rounded shadow-lg" 
+               onerror="this.src='/images/no-poster.jpg'">
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="movie-info text-white">
+          <!-- Movie Title & Year -->
+          <h1 class="display-4 fw-bold mb-2" id="movie-title">Loading...</h1>
+          <p class="lead mb-3" id="movie-tagline"></p>
+          
+          <!-- Movie Meta Info -->
+          <div class="movie-meta d-flex flex-wrap align-items-center gap-3 mb-4">
+            <span class="movie-rating">
+              <i class="bi bi-star-fill text-cinema-gold me-1"></i>
+              <span id="movie-rating">N/A</span>
+            </span>
+            <span id="movie-year" class="text-light">Unknown</span>
+            <span id="movie-duration" class="text-light"></span>
+            <span id="movie-genre" class="badge bg-cinema-gold text-dark"></span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex gap-3 mb-4">
+            <button class="btn btn-cinema-gold btn-lg hover-lift" id="start-discussion-btn">
+              <i class="bi bi-chat-dots me-2"></i>
+              Start Discussion
+            </button>
+            <button class="btn btn-outline-light btn-lg hover-lift" id="share-movie-btn">
+              <i class="bi bi-share me-2"></i>
+              Share Movie
+            </button>
+            <button class="btn btn-outline-light btn-lg hover-lift" onclick="history.back()">
+              <i class="bi bi-arrow-left me-2"></i>
+              Back to Catalog
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container mt-5">
+  
+  <!-- Movie Overview -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="section-title">
+        <i class="bi bi-file-text me-2 text-cinema-gold"></i>
+        Overview
+      </h2>
+      <p class="lead" id="movie-description">Loading movie description...</p>
+    </div>
+  </div>
+
+  <!-- Stats & Reviews Section -->
+  <div class="row mb-5">
+    <!-- Movie Statistics -->
+    <div class="col-md-4 mb-4">
+      <div class="card bg-dark text-white h-100">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-bar-chart me-2 text-cinema-gold"></i>
+            Statistics
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="stat-item mb-3">
+            <div class="d-flex justify-content-between">
+              <span>Average Rating:</span>
+              <span id="avg-rating" class="fw-bold">N/A</span>
+            </div>
+          </div>
+          <div class="stat-item mb-3">
+            <div class="d-flex justify-content-between">
+              <span>Total Reviews:</span>
+              <span id="total-reviews" class="fw-bold">N/A</span>
+            </div>
+          </div>
+          <div class="stat-item mb-3">
+            <div class="d-flex justify-content-between">
+              <span>Release Year:</span>
+              <span id="release-year" class="fw-bold">N/A</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews Summary -->
+    <div class="col-md-8 mb-4">
+      <div class="card bg-dark text-white h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-chat-left-quote me-2 text-cinema-gold"></i>
+            Recent Reviews
+          </h5>
+          <button class="btn btn-sm btn-outline-cinema-gold" id="load-more-reviews">
+            <i class="bi bi-arrow-down me-1"></i>
+            Load More
+          </button>
+        </div>
+        <div class="card-body">
+          <div id="reviews-container">
+            <div class="text-center py-4">
+              <div class="spinner-border text-cinema-gold" role="status"></div>
+              <p class="mt-2">Loading reviews...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cast & Crew Section -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <h2 class="section-title">
+        <i class="bi bi-people me-2 text-cinema-gold"></i>
+        Cast & Crew
+      </h2>
+      <div id="cast-container" class="cast-grid">
+        <div class="text-center py-4">
+          <div class="spinner-border text-cinema-gold" role="status"></div>
+          <p class="mt-2">Loading cast information...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Countries & Releases -->
+  <div class="row mb-5">
+    <div class="col-md-6 mb-4">
+      <div class="card bg-dark text-white">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-globe me-2 text-cinema-gold"></i>
+            Countries
+          </h5>
+        </div>
+        <div class="card-body">
+          <div id="countries-container">
+            <div class="text-center py-2">
+              <div class="spinner-border spinner-border-sm text-cinema-gold" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card bg-dark text-white">
+        <div class="card-header">
+          <h5 class="mb-0">
+            <i class="bi bi-calendar-event me-2 text-cinema-gold"></i>
+            Release Information
+          </h5>
+        </div>
+        <div class="card-body">
+          <div id="releases-container">
+            <div class="text-center py-2">
+              <div class="spinner-border spinner-border-sm text-cinema-gold" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Error State -->
+<div class="container">
+  <div id="error-state" class="alert alert-danger d-none" role="alert">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    <strong>Error loading movie:</strong> <span id="error-message"></span>
+    <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="location.reload()">
+      <i class="bi bi-arrow-clockwise me-1"></i>
+      Try Again
+    </button>
+  </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+.movie-hero-section {
+  background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
+  min-height: 60vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: -2rem;
+  padding-top: 100px;
+}
+
+.movie-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.movie-hero-section .container {
+  position: relative;
+  z-index: 2;
+}
+
+.movie-poster {
+  max-width: 300px;
+  transition: var(--transition);
+}
+
+.movie-poster:hover {
+  transform: scale(1.05);
+}
+
+.movie-meta span {
+  font-size: 1.1rem;
+}
+
+.section-title {
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--cinema-gold);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.cast-member {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.cast-member:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--box-shadow);
+}
+
+.review-item {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+.btn-outline-cinema-gold {
+  border-color: var(--cinema-gold);
+  color: var(--cinema-gold);
+}
+
+.btn-outline-cinema-gold:hover {
+  background-color: var(--cinema-gold);
+  color: #000;
+}
+</style>
+
+<script src="/js/movie-details.js"></script>

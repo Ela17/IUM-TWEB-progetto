@@ -11,7 +11,7 @@
     <h1 class="display-1 fw-bold text-cinema-gold mb-3">{{status}}</h1>
     
     <!-- Titolo dell'errore -->
-    <h2 class="h2 fw-bold mb-3" style="color: var(--text-primary)">
+    <h2 class="h2 fw-bold mb-3 text-primary">
       {{#if title}}
         {{title}}
       {{else}}
@@ -20,7 +20,7 @@
     </h2>
     
     <!-- Messaggio di errore -->
-    <p class="lead mb-4" style="color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+    <p class="lead mb-4 text-secondary mx-auto" style="max-width: 600px;">
       {{#if message}}
         {{message}}
       {{else}}
@@ -31,28 +31,28 @@
     
     <!-- Azioni principali -->
     <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
-      <a href="/" class="btn btn-cinema-gold btn-lg hover-lift" style="background-color: var(--cinema-gold); border-color: var(--cinema-gold); color: white; font-weight: 600;">
+      <a href="/" class="btn btn-cinema-gold btn-lg hover-lift">
         <i class="bi bi-house me-2"></i>Go Home
       </a>
-      <button onclick="history.back()" class="btn btn-outline-primary btn-lg hover-lift" style="border-color: var(--primary-color); color: var(--primary-color);">
+      <button onclick="history.back()" class="btn btn-outline-primary btn-lg hover-lift">
         <i class="bi bi-arrow-left me-2"></i>Go Back
       </button>
     </div>
     
     <!-- Suggerimenti -->
     <div class="mt-4">
-      <p style="color: var(--text-muted);" class="mb-3">You can also try:</p>
+      <p class="text-muted mb-3">You can also try:</p>
       <div class="d-flex justify-content-center gap-2 flex-wrap">
-        <a href="/api/movies/search" class="btn btn-sm btn-outline-secondary hover-lift" style="border-color: var(--secondary-color); color: var(--secondary-color);">
-          <i class="bi bi-search me-1"></i>Browse Movies
+        <a href="/movies" class="btn btn-sm btn-outline-secondary hover-lift">
+          <i class="bi bi-search me-1"></i>Movies Catalog
         </a>
-        <a href="/chat" class="btn btn-sm btn-outline-secondary hover-lift" style="border-color: var(--secondary-color); color: var(--secondary-color);">
-          <i class="bi bi-people me-1"></i>Browse Actors
+        <a href="chat" class="btn btn-sm btn-outline-secondary hover-lift">
+          <i class="bi bi-chat-dots me-1"></i>Live Chat
         </a>
-        <a href="/awards" class="btn btn-sm btn-outline-secondary hover-lift" style="border-color: var(--secondary-color); color: var(--secondary-color);">
-          <i class="bi bi-trophy me-1"></i>Browse Awards
+        <a href="/api-docs" class="btn btn-sm btn-outline-secondary hover-lift">
+          <i class="bi bi-book me-1"></i>API Docs
         </a>
-        <button onclick="location.reload()" class="btn btn-sm btn-outline-secondary hover-lift" style="border-color: var(--secondary-color); color: var(--secondary-color);">
+        <button onclick="location.reload()" class="btn btn-sm btn-outline-secondary hover-lift">
           <i class="bi bi-arrow-clockwise me-1"></i>Refresh Page
         </button>
       </div>
@@ -61,12 +61,12 @@
     <!-- Dettagli tecnici (solo in development) -->
     {{#if isDevelopment}}
       {{#if stack}}
-        <div class="mt-5 text-start" style="max-width: 800px; margin-left: auto; margin-right: auto;">
-          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--border-radius); padding: 1.5rem;">
-            <h5 class="mb-3" style="color: var(--danger-color);">
+        <div class="mt-5 text-start mx-auto" style="max-width: 800px;">
+          <div class="bg-dark border rounded p-4">
+            <h5 class="mb-3 text-danger">
               <i class="bi bi-bug me-2"></i>Technical Details (Development Mode)
             </h5>
-            <div style="background: var(--bg-tertiary); border-radius: var(--border-radius); padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.85rem; color: var(--text-secondary); white-space: pre-wrap; overflow-x: auto; max-height: 200px; overflow-y: auto;">{{stack}}</div>
+            <div class="bg-secondary rounded p-3 font-monospace small text-light overflow-auto" style="max-height: 200px; white-space: pre-wrap;">{{stack}}</div>
           </div>
         </div>
       {{/if}}
@@ -75,62 +75,12 @@
   </div>
 </div>
 
-<!-- CSS aggiuntivo per gli stili dei bottoni con palette corretta -->
-<style>
-  /* Bottone Cinema Gold personalizzato */
-  .btn-cinema-gold {
-    background-color: var(--cinema-gold);
-    border-color: var(--cinema-gold);
-    color: white;
-    font-weight: 600;
-  }
-  
-  .btn-cinema-gold:hover {
-    background-color: #b8941f; /* Versione leggermente più scura del cinema-gold */
-    border-color: #b8941f;
-    color: white;
-    transform: translateY(-2px);
-  }
-  
-  .btn-cinema-gold:focus {
-    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
-  }
-  
-  /* Override per i bottoni outline che usano le variabili CSS */
-  .btn-outline-primary:hover {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-  }
-  
-  .btn-outline-secondary:hover {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-    color: white;
-  }
-  
-  /* Assicura che il warning icon usi il colore corretto */
-  .text-warning {
-    color: var(--warning-color) !important;
-  }
-  
-  /* Migliora il contrasto dei testi in dark mode */
-  [data-theme="dark"] .lead,
-  @media (prefers-color-scheme: dark) {
-    .lead {
-      color: var(--text-secondary) !important;
-    }
-  }
-</style>
-
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     console.log('🎬 Error page loaded');
     
-    // Log dell'errore senza usare template variables
     console.error('Error Page loaded at:', new Date().toISOString());
-    
-    // Notifica solo se c'è il sistema di notifiche
+
     if (window.cinemaHub) {
       setTimeout(() => {
         window.cinemaHub.showNotification(

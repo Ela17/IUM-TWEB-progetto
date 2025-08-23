@@ -13,6 +13,7 @@ const {
   urlencodedConfig,
 } = require("./config");
 
+const indexRouter = require("./routes/index");
 const healthRouter = require("./routes/health");
 const moviesRouter = require("./routes/movies");
 const chatRouter = require("./routes/chat");
@@ -43,9 +44,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/", healthRouter);
-app.use("/api", moviesRouter); // solo dati JSON (REST API)
-app.use("/chat", chatRouter); // pagine + WebSocket
+app.use("/", indexRouter);      // Pagine HTML -> /, /movies, /chat
+app.use("/", healthRouter);     // Health check
+app.use("/api", moviesRouter);  // API movies
+app.use("/api", chatRouter);    // API chat
 
 app.use(function (req, res, next) {
   const error = new Error("Not Found");
