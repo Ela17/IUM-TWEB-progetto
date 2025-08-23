@@ -245,8 +245,8 @@ const collections = {
   },
   'recent': {
     title: 'Recent Releases',
-    description: 'Movies from 2020 onwards',
-    params: { year_from: 2020, limit: 24 }
+    description: 'Movies from 2025 onwards',
+    params: { year_from: 2025, limit: 24 }
   },
   'action': {
     title: 'Action Movies',
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function() {
       performCustomSearch();
     }, 500);
   }
-  
+
   initializeMovieCatalog();
 });
 
@@ -540,7 +540,7 @@ function displayMovies(data) {
  * Crea una card per un film
  */
 function createMovieCard(movie) {
-  const posterUrl = movie.poster_url || '/images/no-poster.jpg';
+  const posterUrl = movie.poster_url || '/images/no-image.svg';
   const title = movie.name || movie.title || 'Unknown Title';
   const year = movie.year || 'Unknown';
   const rating = movie.rating || 'N/A';
