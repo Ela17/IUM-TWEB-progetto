@@ -2,7 +2,7 @@ data/
 data_clean/
 Assignment/
 
-# Environment
+# Environment files
 .env
 
 # File di cache di Python
@@ -17,7 +17,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# Ambienti virtuali Python
+# Ambienti virtuali
 .venv/
 
 # File di log
@@ -49,3 +49,14 @@ yarn-debug.log*
 
 # Package manager files
 package-lock.json
+venv/
+
+# File e cartelle di Node.js/Express
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+# File di build temporanei
+dist/
+build/

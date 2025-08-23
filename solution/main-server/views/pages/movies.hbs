@@ -1,0 +1,245 @@
+{{!-- 
+  Catalogo Film di CinemaHub
+  Questa pagina sostituisce il {{{body}}} nel layout.hbs
+  Utilizza le API esistenti per caricare i film
+--}}
+
+{{#extend "layout"}}
+  
+  {{#content "styles"}}
+    <!-- Page-specific CSS -->
+    <link rel="stylesheet" href="/css/movies.css">
+  {{/content}}
+
+  <!-- Movies Header -->
+  <div class="movies-header bg-dark text-white py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-12">
+          <h1 class="display-4 fw-bold mb-3">
+            <i class="bi bi-film me-3 text-cinema-gold"></i>
+            Movies Catalogue
+          </h1>
+          <p class="lead mb-0">Discover amazing movies from our collections</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advanced Search & Filters -->
+  <div class="container mt-4">
+    <div class="card shadow-sm">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">
+            <i class="bi bi-funnel me-2"></i>
+            Search & Filters
+          </h6>
+          <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearchForm" aria-expanded="true">
+            <i class="bi bi-chevron-up" id="collapse-icon"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="collapse show" id="advancedSearchForm">
+        <div class="card-body">
+          <!-- Search Form -->
+          <form id="movie-search-form">
+            <!-- Quick Filters Row -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <label class="form-label fw-medium">Quick Collections</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm collection-filter active" data-collection="top-rated">
+                    <i class="bi bi-star me-1"></i>Top Rated
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="recent">
+                    <i class="bi bi-calendar me-1"></i>Recent Releases
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="action">
+                    <i class="bi bi-lightning me-1"></i>Action Movies
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="drama">
+                    <i class="bi bi-mask me-1"></i>Drama
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="comedy">
+                    <i class="bi bi-emoji-laughing me-1"></i>Comedy
+                  </button>
+                  <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="custom">
+                    <i class="bi bi-sliders me-1"></i>Custom Search
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Advanced Search Fields (initially hidden) -->
+            <div id="custom-search-fields" class="d-none">
+              <!-- Title Search -->
+              <div class="row mb-3">
+                <div class="col-md-12">
+                  <label for="search-title" class="form-label">Movie Title</label>
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="search-title" name="title" 
+                          placeholder="Enter movie title..." autocomplete="off">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Advanced Filters -->
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="search-genre" class="form-label">Genre</label>
+                  <select class="form-select" id="search-genre" name="genre">
+                    <option value="">All Genres</option>
+                    <option value="Action">Action</option>
+                    <option value="Adventure">Adventure</option>
+                    <option value="Animation">Animation</option>
+                    <option value="Comedy">Comedy</option>
+                    <option value="Crime">Crime</option>
+                    <option value="Documentary">Documentary</option>
+                    <option value="Drama">Drama</option>
+                    <option value="Fantasy">Fantasy</option>
+                    <option value="Horror">Horror</option>
+                    <option value="Romance">Romance</option>
+                    <option value="Sci-Fi">Science Fiction</option>
+                    <option value="Thriller">Thriller</option>
+                    <option value="War">War</option>
+                    <option value="Western">Western</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3">
+                  <label for="search-year-from" class="form-label">Year From</label>
+                  <input type="number" class="form-control" id="search-year-from" name="year_from" 
+                        min="1900" max="2025" placeholder="1990">
+                </div>
+                
+                <div class="col-md-3">
+                  <label for="search-year-to" class="form-label">Year To</label>
+                  <input type="number" class="form-control" id="search-year-to" name="year_to" 
+                        min="1900" max="2025" placeholder="2025">
+                </div>
+                
+                <div class="col-md-3">
+                  <label for="search-min-rating" class="form-label">Min Rating</label>
+                  <select class="form-select" id="search-min-rating" name="min_rating">
+                    <option value="">Any Rating</option>
+                    <option value="1">1+ Stars</option>
+                    <option value="2">2+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="5">5 Stars</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3">
+                  <label for="search-max-rating" class="form-label">Max Rating</label>
+                  <select class="form-select" id="search-max-rating" name="max_rating">
+                    <option value="">Any Rating</option>
+                    <option value="5">Up to 5 Stars</option>
+                    <option value="4">Up to 4 Stars</option>
+                    <option value="3">Up to 3 Stars</option>
+                    <option value="2">Up to 2 Stars</option>
+                    <option value="1">Up to 1 Star</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3">
+                  <label for="search-limit" class="form-label">Results per page</label>
+                  <select class="form-select" id="search-limit" name="limit">
+                    <option value="12">12 results</option>
+                    <option value="24" selected>24 results</option>
+                    <option value="48">48 results</option>
+                  </select>
+                </div>
+                
+                <div class="col-md-3">
+                  <div class="d-flex gap-2 align-items-end h-100">
+                    <button type="submit" class="btn btn-cinema-gold hover-lift">
+                      <i class="bi bi-search me-1"></i>
+                      Search
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary hover-lift" id="clear-filters">
+                      <i class="bi bi-x-circle me-1"></i>
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Title & Stats -->
+  <div class="container mt-4">
+    <div class="row align-items-center mb-3">
+      <div class="col-md-8">
+        <h3 id="collection-title" class="mb-0">Top Rated Movies</h3>
+        <small id="collection-description" class="text-muted">Movies with rating 4+ stars</small>
+      </div>
+      <div class="col-md-4 text-end">
+        <small id="results-info" class="text-muted"></small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="container">
+    <div id="loading-state" class="text-center py-5">
+      <div class="spinner-border text-cinema-gold" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3 text-muted">Loading movies...</p>
+    </div>
+  </div>
+
+  <!-- Movies Grid -->
+  <div class="container">
+    <div id="movies-container">
+
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div class="container">
+    <div id="error-state" class="alert alert-danger d-none" role="alert">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      <strong>Error loading movies:</strong> <span id="error-message"></span>
+      <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="loadCurrentCollection()">
+        <i class="bi bi-arrow-repeat me-1"></i>
+        Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="container mt-4 mb-5">
+    <div id="pagination-container" class="d-flex justify-content-center">
+
+    </div>
+  </div>
+
+  <!-- No Results State -->
+  <div class="container mt-4">
+    <div id="no-results" class="text-center py-5 d-none">
+      <i class="bi bi-film fs-1 text-muted mb-3"></i>
+      <h4>No movies found</h4>
+      <p class="text-muted">Try a different collection or use our advanced search</p>
+              <a href="/search" class="btn btn-cinema-gold hover-lift">
+        <i class="bi bi-search me-1"></i>
+        Advanced Search
+      </a>
+    </div>
+  </div>
+
+  {{#content "scripts"}}
+    <script src="/js/movies.js"></script>
+  {{/content}}
+
+{{/extend}}

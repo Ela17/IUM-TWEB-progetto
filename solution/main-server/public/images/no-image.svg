@@ -1,0 +1,84 @@
+<svg width="300" height="450" viewBox="0 0 300 450" xmlns="http://www.w3.org/2000/svg" class="movie-poster-placeholder">
+  <defs>
+    <!-- Gradient che si adatta al tema -->
+    <linearGradient id="placeholderBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:var(--bg-secondary, #f8f9fa)"/>
+      <stop offset="100%" style="stop-color:var(--bg-tertiary, #e9ecef)"/>
+    </linearGradient>
+    
+    <!-- Shadow filter -->
+    <filter id="softGlow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="var(--shadow-color, rgba(0,0,0,0.1))"/>
+    </filter>
+  </defs>
+  
+  <!-- Background con border radius come le movie-card -->
+  <rect width="100%" height="100%" fill="url(#placeholderBg)" rx="6" style="filter: url(#softGlow)"/>
+  
+  <!-- Cinema Icon (simile al logo navbar) -->
+  <g transform="translate(150, 165)">
+    <!-- Main camera reel -->
+    <circle cx="0" cy="0" r="50" fill="var(--cinema-gold, #d4af37)" opacity="0.15"/>
+    <circle cx="0" cy="0" r="42" fill="none" stroke="var(--cinema-gold, #d4af37)" stroke-width="2.5" opacity="0.8"/>
+    
+    <!-- Inner circles -->
+    <circle cx="0" cy="0" r="28" fill="none" stroke="var(--text-secondary, #6c757d)" stroke-width="1.5" opacity="0.4"/>
+    <circle cx="0" cy="0" r="12" fill="var(--text-muted, #495057)" opacity="0.6"/>
+    
+    <!-- Perforations -->
+    <g opacity="0.6">
+      <circle cx="30" cy="0" r="3" fill="var(--text-muted, #495057)"/>
+      <circle cx="-30" cy="0" r="3" fill="var(--text-muted, #495057)"/>
+      <circle cx="0" cy="30" r="3" fill="var(--text-muted, #495057)"/>
+      <circle cx="0" cy="-30" r="3" fill="var(--text-muted, #495057)"/>
+      
+      <!-- Diagonal perforations -->
+      <circle cx="21" cy="21" r="2" fill="var(--text-muted, #495057)"/>
+      <circle cx="-21" cy="-21" r="2" fill="var(--text-muted, #495057)"/>
+      <circle cx="21" cy="-21" r="2" fill="var(--text-muted, #495057)"/>
+      <circle cx="-21" cy="21" r="2" fill="var(--text-muted, #495057)"/>
+    </g>
+  </g>
+  
+  <!-- Film strip decoration -->
+  <g transform="translate(150, 280)">
+    <rect x="-70" y="-8" width="140" height="16" fill="var(--cinema-gold, #d4af37)" opacity="0.2" rx="2"/>
+    
+    <!-- Film frames -->
+    <g opacity="0.4">
+      <rect x="-65" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+      <rect x="-45" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+      <rect x="-25" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+      <rect x="-5" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+      <rect x="15" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+      <rect x="35" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+      <rect x="55" y="-5" width="12" height="10" fill="var(--text-secondary, #6c757d)" rx="1"/>
+    </g>
+  </g>
+  
+  <!-- Typography con font del sito -->
+  <text x="150" y="340" text-anchor="middle" 
+        fill="var(--text-primary, #212529)" 
+        font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" 
+        font-size="16" 
+        font-weight="600"
+        opacity="0.8">
+    No Poster Available
+  </text>
+  
+  <text x="150" y="365" text-anchor="middle" 
+        fill="var(--text-secondary, #6c757d)" 
+        font-family="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif" 
+        font-size="12" 
+        opacity="0.7">
+    Image not found
+  </text>
+  
+  <!-- Subtle border come le movie-card -->
+  <rect x="2" y="2" width="296" height="446" 
+        fill="none" 
+        stroke="var(--border-color, #dee2e6)" 
+        stroke-width="1" 
+        opacity="0.5" 
+        rx="6"/>
+</svg>

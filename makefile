@@ -11,6 +11,7 @@ EXPRESS_SERVER_DIR = solution/express-mongo-server
 all: setup_all run_all
 
 
+
 ## Gestione dell'ambiente virtuale Python
 .PHONY: venv install_python_deps clean_venv
 
@@ -31,6 +32,7 @@ clean_venv:
 	@echo "Rimozione dell'ambiente virtuale Python '$(PYTHON_ENV_NAME)'..."
 	rm -rf $(PYTHON_ENV_NAME)
 	@echo "Ambiente virtuale Python rimosso."
+
 
 
 ## Gestione del server Spring Boot (Java)
@@ -92,7 +94,7 @@ clean_express_server:
 # Installa le dipendenze Node.js specificate in package.json.
 install_main_server_deps:
 	@echo "Installazione delle dipendenze Node.js per il server principale..."
-	cd $(MAIN_SERVER_DIR) && npm install --production
+	cd $(MAIN_SERVER_DIR) && npm install --production --production
 	@echo "Dipendenze Node.js installate."
 
 # Avvia il server principale (Node.js) in background.
@@ -108,6 +110,7 @@ clean_main_server:
 	@echo "Dipendenze Node.js rimosse."
 
 
+
 ## Esecuzione di script Python
 .PHONY: run_db_setup
 
@@ -117,6 +120,7 @@ run_db_setup: install_python_deps
 	@echo "Esecuzione dello script di setup del database..."
 	$(PYTHON) solution/database/databases_setup.py $(PATH_PARAM)
 	@echo "Setup del database completato."
+
 
 
 ## Regole composite per setup e avvio
@@ -132,6 +136,7 @@ run_all: run_springboot run_express_server run_main_server
 	@echo "Tutti i servizi sono stati avviati."
 	@echo "Il makefile ha completato l'esecuzione. I server sono in background."
 	@echo "Potrebbe essere necessario terminare i processi manualmente (es. con 'killall java' o 'killall node')."
+
 
 
 ## Pulizia generale del progetto
