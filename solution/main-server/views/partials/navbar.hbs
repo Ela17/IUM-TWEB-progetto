@@ -67,7 +67,7 @@
                     <div id="chat-indicator" class="text-light d-flex align-items-center">
                         <i class="bi bi-circle-fill text-success me-1"></i>
                         <small>
-                            <span id="online-users">0</span> online
+                            <span id="online-users">{{#if onlineUsers}}{{onlineUsers}}{{else}}0{{/if}}</span> online
                         </small>
                     </div>
                 </div>

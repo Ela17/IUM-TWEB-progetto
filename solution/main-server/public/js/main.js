@@ -413,6 +413,8 @@ class CinemaHub {
         console.log('✅ Connected to chat server');
         this.updateChatIndicator(true);
         this.showNotification('Connected to live chat', 'success');
+
+        this.socket.emit('request_user_count');
       });
 
       this.socket.on('disconnect', (reason) => {

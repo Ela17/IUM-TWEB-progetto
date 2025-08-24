@@ -26,7 +26,6 @@ class Homepage {
     console.log('🏠 Initializing Homepage Controller...');
     
     this.setupIntersectionObserver();
-    this.setupOnlineUsersCounter();
     this.setupHeroAnimations();
     this.setupFeatureCardAnimations();
     
@@ -211,53 +210,6 @@ class Homepage {
       title.style.opacity = '1';
       title.style.transform = 'translateX(0)';
     }, 100);
-  }
-
-  /**
-   * @method setupOnlineUsersCounter
-   * @description Gestisce il contatore utenti online in tempo reale
-   */
-  setupOnlineUsersCounter() {
-    const displayElement = document.getElementById('online-users-display');
-    const footerElement = document.getElementById('online-users-footer');
-    
-    if (window.cinemaHub && window.cinemaHub.socket) {
-      // Listener per aggiornamenti contatore utenti
-      window.cinemaHub.socket.on('user_count_update', (count) => {
-        this.updateOnlineUsersCount(count, displayElement);
-        this.updateOnlineUsersCount(count, footerElement);
-      });
-      
-      // Richiedi il conteggio corrente
-      window.cinemaHub.socket.emit('request_user_count');
-    }
-  }
-
-  /**
-   * @method updateOnlineUsersCount
-   * @param {number} newCount - Nuovo conteggio
-   * @param {Element} element - Elemento da aggiornare
-   */
-  updateOnlineUsersCount(newCount, element) {
-    if (!element) return;
-    
-    const currentCount = parseInt(element.textContent) || 0;
-    
-    if (newCount !== currentCount) {
-      // Animazione di cambio valore
-      element.style.transform = 'scale(0.8)';
-      element.style.opacity = '0.5';
-      
-      setTimeout(() => {
-        element.textContent = newCount;
-        element.style.transform = 'scale(1.1)';
-        element.style.opacity = '1';
-        
-        setTimeout(() => {
-          element.style.transform = 'scale(1)';
-        }, 200);
-      }, 150);
-    }
   }
 
   /**
