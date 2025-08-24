@@ -71,6 +71,16 @@ const SOCKET_SYSTEM_EVENTS = Object.freeze({
   CONNECT_ERROR: "connect_error",
 });
 
+/**
+ * @enum {string}
+ * @readonly
+ * @description Eventi Socket.IO per il conteggio utenti online
+ */
+const SOCKET_USER_COUNT_EVENTS = Object.freeze({
+  REQUEST_USER_COUNT: "request_user_count",
+  USER_COUNT_UPDATE: "user_count_update",
+});
+
 // ============================================================================
 // MESSAGE PERSISTENCE CONSTANTS
 // ============================================================================
@@ -134,6 +144,7 @@ module.exports = {
   SOCKET_ROOM_EVENTS,
   SOCKET_MESSAGE_EVENTS,
   SOCKET_SYSTEM_EVENTS,
+  SOCKET_USER_COUNT_EVENTS,
 
   PERSISTENCE_MODES,
 

@@ -3,7 +3,7 @@ const {
   SOCKET_MESSAGE_EVENTS,
   CHAT_ERROR_CODES,
 } = require("../constants/socketConstants");
-const proxyService = require("../services/proxyService");
+const { callOtherExpress } = require("../../services/proxyService");
 
 /**
  * @class MessageEventsHandler
@@ -61,7 +61,7 @@ class MessageEventsHandler {
   async _updateRoomActivity(roomName) {
     try {
       const endpoint = `/api/rooms/${encodeURIComponent(roomName)}`;
-      await proxyService.callOtherExpress(endpoint, "PUT");
+      await callOtherExpress(endpoint, "PUT");
       console.log(`✅ Room activity updated: ${roomName}`);
     } catch (error) {
       // Non bloccare la chat se updateActivity fallisce

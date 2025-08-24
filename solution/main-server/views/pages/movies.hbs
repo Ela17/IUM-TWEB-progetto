@@ -43,23 +43,29 @@
             <div class="col-12">
               <label class="form-label fw-medium">Quick Collections</label>
               <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-outline-primary btn-sm collection-filter active" data-collection="top-rated">
-                  <i class="bi bi-star me-1"></i>Top Rated
+                <button type="button" class="collection-filter active" data-collection="top-rated">
+                  <i class="bi bi-star me-1"></i>
+                  <span>Top Rated</span>
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="recent">
-                  <i class="bi bi-calendar me-1"></i>Recent Releases
+                <button type="button" class="collection-filter" data-collection="recent">
+                  <i class="bi bi-calendar me-1"></i>
+                  <span>Recent Releases</span>
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="action">
-                  <i class="bi bi-lightning me-1"></i>Action Movies
+                <button type="button" class="collection-filter" data-collection="action">
+                  <i class="bi bi-lightning me-1"></i>
+                  <span>Action Movies</span>
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="drama">
-                  <i class="bi bi-mask me-1"></i>Drama
+                <button type="button" class="collection-filter" data-collection="drama">
+                  <i class="bi bi-mask me-1"></i>
+                  <span>Drama</span>
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="comedy">
-                  <i class="bi bi-emoji-laughing me-1"></i>Comedy
+                <button type="button" class="collection-filter" data-collection="comedy">
+                  <i class="bi bi-emoji-laughing me-1"></i>
+                  <span>Comedy</span>
                 </button>
-                <button type="button" class="btn btn-outline-primary btn-sm collection-filter" data-collection="custom">
-                  <i class="bi bi-sliders me-1"></i>Custom Search
+                <button type="button" class="collection-filter" data-collection="custom">
+                  <i class="bi bi-sliders me-1"></i>
+                  <span>Custom Search</span>
                 </button>
               </div>
             </div>
@@ -174,10 +180,10 @@
   <div class="row align-items-center mb-3">
     <div class="col-md-8">
       <h3 id="collection-title" class="mb-0">Top Rated Movies</h3>
-      <small id="collection-description" class="text-muted">Movies with rating 4+ stars</small>
+      <small id="collection-description" class="text-secondary">Movies with rating 4+ stars</small>
     </div>
     <div class="col-md-4 text-end">
-      <small id="results-info" class="text-muted"></small>
+      <small id="results-info" class="text-secondary"></small>
     </div>
   </div>
 </div>
@@ -188,7 +194,7 @@
     <div class="spinner-border text-cinema-gold" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
-    <p class="mt-3 text-muted">Loading movies...</p>
+    <p class="mt-3 text-secondary">Loading movies...</p>
   </div>
 </div>
 
@@ -221,9 +227,9 @@
 <!-- No Results State -->
 <div class="container mt-4">
   <div id="no-results" class="text-center py-5 d-none">
-    <i class="bi bi-film fs-1 text-muted mb-3"></i>
+    <i class="bi bi-film fs-1 text-secondary mb-3"></i>
     <h4>No movies found</h4>
-    <p class="text-muted">Try a different collection or use our advanced search</p>
+    <p class="text-secondary">Try a different collection or use our advanced search</p>
             <a href="/search" class="btn btn-cinema-gold hover-lift">
       <i class="bi bi-search me-1"></i>
       Advanced Search

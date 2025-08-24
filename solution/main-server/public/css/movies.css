@@ -39,56 +39,42 @@
 /* FILTERS & SEARCH */
 
 .collection-filter {
-  transition: var(--transition);
-  border-radius: 20px;
+  background: transparent;
+  border: 1px solid #1a1a1a;
+  color: #141414;
+  border-radius: var(--border-radius);
   font-size: 0.9rem;
   padding: 0.5rem 1rem;
-  border: 2px solid transparent;
-  position: relative;
-  overflow: hidden;
-}
-
-.collection-filter::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 0;
-  height: 0;
-  background: var(--cinema-gold);
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  z-index: 0;
-}
-
-.collection-filter:hover::before {
-  width: 100%;
-  height: 100%;
-}
-
-.collection-filter span,
-.collection-filter i {
-  position: relative;
-  z-index: 1;
-}
-
-.collection-filter.active {
-  background: var(--cinema-gold);
-  border-color: var(--cinema-gold);
-  color: #000;
-  font-weight: 600;
+  transition: var(--transition);
+  font-weight: 500;
 }
 
 .collection-filter:hover:not(.active) {
   border-color: var(--cinema-gold);
   color: var(--cinema-gold);
-  transform: translateY(-2px);
+  background: transparent;
 }
 
-.collection-filter:hover:not(.active) span,
-.collection-filter:hover:not(.active) i {
-  color: #000;
+.collection-filter.active {
+  background: var(--cinema-gold) !important;
+  border-color: var(--cinema-gold) !important;
+  color: #1a1a1a !important;
+  font-weight: 600;
+}
+
+.collection-filter:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.2rem var(--cinema-gold);
+}
+
+.collection-filter::before {
+  display: none;
+}
+
+.collection-filter span,
+.collection-filter i {
+  position: relative;
+  z-index: auto;
 }
 
 /* MOVIE CARDS */
@@ -314,7 +300,7 @@
 /* FORM IMPROVEMENTS */
 
 .form-label {
-  color: var(--text-primary);
+  color: #141414;
   font-weight: 500;
   margin-bottom: 0.5rem;
 }

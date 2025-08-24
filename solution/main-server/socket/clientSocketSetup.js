@@ -1,7 +1,8 @@
 const getRoomEventsHandler = require("./eventHandlers/RoomEventsHandler");
 const getMessageEventsHandler = require("./eventHandlers/MessageEventsHandler");
+const getUserCountHandler = require("./eventHandlers/UserCountHandler");
 const usersMetadataManager = require("./utils/UsersMetadataManager")
-const { handleDisconnection } = require("./eventHandlers/DisconnectionHandler");
+const disconnectionHandler = require("./eventHandlers/DisconnectionHandler");
 
 /**
  * @function setUpClientSocket
@@ -24,6 +25,7 @@ function setupClientSocket(
 ) {
   const roomEventsHandler = getRoomEventsHandler(io);
   const messageEventsHandler = getMessageEventsHandler(io);
+  const userCountHandler = getUserCountHandler(io);
 
   try {
     console.log(`🎯 Setup base per client: ${clientSocket.id}`);
@@ -31,11 +33,13 @@ function setupClientSocket(
     const userProfile = usersMetadataManager.registerUser(clientSocket.id);
 
     clientSocket.on("disconnect", (reason) => {
-      handleDisconnection(clientSocket, usersMetadataManager, reason);
+      disconnectionHandler.handleDisconnection(clientSocket, reason);
+      userCountHandler.broadcastUserCount();
     });
 
     roomEventsHandler.setupEventListeners(clientSocket, errorSocketHandler);
     messageEventsHandler.setupEventListeners(clientSocket, errorSocketHandler);
+    userCountHandler.setupEventListeners(clientSocket, errorSocketHandler);
 
     clientSocket.emit("welcome", {
       success: true,
@@ -44,6 +48,9 @@ function setupClientSocket(
       socketId: clientSocket.id,
       timestamp: new Date().toISOString(),
     });
+
+    userCountHandler.sendUserCountToClient(clientSocket);
+    userCountHandler.broadcastUserCount();
 
     console.log(`✅ Client ${userProfile.userName} configurato`);
   } catch (error) {

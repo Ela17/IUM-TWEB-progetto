@@ -160,6 +160,28 @@ class UsersMetadataManager {
   }
 
   /**
+   * @method getCurrentConnections
+   * @description Getter per il numero di connessioni attualmente attive.
+   * Espone il dato stats.currentConnections per l'uso esterno.
+   * 
+   * @returns {number} Il numero di utenti attualmente connessi
+   */
+  getCurrentConnections() {
+    return this.stats.currentConnections;
+  }
+
+  /**
+   * @method getTotalConnectionsEver
+   * @description Getter per il numero totale di connessioni mai gestite.
+   * Espone il dato stats.totalConnectionsEver per l'uso esterno.
+   * 
+   * @returns {number} Il numero totale di connessioni gestite dal avvio del server
+   */
+  getTotalConnectionsEver() {
+    return this.stats.totalConnectionsEver;
+  }
+
+  /**
    * @method _generateUniqueNickname
    * @description Genera un nickname univoco basato su aggettivi e nomi a tema cinematografico.
    * Assicura che il nickname generato non sia già in uso da un altro utente connesso.
