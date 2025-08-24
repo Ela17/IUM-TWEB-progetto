@@ -3,6 +3,7 @@ const {
   SOCKET_MESSAGE_EVENTS,
   CHAT_ERROR_CODES,
 } = require("../constants/socketConstants");
+const proxyService = require("../services/proxyService");
 
 /**
  * @class MessageEventsHandler
@@ -46,6 +47,7 @@ class MessageEventsHandler {
           .emit(SOCKET_MESSAGE_EVENTS.ROOM_MESSAGE_RECEIVED, messageData);
 
         messagePersistenceController.saveMessage(messageData);
+        this._updateRoomActivity(roomName);
       } catch (error) {
         error.socket = clientSocket;
         error.event = SOCKET_MESSAGE_EVENTS.ROOM_MESSAGE;
@@ -54,6 +56,17 @@ class MessageEventsHandler {
         errorSocketHandler.emitAndLogError(error);
       }
     });
+  }
+
+  async _updateRoomActivity(roomName) {
+    try {
+      const endpoint = `/api/rooms/${encodeURIComponent(roomName)}`;
+      await proxyService.callOtherExpress(endpoint, "PUT");
+      console.log(`✅ Room activity updated: ${roomName}`);
+    } catch (error) {
+      // Non bloccare la chat se updateActivity fallisce
+      console.warn(`⚠️ Failed to update room activity: ${error.message}`);
+    }
   }
 }
 

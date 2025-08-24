@@ -119,37 +119,6 @@ const getRoomsList = async (req, res, next) => {
 };
 
 /**
- * @function deleteRoom
- * @description Aggiorna l'attività di una stanza (il secondo server non ha delete, ma update).
- * Usa l'endpoint reale: /api/rooms/:roomName
- * @param {Object} req - L'oggetto Request contenente il nome della stanza nei params.
- * @param {Object} res - L'oggetto Response per inviare la risposta al client.
- * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
- */
-const deleteRoom = async (req, res, next) => {
-  try {
-    const { roomName } = req.params;
-
-    console.log(`🔄 Updating room activity: ${roomName}`); // Il secondo server ha solo update activity, non delete
-    // Endpoint reale PUT /api/rooms/:roomName
-
-    const endpoint = `/api/rooms/${encodeURIComponent(roomName)}`;
-    const updateResponse = await proxyService.callOtherExpress(
-      endpoint,
-      "PUT",
-    );
-
-    res.json(updateResponse.data);
-  } catch (error) {
-    console.error(
-      `❌ Error updating room ${req.params.roomName}:`,
-      error.message,
-    );
-    next(error);
-  }
-};
-
-/**
  * @function syncMessageToOtherServer
  * @description Metodo helper per sincronizzare i messaggi con l'OTHER_EXPRESS_SERVER.
  * Usa l'endpoint reale: /api/messages
@@ -190,6 +159,5 @@ module.exports = {
   getChatHistory,
   createRoom,
   getRoomsList,
-  deleteRoom,
   syncMessageToOtherServer,
 };

@@ -91,26 +91,4 @@ router.post("/rooms", chatController.createRoom);
  */
 router.get("/rooms", chatController.getRoomsList);
 
-/**
- * @swagger
- * /chat/rooms/{roomName}:
- *   put:
- *     summary: Aggiorna Attività Stanza (o elimina)
- *     description: Aggiorna l'attività di una stanza. L'API originale sembra usare PUT per una funzione che ha a che fare con la cancellazione. Questo riflette l'uso nel file originale.
- *     tags: [Chat]
- *     parameters:
- *       - in: path
- *         name: roomName
- *         required: true
- *         schema:
- *           type: string
- *         description: Nome della stanza da aggiornare.
- *     responses:
- *       200:
- *         description: Attività della stanza aggiornata con successo.
- *       404:
- *         description: Stanza non trovata.
- */
-router.put("/rooms/:roomName", chatController.deleteRoom);
-
 module.exports = router;
