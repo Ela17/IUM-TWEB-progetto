@@ -81,7 +81,7 @@ const servicesConfig = {
 const socketConfig = {
   cors: {
     origin: [
-      getEnvOrDefault("SPRING_BOOT_SERVER_URL", "http://localhost:8081"),
+      getEnvOrDefault("MAIN_SERVER_URL", "http://localhost:3000"),
     ],
     methods: ["GET", "POST"],
     credentials: false,
