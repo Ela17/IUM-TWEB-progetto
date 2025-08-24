@@ -124,7 +124,7 @@ const getSuggestions = async (req, res, next) => {
 /**
  * @function getMovieReviews
  * @description Recupera le recensioni per un film specifico con paginazione.
- * Proxy diretto verso l'endpoint: `/reviews/movie/:movieId`
+ * Proxy diretto verso l'endpoint: `/api/reviews/movie/:movieId`
  * @param {Object} req - L'oggetto Request contenente l'ID del film nei params.
  * @param {Object} res - L'oggetto Response per inviare la risposta al client.
  * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
@@ -138,7 +138,7 @@ const getMovieReviews = async (req, res, next) => {
     if (req.query.sortBy) searchParams.set("sortBy", req.query.sortBy);
     if (req.query.orderBy) searchParams.set("orderBy", req.query.orderBy);
 
-    const endpoint = `/reviews/movie/${movieId}?${searchParams.toString()}`;
+    const endpoint = `/api/reviews/movie/${movieId}?${searchParams.toString()}`;
     const response = await proxyService.callOtherExpress(endpoint);
 
     res.json(response.data);
@@ -150,7 +150,7 @@ const getMovieReviews = async (req, res, next) => {
 /**
  * @function getMovieReviewsStats
  * @description Recupera le statistiche delle recensioni per un film.
- * Proxy diretto verso il tuo endpoint: `/reviews/movie/:movieId/stats`
+ * Proxy diretto verso il tuo endpoint: `/api/reviews/movie/:movieId/stats`
  * @param {Object} req - L'oggetto Request contenente l'ID del film nei params.
  * @param {Object} res - L'oggetto Response per inviare la risposta al client.
  * @param {Function} next - La funzione `next` per passare gli errori al middleware successivo.
@@ -159,7 +159,7 @@ const getMovieReviewsStats = async (req, res, next) => {
   try {
     const movieId = parseInt(req.params.movieId);
 
-    const endpoint = `/reviews/movie/${movieId}/stats`;
+    const endpoint = `/api/reviews/movie/${movieId}/stats`;
     const response = await proxyService.callOtherExpress(endpoint);
 
     res.json(response.data);
