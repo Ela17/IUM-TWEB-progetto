@@ -484,7 +484,7 @@ class MoviesController {
               <span>${year}</span>${duration}
             </div>
             <p class="card-text small text-muted flex-grow-1 mb-3">${this.escapeHtml(description)}</p>
-            <a href="/api/movies/${movie.id}" class="btn btn-outline-primary btn-sm mt-auto hover-lift">
+            <a href="/movies/${movie.id}" class="btn btn-outline-primary btn-sm mt-auto hover-lift">
               <i class="bi bi-eye me-1"></i>
               View Details
             </a>

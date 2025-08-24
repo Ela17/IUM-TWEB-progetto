@@ -7,7 +7,7 @@ const {
   validateMovieSearch,
 } = require("../middlewares/validations/searchMoviesValidation");
 
-const moviesController = require("../controllers/MoviesController");
+const moviesController = require("../controllers/moviesController");
 
 const router = express.Router();
 

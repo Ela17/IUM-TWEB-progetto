@@ -6,7 +6,11 @@
 /* CHAT LOBBY HEADER */
 .chat-header {
   background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
-  border-bottom: 1px solid var(--border-color);
+  color: white;
+  padding: 4rem 0;
+  margin: -2rem -15px 3rem -15px;
+  text-align: center;
+  padding-top: 100px !important;
   position: relative;
   overflow: hidden;
 }

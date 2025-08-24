@@ -15,11 +15,11 @@ const proxyService = require("../services/proxyService");
  */
 const getChatPage = async (req, res, next) => {
   try {
-    res.render("chat", {
+    res.render("pages/chat", {
       title: "Cinema Chat",
       isChatPage: true,
       serverUrl:
-        process.env.OTHER_EXPRESS_SERVER_URL || "http://localhost:3001",
+        `http://${process.env.MAIN_SERVER_HOST || 'localhost'}:${process.env.MAIN_SERVER_PORT || 3000}`
     });
   } catch (error) {
     next(error);

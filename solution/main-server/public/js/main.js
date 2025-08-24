@@ -574,17 +574,26 @@ class CinemaHub {
    * @param {number} count - Il numero di utenti online.
    */
   updateOnlineUsersCount(count) {
-    const counter = document.getElementById('online-users');
-    if (counter) {
-      const prevCount = parseInt(counter.textContent) || 0;
-      counter.textContent = count || 0;
-      
-      if (count !== prevCount) {
-        counter.style.animation = 'none';
-        counter.offsetHeight;
-        counter.style.animation = 'fadeIn 0.5s ease';
+    const counters = [
+      'navbar-online-users',
+      'home-online-users', 
+      'chat-online-users',
+      'footer-online-users'
+    ];
+
+    counters.forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        const prevCount = parseInt(element.textContent) || 0;
+        element.textContent = count || 0;
+        
+        if (count !== prevCount) {
+          element.style.animation = 'none';
+          element.offsetHeight;
+          element.style.animation = 'fadeIn 0.5s ease';
+        }
       }
-    }
+    });
   }
 
   // ===================
