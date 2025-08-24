@@ -23,7 +23,10 @@ exports.saveMessage = async function (req, res, next) {
 
     return res.status(201).json({
       success: true,
-      messageId: req.body.uniqueTimestamp,
+      data: {
+        messageId: req.body.uniqueTimestamp
+      },
+      error: null
     });
   } catch (error) {
     next(error);
@@ -49,8 +52,11 @@ exports.getLatestMessages = async function (req, res, next) {
 
     res.status(200).json({
       success: true,
-      messages: result.messages,
-      pagination: result.pagination,
+      data: {
+        messages: result.messages,
+        pagination: result.pagination,
+      },
+      error: null
     });
   } catch (error) {
     next(error);
@@ -78,7 +84,10 @@ exports.getMessagesBefore = async function (req, res, next) {
 
     res.status(200).json({
       success: true,
-      messages: messages,
+      data: {
+        messages: messages,
+      },
+      error: null
     });
   } catch (error) {
     next(error);
@@ -100,7 +109,10 @@ exports.saveRoom = async function (req, res, next) {
 
     res.status(201).json({
       success: true,
-      room: req.body.roomName,
+      data: {
+        room: req.body.roomName,
+      },
+      error: null
     });
   } catch (error) {
     next(error);
@@ -121,7 +133,10 @@ exports.getAllRooms = async function (req, res, next) {
 
     res.status(200).json({
       success: true,
-      rooms: rooms,
+      data: {
+        rooms: rooms
+      },
+      error: null
     });
   } catch (error) {
     next(error);
@@ -150,7 +165,10 @@ exports.updateActivity = async function (req, res, next) {
 
     return res.status(200).json({
       success: true,
-      message: "Room activity updated",
+      data: {
+        message: "Room activity updated",
+      },
+      error: null
     });
   } catch (error) {
     next(error);

@@ -45,7 +45,7 @@ const getChatHistory = async (req, res, next) => {
     const endpoint = `/api/messages/${encodeURIComponent(roomName)}?page=${page}`;
     const chatResponse = await proxyService.callOtherExpress(endpoint);
 
-    res.json(chatResponse.data);
+    res.json(chatResponse.data.data);
   } catch (error) {
     console.error(
       `❌ Error fetching chat history for ${req.params.roomName}:`,
@@ -86,7 +86,7 @@ const createRoom = async (req, res, next) => {
     );
 
     res.writeHead(201, { "Content-Type": "application/json" });
-    res.end(JSON.stringify(createResponse.data));
+    res.end(JSON.stringify(createResponse.data.data));
   } catch (error) {
     console.error(
       `❌ Error creating room ${req.body.roomName}:`,
@@ -111,7 +111,7 @@ const getRoomsList = async (req, res, next) => {
     const endpoint = "/api/rooms/all";
     const roomsResponse = await proxyService.callOtherExpress(endpoint);
 
-    res.json(roomsResponse.data);
+    res.json(roomsResponse.data.data);
   } catch (error) {
     console.error("❌ Error fetching room list:", error.message);
     next(error);
@@ -147,7 +147,7 @@ const syncMessageToOtherServer = async (messageData) => {
       messagePayload,
     );
 
-    return syncResponse.data;
+    return syncResponse.data.data;
   } catch (error) {
     console.error("❌ Error syncing message:", error.message); // Non propaga l'errore per non interrompere il flusso principale della chat
     return null;

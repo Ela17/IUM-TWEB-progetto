@@ -85,8 +85,8 @@ const getMovieDetails = async (req, res, next) => {
         response.reviews = null;
         response.reviewsStat = null;
       } else {
-        response.reviews = reviewsResults.value.data;
-        response.reviewsStat = reviewsStats.value.data;
+        response.reviews = reviewsResults.value.data.data;
+        response.reviewsStat = reviewsStats.value.data.data;
       }
 
       response.movieDetails = movieResult.value.data;
@@ -141,7 +141,7 @@ const getMovieReviews = async (req, res, next) => {
     const endpoint = `/api/reviews/movie/${movieId}?${searchParams.toString()}`;
     const response = await proxyService.callOtherExpress(endpoint);
 
-    res.json(response.data);
+    res.json(response.data.data);
   } catch (error) {
     next(error);
   }
@@ -162,7 +162,7 @@ const getMovieReviewsStats = async (req, res, next) => {
     const endpoint = `/api/reviews/movie/${movieId}/stats`;
     const response = await proxyService.callOtherExpress(endpoint);
 
-    res.json(response.data);
+    res.json(response.data.data);
   } catch (error) {
     next(error);
   }

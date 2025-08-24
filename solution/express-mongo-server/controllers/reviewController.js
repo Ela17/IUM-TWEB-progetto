@@ -51,25 +51,31 @@ exports.getReviewsByMovieId = async function (req, res, next) {
     if (reviewsById.reviews.length === 0) {
       return res.status(200).json({
         success: true,
-        message: `No reviews available`,
-        movieId: movieId,
-        reviews: [],
-        count: 0,
+        data: {
+          message: `No reviews available`,
+          movieId: movieId,
+          reviews: [],
+          count: 0,
+        },
+        error: null
       });
     }
 
     return res.status(200).json({
       success: true,
-      reviews: reviewsById.reviews,
-      pagination: {
-        currentPage: pagination.page,
-        totalPages: Math.ceil(reviewsById.totalCount / pagination.limit),
-        totalResults: reviewsById.totalCount,
-        hasNext: pagination.page * pagination.limit < reviewsById.totalCount,
-        hasPrev: pagination.page > 1,
+      data: {
+        reviews: reviewsById.reviews,
+        pagination: {
+          currentPage: pagination.page,
+          totalPages: Math.ceil(reviewsById.totalCount / pagination.limit),
+          totalResults: reviewsById.totalCount,
+          hasNext: pagination.page * pagination.limit < reviewsById.totalCount,
+          hasPrev: pagination.page > 1,
+        },
+        count: reviewsById.reviews.length,
+        message: `${reviewsById.reviews.length} reviews found`
       },
-      count: reviewsById.reviews.length,
-      message: `${reviewsById.reviews.length} reviews found`,
+      error: null
     });
   } catch (error) {
     next(error);
@@ -95,30 +101,36 @@ exports.getMovieReviewStats = async function (req, res, next) {
     if (stats === null) {
       return res.status(200).json({
         success: true,
-        movieId: movieId,
-        hasReviews: false,
-        message: "No reviews available",
-        stats: {
-          totalReviews: 0,
-          averageScore: null,
-          maxScore: null,
-          minScore: null,
-          positiveReviews: 0,
-          negativeReviews: 0,
-          positivePercentage: null,
-          negativePercentage: null,
-          publisherCount: 0,
-          reviewTypeDistribution: {},
+        data: {
+          movieId: movieId,
+          hasReviews: false,
+          message: "No reviews available",
+          stats: {
+            totalReviews: 0,
+            averageScore: null,
+            maxScore: null,
+            minScore: null,
+            positiveReviews: 0,
+            negativeReviews: 0,
+            positivePercentage: null,
+            negativePercentage: null,
+            publisherCount: 0,
+            reviewTypeDistribution: {},
+          }
         },
+        error: null
       });
     }
 
     res.status(200).json({
       success: true,
-      movieId: movieId,
-      hasReviews: true,
-      message: `statistics calculated from ${stats.totalReviews} reviews`,
-      stats: stats,
+      data: {
+        movieId: movieId,
+        hasReviews: true,
+        message: `statistics calculated from ${stats.totalReviews} reviews`,
+        stats: stats,
+      },
+      error: null
     });
   } catch (error) {
     next(error);

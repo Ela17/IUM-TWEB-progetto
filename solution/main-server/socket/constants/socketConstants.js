@@ -117,6 +117,16 @@ const TIMING_CONFIG = Object.freeze({
   PING_INTERVAL: 25000, // 25 secondi - intervallo ping Socket.IO
 });
 
+/**
+ * @enum {number}
+ * @readonly
+ * @description Messaggi di errore per chat system
+ */
+const CHAT_ERROR_CODES = Object.freeze({
+  VALIDATION_ERROR_MESSAGE_DATA: "VALIDATION_ERROR_MESSAGE_DATA",
+  VALIDATION_ERROR_ROOM_DATA: "VALIDATION_ERROR_ROOM_DATA",
+});
+
 module.exports = {
   STATS_OPERATIONS,
   ROOM_EVENTS,
@@ -126,6 +136,8 @@ module.exports = {
   SOCKET_SYSTEM_EVENTS,
 
   PERSISTENCE_MODES,
+
+  CHAT_ERROR_CODES,
 
   MESSAGE_LIMITS,
   TIMING_CONFIG,
