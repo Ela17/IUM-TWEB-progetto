@@ -103,7 +103,7 @@ Senza questo primo passaggio, il server Spring Boot non può collegarsi al datab
 2. Compila e avvia il server:
 **Con makefile**
 ```bash
-run_springboot
+make run_springboot
 ```
 
 **Comando alternativo da terminale**
@@ -116,7 +116,7 @@ java -jar target/*.jar &
 ##### **Avvio del server Express (Node.js) per MongoDB**
 **Con makefile**
 ```bash
-run_express_server
+make run_express_server
 ```
 
 **Comando alternativo da terminale**
@@ -129,7 +129,7 @@ npm start &
 ##### **Avvio del server principale (Node.js)**
 **Con makefile**
 ```bash
-run_main_server
+make run_main_server
 ```
 
 **Comando alternativo da terminale**
