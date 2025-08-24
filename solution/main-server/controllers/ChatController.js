@@ -15,7 +15,7 @@ const proxyService = require("../services/proxyService");
  */
 const getChatPage = async (req, res, next) => {
   try {
-    res.render("pages/chat", {
+    res.render("chat", {
       title: "Cinema Chat",
       isChatPage: true,
       serverUrl:
