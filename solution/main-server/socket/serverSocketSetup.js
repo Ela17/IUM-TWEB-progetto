@@ -28,8 +28,10 @@ function createSocketServer(httpServer, options = socketConfig) {
     });
 
     console.log("Server socket configurato");
+    return io;
   } catch (error) {
     console.error("++ CRITICO ++ , ERROR IN SETUP SOCKET SERVER", error);
+    throw error;
   }
 }
 
