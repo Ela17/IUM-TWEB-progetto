@@ -263,8 +263,23 @@ reviewSchema.statics.getReviewsByMovieId = async function (
  */
 reviewSchema.statics.getMovieReviewStats = async function (movieId) {
   try {
-    const pipeline = [
-      // filtraggio -> solo le recensioni utili
+    // Prima pipeline: tutte le recensioni per il conteggio totale
+    const totalPipeline = [
+      {
+        $match: {
+          id_movie: movieId,
+        },
+      },
+      {
+        $group: {
+          _id: "$id_movie",
+          totalReviews: { $sum: 1 },
+        },
+      },
+    ];
+
+    // Seconda pipeline: solo recensioni con punteggi validi per le statistiche
+    const statsPipeline = [
       {
         $match: {
           id_movie: movieId,
@@ -279,17 +294,15 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
           },
         },
       },
-      // aggregazione
       {
         $group: {
           _id: "$id_movie",
-          totalReviews: { $sum: 1 },
+          totalReviewsWithScore: { $sum: 1 },
           averageScore: { $avg: "$review_score" },
           maxScore: { $max: "$review_score" },
           minScore: { $min: "$review_score" },
 
           // Classificazione Rotten Tomatoes:
-          // - Fresh include: "Fresh" + "Certified Fresh"
           freshReviews: {
             $sum: {
               $cond: [
@@ -300,14 +313,12 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
             },
           },
 
-          // - Rotten include: "Rotten" + "Spilled"
           rottenReviews: {
             $sum: {
               $cond: [{ $in: ["$review_type", ["Rotten", "Spilled"]] }, 1, 0],
             },
           },
 
-          // Classificazione per punteggio
           positiveScoreReviews: {
             $sum: {
               $cond: [{ $gte: ["$review_score", 6] }, 1, 0],
@@ -320,45 +331,33 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
             },
           },
 
-          // Critics
           topCriticsCount: {
             $sum: { $cond: [{ $eq: ["$top_critic", true] }, 1, 0] },
           },
-
-          // Distribuzione dettagliata -> array di tutti i tipi
-          reviewTypeDistribution: {
-            $push: "$review_type",
-          },
         },
       },
-      // Calcolo percentuali e output finale
       {
         $project: {
           _id: 0,
           movieId: "$_id",
-
-          // conteggi assoluti
-          totalReviews: 1,
+          totalReviewsWithScore: 1,
+          averageScore: { $round: ["$averageScore", 2] },
+          maxScore: 1,
+          minScore: 1,
           freshCount: "$freshReviews",
           rottenCount: "$rottenReviews",
           positiveScoreCount: "$positiveScoreReviews",
           negativeScoreCount: "$negativeScoreReviews",
           topCriticsCount: 1,
 
-          // stats punteggi
-          averageScore: { $round: ["$averageScore", 2] },
-          maxScore: 1,
-          minScore: 1,
-
-          // percentuali
           freshPercentage: {
             $cond: [
-              { $gt: ["$totalReviews", 0] },
+              { $gt: ["$totalReviewsWithScore", 0] },
               {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$freshReviews", "$totalReviews"] },
+                      { $divide: ["$freshReviews", "$totalReviewsWithScore"] },
                       100,
                     ],
                   },
@@ -371,12 +370,12 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
 
           rottenPercentage: {
             $cond: [
-              { $gt: ["$totalReviews", 0] },
+              { $gt: ["$totalReviewsWithScore", 0] },
               {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$rottenReviews", "$totalReviews"] },
+                      { $divide: ["$rottenReviews", "$totalReviewsWithScore"] },
                       100,
                     ],
                   },
@@ -387,15 +386,14 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
             ],
           },
 
-          // percentuali per punteggio
           positiveScorePercentage: {
             $cond: [
-              { $gt: ["$totalReviews", 0] },
+              { $gt: ["$totalReviewsWithScore", 0] },
               {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$positiveScoreReviews", "$totalReviews"] },
+                      { $divide: ["$positiveScoreReviews", "$totalReviewsWithScore"] },
                       100,
                     ],
                   },
@@ -408,12 +406,12 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
 
           negativeScorePercentage: {
             $cond: [
-              { $gt: ["$totalReviews", 0] },
+              { $gt: ["$totalReviewsWithScore", 0] },
               {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$negativeScoreReviews", "$totalReviews"] },
+                      { $divide: ["$negativeScoreReviews", "$totalReviewsWithScore"] },
                       100,
                     ],
                   },
@@ -424,15 +422,14 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
             ],
           },
 
-          // top critics
           topCriticsPercentage: {
             $cond: [
-              { $gt: ["$totalReviews", 0] },
+              { $gt: ["$totalReviewsWithScore", 0] },
               {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$topCriticsCount", "$totalReviews"] },
+                      { $divide: ["$topCriticsCount", "$totalReviewsWithScore"] },
                       100,
                     ],
                   },
@@ -441,56 +438,43 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
               },
               0,
             ],
-          },
-
-          // distribuzione dettagliata per tipo
-          reviewTypeCounts: {
-            $let: {
-              vars: {
-                types: "$reviewTypeDistribution",
-              },
-              in: {
-                Fresh: {
-                  $size: {
-                    $filter: {
-                      input: "$types",
-                      cond: { $eq: ["$this", "Fresh"] },
-                    },
-                  },
-                },
-                Rotten: {
-                  $size: {
-                    $filter: {
-                      input: "$types",
-                      cond: { $eq: ["$this", "Rotten"] },
-                    },
-                  },
-                },
-                "Certified Fresh": {
-                  $size: {
-                    $filter: {
-                      input: "$types",
-                      cond: { $eq: ["$this", "Certified Fresh"] },
-                    },
-                  },
-                },
-                Spilled: {
-                  $size: {
-                    $filter: {
-                      input: "$types",
-                      cond: { $eq: ["$this", "Spilled"] },
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },
     ];
 
-    const result = await this.aggregate(pipeline);
-    return result.length > 0 ? result[0] : null;
+    const [totalResult, statsResult] = await Promise.all([
+      this.aggregate(totalPipeline),
+      this.aggregate(statsPipeline),
+    ]);
+
+    const totalReviews = totalResult.length > 0 ? totalResult[0].totalReviews : 0;
+    const stats = statsResult.length > 0 ? statsResult[0] : null;
+
+    if (stats) {
+      return {
+        ...stats,
+        totalReviews: totalReviews, // Usa il conteggio totale di tutte le recensioni
+      };
+    }
+
+    return {
+      totalReviews: totalReviews,
+      totalReviewsWithScore: 0,
+      averageScore: null,
+      maxScore: null,
+      minScore: null,
+      freshCount: 0,
+      rottenCount: 0,
+      positiveScoreCount: 0,
+      negativeScoreCount: 0,
+      topCriticsCount: 0,
+      freshPercentage: 0,
+      rottenPercentage: 0,
+      positiveScorePercentage: 0,
+      negativeScorePercentage: 0,
+      topCriticsPercentage: 0,
+    };
   } catch (error) {
     console.error("Error in getMovieReviewStats:", error);
     throw new Error(

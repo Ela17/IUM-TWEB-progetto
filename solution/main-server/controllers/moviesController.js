@@ -94,7 +94,7 @@ const getMovieDetails = async (req, res, next) => {
     // Recupera le recensioni (chiamata opzionale)
     try {
       const reviewsResponse = await proxyService.callOtherExpress(`/api/reviews/movie/${movieId}`);
-      reviews = reviewsResponse.data?.reviews || [];
+      reviews = reviewsResponse.data?.data?.reviews || [];
       console.log(`✅ Retrieved ${reviews.length} reviews for movie ${movieId}`);
     } catch (reviewsError) {
       console.warn(`⚠️ Reviews not available for movie ${movieId}: ${reviewsError.message}`);
@@ -104,7 +104,7 @@ const getMovieDetails = async (req, res, next) => {
     // Recupera le statistiche (chiamata opzionale)
     try {
       const statsResponse = await proxyService.callOtherExpress(`/api/reviews/movie/${movieId}/stats`);
-      stats = statsResponse.data?.stats || {};
+      stats = statsResponse.data?.data?.stats || {};
       console.log(`✅ Retrieved review stats for movie ${movieId}`);
     } catch (statsError) {
       console.warn(`⚠️ Stats not available for movie ${movieId}: ${statsError.message}`);
@@ -178,7 +178,7 @@ function transformMovieDetails(details) {
     name: details.name,
     tagline: details.tagline,
     description: details.description,
-    rating: details.rating,
+    rating: details.rating ? Math.round(details.rating * 100) / 100 : null,
     year: details.date,
     duration: details.minute,
     poster_url: details.poster_url,
@@ -232,7 +232,7 @@ const getMovieReviews = async (req, res, next) => {
     const endpoint = `/api/reviews/movie/${movieId}?${searchParams.toString()}`;
     const response = await proxyService.callOtherExpress(endpoint);
 
-    res.json(response.data.data);
+    res.json(response.data.data.reviews);
   } catch (error) {
     next(error);
   }

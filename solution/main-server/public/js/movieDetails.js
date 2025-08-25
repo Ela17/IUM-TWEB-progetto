@@ -228,7 +228,7 @@ class MovieDetailsPage {
    * @param {Object} stats - Le statistiche delle recensioni
    */
   displayStatistics(stats) {
-    this.updateElement('avg-rating', stats.averageRating || 'N/A');
+    this.updateElement('avg-rating', stats.averageScore || 'N/A');
     this.updateElement('total-reviews', stats.totalReviews || '0');
   }
 

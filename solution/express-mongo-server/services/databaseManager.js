@@ -24,6 +24,7 @@ async function connect() {
     });
 
     console.log("✅ MongoDB connection successful!");
+    console.log(`🔗 Connected to database: ${mongoose.connection.db.databaseName}`);
 
     // Gestione eventi di connessione
     mongoose.connection.on("error", (err) => {
