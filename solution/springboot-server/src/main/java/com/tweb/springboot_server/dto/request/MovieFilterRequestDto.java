@@ -25,6 +25,14 @@ public class MovieFilterRequestDto {
     private String title;
 
     /**
+     * Genere del film da filtrare.
+     * Se specificato, vengono restituiti solo i film del genere specificato.
+     * Accetta valori {@code null}.
+     */
+    @Nullable
+    private String genre;
+
+    /**
      * Rating minimo del film (0.0 - 10.0).
      * Se specificato, vengono restituiti solo i film con rating >= a questo valore.
      * Accetta valori {@code null}.
@@ -140,6 +148,22 @@ public class MovieFilterRequestDto {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * Restituisce il genere del film per il filtro.
+     * @return Il genere del film.
+     */
+    public String getGenre() {
+        return genre;
+    }
+
+    /**
+     * Imposta il genere del film per il filtro.
+     * @param genre Il genere del film da impostare.
+     */
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 
     /**
@@ -310,6 +334,7 @@ public class MovieFilterRequestDto {
     public String toString() {
         return "MovieFilterRequestDto{" +
                 "title='" + title + '\'' +
+                ", genre='" + genre + '\'' +
                 ", minRating=" + minRating +
                 ", maxRating=" + maxRating +
                 ", yearFrom=" + yearFrom +

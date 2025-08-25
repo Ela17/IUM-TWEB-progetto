@@ -77,6 +77,9 @@ const servicesConfig = {
  * @property {string[]} cors.origin - URL consentiti per le connessioni Socket.IO
  * @property {string[]} cors.methods - Metodi HTTP consentiti per Socket.IO
  * @property {boolean} cors.credentials - Se permettere l'invio di credenziali
+ * @property {Object} pingTimeout - Timeout per il ping delle connessioni
+ * @property {Object} pingInterval - Intervallo tra i ping
+ * @property {number} maxHttpBufferSize - Dimensione massima del buffer HTTP
  */
 const socketConfig = {
   cors: {
@@ -86,6 +89,10 @@ const socketConfig = {
     methods: ["GET", "POST"],
     credentials: false,
   },
+  pingTimeout: 60000, // 60 secondi
+  pingInterval: 25000, // 25 secondi
+  maxHttpBufferSize: 1e6, // 1MB
+  transports: ['websocket', 'polling'], // Preferisce WebSocket
 };
 
 /**

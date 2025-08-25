@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
+    "stop": "node ./stop-server.js",
+    "kill": "node ./stop-server.js",
     "format": "npx prettier . --write",
     "debug": "DEBUG=express-mongo-server:* node bin/www.js"
   },

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /**
  * Module dependencies.
  */
@@ -35,7 +33,7 @@ server.on("error", onError);
 server.on("listening", onListening);
 
 /**
- * Graceful shutdown
+ * GRACEFUL SHUTDOWN
  */
 let isShuttingDown = false;
 let socketClosed = false;
@@ -43,12 +41,17 @@ let serverClosed = false;
 let forceShutdownTimeout = null;
 
 /**
-   * @function checkAndExit
-   * @description Controlla se entrambi Socket.io e HTTP server sono chiusi per uscire
-   */
+ * @function checkAndExit
+ * @description Controlla se entrambi Socket.io e HTTP server sono chiusi per uscire
+ */
 function checkAndExit() {
+  console.log(`🔍 DEBUG: checkAndExit called - socketClosed: ${socketClosed}, serverClosed: ${serverClosed}`);
+  
   if (socketClosed && serverClosed) {
-    clearTimeout(forceShutdownTimeout);
+    if (forceShutdownTimeout) {
+      clearTimeout(forceShutdownTimeout);
+      console.log('🔍 DEBUG: Timeout cancellato');
+    }
     console.log('✅ Graceful shutdown completato.');
     process.exit(0);
   }
@@ -68,13 +71,14 @@ function gracefulShutdown(signal) {
   isShuttingDown = true;
   console.log(`\n🛑 Ricevuto segnale ${signal}. Avvio graceful shutdown...`);
   
+  // Riduco il timeout a 3 secondi per una chiusura più veloce
   forceShutdownTimeout = setTimeout(() => {
     console.error('⚠️ Timeout raggiunto. Forzo la chiusura del processo.');
     process.exit(1);
-  }, 30000); // 30 secondi di timeout
+  }, 3000);
 
   // Prima chiude Socket.io
-  if (io) {
+  if (io && typeof io.close === 'function') {
     console.log('🔌 Chiusura connessioni Socket.io...');
     io.close((err) => {
       if (err) {
@@ -83,14 +87,16 @@ function gracefulShutdown(signal) {
         console.log('✅ Socket.io chiuso correttamente');
       }
       socketClosed = true;
+      console.log('🔍 DEBUG: Socket.io marcato come chiuso');
       checkAndExit();
     });
   } else {
+    console.log('⚠️ Socket.io non disponibile o già chiuso');
     socketClosed = true;
     checkAndExit();
   }
 
-  // Poi chiude server http
+  // Poi chiude server HTTP
   console.log('🌐 Chiusura server HTTP...');
   server.close((err) => {
     if (err) {
@@ -99,17 +105,32 @@ function gracefulShutdown(signal) {
       console.log('✅ Server HTTP chiuso correttamente');
     }
     serverClosed = true;
+    console.log('🔍 DEBUG: Server HTTP marcato come chiuso');
     checkAndExit();
   });
 
   server.unref();
 }
 
-// Gestori per i segnali di terminazione
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+/**
+ * @function forceKill
+ * @description Termina immediatamente il processo senza graceful shutdown
+ */
+function forceKill() {
+  console.log('💀 Terminazione forzata del processo...');
+  process.exit(0);
+}
+
+// Gestione più robusta dei segnali
+process.on('SIGINT', () => {
+  console.log('\n🛑 Ricevuto SIGINT (Ctrl+C)');
+  // Per Ctrl+C facciamo un kill immediato
+  forceKill();
+});
+
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 
-// Gestisce gli errori non catturati per evitare crash inaspettati
+// Gestione errori non catturati
 process.on('uncaughtException', (err) => {
   console.error('💥 Uncaught Exception:', err);
   gracefulShutdown('UNCAUGHT_EXCEPTION');
@@ -171,6 +192,7 @@ function onListening() {
   var addr = server.address();
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
+  console.log(`🚀 Server avviato su ${bind}`);
   console.log(`📚 API Documentation: http://localhost:${addr.port}/api-docs`);
   console.log('🛠️ Premi Ctrl+C per graceful shutdown');
 }

@@ -1,5 +1,7 @@
 package com.tweb.springboot_server.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Servizio per la gestione delle operazioni relative ai film.
@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 @Service
 public class MovieService {
+    
     private static final Logger logger = LoggerFactory.getLogger(MovieService.class);
     
     /**
@@ -58,8 +59,15 @@ public class MovieService {
      */
     public Optional<MovieDetailDto> getMovieDetails(Integer movieId) {
         try {
+            // Usa la query JPA semplice e carica le relazioni in modo sicuro
             Optional<Movie> movieOptional = movieRepository.findMovieDetailsById(movieId);
-            return movieOptional.map(this::mapToMovieDetailDto);
+            if (movieOptional.isPresent()) {
+                Movie movie = movieOptional.get();
+                // Carica le relazioni in modo sicuro per evitare LazyInitializationException
+                loadMovieRelations(movie);
+                return Optional.of(mapToMovieDetailDto(movie));
+            }
+            return Optional.empty();
         } catch (Exception e) {
             logger.error("Error in getMovieDetails for ID {}: {}", movieId, e.getMessage(), e);
             throw e;
@@ -109,12 +117,17 @@ public class MovieService {
             Pageable pageable = PageRequest.of(page - 1, perPage, sort);
 
             String title = (String) filters.get("title");
+            String genre = (String) filters.get("genre");
             Double minRating = (Double) filters.get("min_rating");
             Double maxRating = (Double) filters.get("max_rating");
             Integer yearFrom = (Integer) filters.get("year_from");
             Integer yearTo = (Integer) filters.get("year_to");
             Integer minDuration = (Integer) filters.get("min_duration");
             Integer maxDuration = (Integer) filters.get("max_duration");
+
+            // Debug logging
+            logger.info("Search filters - genre: {}, minRating: {}, maxRating: {}, yearFrom: {}, yearTo: {}", 
+                       genre, minRating, maxRating, yearFrom, yearTo);
 
             String titlePattern = null;
             if (title != null && !title.trim().isEmpty()) {
@@ -123,7 +136,7 @@ public class MovieService {
             
             // Esegue la query con filtri (SENZA fetch joins che causa MultipleBagFetchException)
             Page<Movie> moviePage = movieRepository.searchMoviesWithFilters(
-                title, titlePattern, minRating, maxRating, yearFrom, yearTo,
+                title, titlePattern, genre, minRating, maxRating, yearFrom, yearTo,
                 minDuration, maxDuration, pageable
             );
 
@@ -137,6 +150,57 @@ public class MovieService {
         } catch (Exception e) {
             logger.error("Error in searchMovies: {}", e.getMessage(), e);
             throw e;
+        }
+    }
+
+    /**
+     * Carica tutte le relazioni di un singolo film in modo sicuro.
+     * Utilizza query separate per evitare il problema MultipleBagFetchException.
+     * Modifica direttamente l'oggetto {@link Movie} passato come parametro.
+     *
+     * @param movie Il film per cui caricare le relazioni
+     */
+    private void loadMovieRelations(Movie movie) {
+        if (movie == null) {
+            return;
+        }
+
+        // Carica le relazioni con query separate per evitare MultipleBagFetchException
+        List<Movie> moviesWithPosters = movieRepository.findMoviesWithPosters(List.of(movie.getId()));
+        List<Movie> moviesWithGenres = movieRepository.findMoviesWithGenres(List.of(movie.getId()));
+        
+        // Assegna poster e generi al film
+        if (!moviesWithPosters.isEmpty()) {
+            movie.setPosters(moviesWithPosters.get(0).getPosters());
+        }
+        if (!moviesWithGenres.isEmpty()) {
+            movie.setGenres(moviesWithGenres.get(0).getGenres());
+        }
+        
+        // Inizializza le altre relazioni come liste vuote per evitare LazyInitializationException
+        if (movie.getActors() == null) {
+            movie.setActors(new ArrayList<>());
+        }
+        if (movie.getCrews() == null) {
+            movie.setCrews(new ArrayList<>());
+        }
+        if (movie.getLanguages() == null) {
+            movie.setLanguages(new ArrayList<>());
+        }
+        if (movie.getReleases() == null) {
+            movie.setReleases(new ArrayList<>());
+        }
+        if (movie.getOscars() == null) {
+            movie.setOscars(new ArrayList<>());
+        }
+        if (movie.getStudios() == null) {
+            movie.setStudios(new ArrayList<>());
+        }
+        if (movie.getThemes() == null) {
+            movie.setThemes(new ArrayList<>());
+        }
+        if (movie.getCountries() == null) {
+            movie.setCountries(new ArrayList<>());
         }
     }
 
@@ -238,34 +302,49 @@ public class MovieService {
             dto.setPosterUrl(null); // O un URL di placeholder se preferito
         }
 
-        // Relazioni semplici (liste di stringhe)
-        dto.setGenres(movie.getGenres().stream().map(Genre::getGenre).collect(Collectors.toList()));
-        dto.setStudios(movie.getStudios().stream().map(Studio::getStudio).collect(Collectors.toList()));
-        dto.setThemes(movie.getThemes().stream().map(Theme::getTheme).collect(Collectors.toList()));
-        dto.setCountries(movie.getCountries().stream().map(Country::getCountry).collect(Collectors.toList()));
+        // Relazioni semplici (liste di stringhe) - gestione null safety
+        dto.setGenres(movie.getGenres() != null ? 
+            movie.getGenres().stream().map(Genre::getGenre).collect(Collectors.toList()) : 
+            new ArrayList<>());
+        dto.setStudios(movie.getStudios() != null ? 
+            movie.getStudios().stream().map(Studio::getStudio).collect(Collectors.toList()) : 
+            new ArrayList<>());
+        dto.setThemes(movie.getThemes() != null ? 
+            movie.getThemes().stream().map(Theme::getTheme).collect(Collectors.toList()) : 
+            new ArrayList<>());
+        dto.setCountries(movie.getCountries() != null ? 
+            movie.getCountries().stream().map(Country::getCountry).collect(Collectors.toList()) : 
+            new ArrayList<>());
 
         // Relazioni complesse (Map<String, List<String>>)
 
         // Attori (Map<String, List<String>>) raggruppati per ruolo
-        Map<String, List<String>> actorsMap = movie.getActors().stream()
+        Map<String, List<String>> actorsMap = movie.getActors() != null ? 
+            movie.getActors().stream()
                 .collect(Collectors.groupingBy(Actor::getRole,
-                        Collectors.mapping(Actor::getName, Collectors.toList())));
+                        Collectors.mapping(Actor::getName, Collectors.toList()))) :
+            new HashMap<>();
         dto.setActors(actorsMap);
 
         // Troupe (Map<String, List<String>>) raggruppata per ruolo
-        Map<String, List<String>> crewsMap = movie.getCrews().stream()
+        Map<String, List<String>> crewsMap = movie.getCrews() != null ? 
+            movie.getCrews().stream()
                 .collect(Collectors.groupingBy(Crew::getRole,
-                        Collectors.mapping(Crew::getName, Collectors.toList())));
+                        Collectors.mapping(Crew::getName, Collectors.toList()))) :
+            new HashMap<>();
         dto.setCrews(crewsMap);
 
         // Lingue (Map<String, List<String>>) raggruppate per tipo
-        Map<String, List<String>> languagesMap = movie.getLanguages().stream()
+        Map<String, List<String>> languagesMap = movie.getLanguages() != null ? 
+            movie.getLanguages().stream()
                 .collect(Collectors.groupingBy(Language::getType,
-                        Collectors.mapping(Language::getLanguage, Collectors.toList())));
+                        Collectors.mapping(Language::getLanguage, Collectors.toList()))) :
+            new HashMap<>();
         dto.setLanguages(languagesMap);
 
         // Release (Map<String, List<ReleaseDetailDto>>) raggruppate per paese
-        Map<String, List<ReleaseDetailDto>> releasesMap = movie.getReleases().stream()
+        Map<String, List<ReleaseDetailDto>> releasesMap = movie.getReleases() != null ? 
+            movie.getReleases().stream()
                 .collect(Collectors.groupingBy(
                         Release::getCountry, // Raggruppa per paese
                         Collectors.mapping(
@@ -276,11 +355,13 @@ public class MovieService {
                                 ),
                                 Collectors.toList()
                         )
-                ));
+                )) :
+            new HashMap<>();
         dto.setReleases(releasesMap);
 
         // Oscars (List<OscarDetailDto>)
-        List<OscarDetailDto> oscarsList = movie.getOscars().stream()
+        List<OscarDetailDto> oscarsList = movie.getOscars() != null ? 
+            movie.getOscars().stream()
                 .map(oscar -> new OscarDetailDto(
                         oscar.getYearFilm(),
                         oscar.getCategory(),
@@ -288,7 +369,8 @@ public class MovieService {
                         oscar.getFilm(),
                         oscar.getWinner()
                 ))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) :
+            new ArrayList<>();
         dto.setOscars(oscarsList);
 
         return dto;
@@ -328,6 +410,7 @@ public class MovieService {
         if (value == null || value.isNaN() || value.isInfinite()) {
             return null;
         }
+    
         return value;
     }
 }

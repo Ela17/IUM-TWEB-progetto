@@ -5,6 +5,7 @@ Modulo di pulizia dati.
 """
 
 import pandas as pd
+import numpy as np
 from pathlib import Path
 import logging
 from .scripts.normalization import normalize_description, normalize_score, normalize_title
@@ -143,18 +144,38 @@ class DataCleaner:
                 if name != 'movies' and 'id' in df.columns:
                     self.data[name] = df.rename(columns={'id': 'id_movie'})
 
-                # Converte tutti i tipi di NA (pd.NA, np.nan) in None, compatibile con i driver DB
-                df_clean = self.data[name].replace({pd.NA: None})
+                # PULIZIA NAN - Spostata qui per essere l'ultima operazione
+                logger.info(f"🧹 Pulendo valori 'NaN' in {name}...")
+                
+                # Sostituisce le stringhe 'NaN' e 'nan' con None
+                df_clean = self.data[name].replace('NaN', None)
+                df_clean = df_clean.replace('nan', None)
+                
+                # Sostituisce anche i valori numpy.nan con None
+                df_clean = df_clean.replace({pd.NA: None, pd.NaT: None})
+                
+                # Per le colonne numeriche, sostituisce anche i valori infiniti e numpy.nan
+                numeric_columns = df_clean.select_dtypes(include=['number']).columns
+                for col in numeric_columns:
+                    df_clean[col] = df_clean[col].replace([np.inf, -np.inf], None)
+                    # Converti numpy.nan in None - questo è il punto chiave!
+                    df_clean[col] = df_clean[col].where(pd.notna(df_clean[col]), None)
+                
+                # CONVERSIONE FINALE: assicuriamoci che tutti i NaN diventino None
+                # Questo è cruciale per PostgreSQL
+                df_clean = df_clean.where(pd.notna(df_clean), None)
+                
+                logger.info(f"   ✅ {name}: valori 'NaN' convertiti in None")
 
                 if df_clean.empty:
                     logger.warning(f"⚠️ {name} vuoto dopo preprocessing")
                     raise ValueError(f"Il dataset {name} è vuoto.")
                 
                 self.data[name] = df_clean
-                logger.info(f"   ✅ {name}: null convertiti in None")
+                logger.info(f"   ✅ {name}: pronto per database")
             
         except Exception as e:
-            logger.error(f"❌ Errore peprocessing dei dati per l'inserimento nel database: {e}")
+            logger.error(f"❌ Errore preprocessing dei dati per l'inserimento nel database: {e}")
             raise
 
     def run_cleaning(self):

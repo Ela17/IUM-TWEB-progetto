@@ -22,13 +22,8 @@ class MoviesController {
       },
       'recent': {
         title: 'Recent Releases',
-        description: 'Movies from 2025 onwards',
-        params: { year_from: 2025, limit: 24 }
-      },
-      'action': {
-        title: 'Action Movies',
-        description: 'High-octane action and adventure films',
-        params: { genre: 'Action', min_rating: 3, limit: 24 }
+        description: 'Movies from 2025',
+        params: { year_from: 2025, year_to: 2025, limit: 24 }
       },
       'drama': {
         title: 'Drama Movies', 
@@ -39,6 +34,31 @@ class MoviesController {
         title: 'Comedy Movies',
         description: 'Laugh-out-loud comedies',
         params: { genre: 'Comedy', min_rating: 3, limit: 24 }
+      },
+      'action': {
+        title: 'Action Movies',
+        description: 'High-octane action and adventure films',
+        params: { genre: 'Action', min_rating: 3, limit: 24 }
+      },
+      'horror': {
+        title: 'Horror Movies',
+        description: 'Spine-chilling horror films',
+        params: { genre: 'Horror', min_rating: 3, limit: 24 }
+      },
+      'documentary': {
+        title: 'Documentary Films',
+        description: 'Real stories, real people',
+        params: { genre: 'Documentary', min_rating: 3, limit: 24 }
+      },
+      'animation': {
+        title: 'Animation Movies',
+        description: 'Beautiful animated storytelling',
+        params: { genre: 'Animation', min_rating: 3, limit: 24 }
+      },
+      'thriller': {
+        title: 'Thriller Movies',
+        description: 'Edge-of-your-seat suspense',
+        params: { genre: 'Thriller', min_rating: 3, limit: 24 }
       },
       'custom': {
         title: 'Custom Search',
@@ -389,7 +409,7 @@ class MoviesController {
       // Mostra notifica di successo
       if (window.cinemaHub) {
         window.cinemaHub.showNotification(
-          `Loaded ${data.movies?.length || 0} movies`, 
+          `Loaded ${data.data?.length || 0} movies`, 
           'success'
         );
       }
@@ -415,7 +435,7 @@ class MoviesController {
   displayMovies(data) {
     const container = document.getElementById('movies-container');
     
-    if (!data.movies || data.movies.length === 0) {
+    if (!data.data || data.data.length === 0) {
       this.showNoResults();
       return;
     }
@@ -426,7 +446,7 @@ class MoviesController {
     // Create movies grid
     let html = '<div class="row g-4">';
     
-    data.movies.forEach((movie, index) => {
+    data.data.forEach((movie, index) => {
       html += this.createMovieCard(movie, index);
     });
     
@@ -453,10 +473,13 @@ class MoviesController {
    * @returns {string} HTML della card
    */
   createMovieCard(movie, index) {
-    const posterUrl = movie.poster_url || '/images/no-poster.jpg';
+    const posterUrl = movie.poster_url || '/images/no-image.svg';
     const title = movie.name || movie.title || 'Unknown Title';
-    const year = movie.year || 'Unknown';
-    const rating = movie.rating || 'N/A';
+    const year = (movie.year ?? movie.date) || 'Unknown';
+    const rawRating = (movie.rating ?? movie.avg_rating ?? movie.averageRating);
+    const rating = (typeof rawRating === 'number' && !isNaN(rawRating))
+      ? (Math.round(rawRating * 10) / 10)
+      : (rawRating || 'N/A');
     const duration = movie.duration ? ` • ${movie.duration}min` : '';
     const description = movie.description 
       ? (movie.description.length > 120 ? movie.description.substring(0, 120) + '...' : movie.description)
@@ -469,7 +492,7 @@ class MoviesController {
           <div class="position-relative">
             <img src="${posterUrl}" alt="${this.escapeHtml(title)}" 
                  class="card-img-top" style="height: 350px; object-fit: cover;"
-                 onerror="this.src='/images/no-poster.jpg'"
+                 onerror="this.src='/images/no-image.svg'"
                  loading="lazy">
             <div class="movie-rating-badge position-absolute top-0 end-0 m-2 bg-dark text-white px-2 py-1 rounded">
               <i class="bi bi-star-fill text-warning me-1"></i>
@@ -635,8 +658,8 @@ class MoviesController {
     if (!info) return;
     
     if (data.pagination) {
-      const { currentPage, totalPages, totalItems } = data.pagination;
-      info.textContent = `Page ${currentPage} of ${totalPages} • ${totalItems} movies total`;
+      const { currentPage, totalPages, totalResults } = data.pagination;
+      info.textContent = `Page ${currentPage} of ${totalPages} • ${totalResults} movies`;
     } else if (data.movies) {
       info.textContent = `${data.movies.length} movies found`;
     }

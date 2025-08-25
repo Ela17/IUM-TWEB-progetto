@@ -7,7 +7,9 @@
   "author": "Elena Derosas - 1049692",
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www",
+    "dev": "npx nodemon ./bin/www",
+    "stop": "node ./stop-server.js",
+    "kill": "node ./stop-server.js",
     "format": "npx prettier . --write"
   },
   "dependencies": {

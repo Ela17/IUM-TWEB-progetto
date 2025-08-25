@@ -68,15 +68,7 @@ const ENUMS = {
   // Ruoli crew dai CSV
   CREW_ROLES: ["Director", "Producer", "Writer", "Cinematographer", "Editor"],
 
-  // Categorie Oscar dai CSV
-  OSCAR_CATEGORIES: [
-    "Best Picture",
-    "Best Director",
-    "Best Actor",
-    "Best Actress",
-    "Best Supporting Actor",
-    "Best Supporting Actress",
-  ],
+  // Categorie Oscar sono ora gestite da PostgreSQL - non più necessarie qui
 
   // Stati chat room
   ROOM_STATUS: ["active", "inactive", "archived"],

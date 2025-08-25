@@ -56,7 +56,7 @@
 }
 
 .movie-rating {
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--bg-primary);
   padding: 0.5rem 1rem;
   border-radius: 2rem;
   backdrop-filter: blur(10px);
@@ -100,8 +100,31 @@
 }
 
 .cast-member small {
-  color: var(--text-secondary);
+  color: var(--text-primary) !important;
   font-size: 0.8rem;
+}
+
+/* Forzatura text-primary per tutte le scritte nella pagina movie-details */
+.movie-details .text-muted,
+.movie-details small,
+.movie-details p,
+.movie-details span {
+  color: var(--text-primary) !important;
+}
+
+/* Specifici per le sezioni */
+.movie-details .release-item small,
+.movie-details .release-item span {
+  color: var(--text-primary) !important;
+}
+
+.movie-details .stat-item span {
+  color: var(--text-primary) !important;
+}
+
+.movie-details .review-item small,
+.movie-details .review-item p {
+  color: var(--text-primary) !important;
 }
 
 /* Reviews */
@@ -122,6 +145,56 @@
   border-radius: var(--border-radius);
 }
 
+/* Stili specifici per reviews */
+.review-item {
+  color: var(--text-primary) !important;
+}
+
+.review-item * {
+  color: var(--text-primary) !important;
+}
+
+.review-item h6,
+.review-item h5,
+.review-item h4 {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.review-item p {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.review-item small {
+  color: var(--text-primary) !important;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.review-item span {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+/* Reviews container specific */
+#reviews-container {
+  color: var(--text-primary) !important;
+}
+
+#reviews-container * {
+  color: var(--text-primary) !important;
+}
+
+#reviews-container .review-item {
+  color: var(--text-primary) !important;
+}
+
+#reviews-container .review-item * {
+  color: var(--text-primary) !important;
+}
+
 .review-score {
   min-width: 60px;
   text-align: center;
@@ -135,7 +208,7 @@
 /* Stats Cards */
 .stat-item {
   padding: 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--bg-secondary);
 }
 
 .stat-item:last-child {
@@ -156,12 +229,89 @@
   transform: translateX(4px);
 }
 
+/* Stili specifici per release information */
+.release-item span,
+.release-item small,
+.release-item p {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+.release-item .d-flex span:first-child {
+  font-weight: 600;
+  color: var(--text-primary) !important;
+}
+
+.release-item .d-flex small {
+  color: var(--text-primary) !important;
+  opacity: 0.9;
+}
+
+/* Countries container */
+#countries-container p {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+/* Stili specifici per countries */
+#countries-container {
+  color: var(--text-primary) !important;
+}
+
+#countries-container span,
+#countries-container div,
+#countries-container p {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+}
+
+/* Countries card specific */
+.card .card-body #countries-container {
+  color: var(--text-primary) !important;
+}
+
+.card .card-body #countries-container * {
+  color: var(--text-primary) !important;
+}
+
+/* Release container */
+#releases-container .release-item {
+  margin-bottom: 0.75rem;
+}
+
+#releases-container .release-item:last-child {
+  margin-bottom: 0;
+}
+
 /* Movie Cards in Details */
 .movie-details .card {
   background: var(--bg-primary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
   transition: var(--transition);
+}
+
+/* Theme Card - usa le variabili del tema */
+.theme-card {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--border-radius) !important;
+}
+
+.theme-card .card-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-card .card-body {
+  background: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-card .card-header h5 {
+  color: var(--text-primary) !important;
 }
 
 .movie-details .card-header {
@@ -185,7 +335,7 @@
 
 .btn-outline-cinema-gold:hover {
   background-color: var(--cinema-gold);
-  color: #000;
+  color: var(--bg-primary);
   transform: translateY(-2px);
 }
 

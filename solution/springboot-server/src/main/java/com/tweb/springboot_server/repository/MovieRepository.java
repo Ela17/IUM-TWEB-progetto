@@ -24,7 +24,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
 
     /**
      * Recupera i dettagli di un film tramite il suo ID.
-     * Carica tutte le relazioni tramite lazy loading quando vengono accedute nel Service.
+     * Carica tutte le relazioni necessarie per evitare problemi di lazy loading.
      * 
      * @param id L'ID del film da cercare.
      * @return Un {@link Optional} contenente l'entità {@link Movie} con tutti i dettagli,
@@ -32,6 +32,15 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
      */
     @Query("SELECT m FROM Movie m WHERE m.id = :id AND m.name IS NOT NULL AND m.name != ''")
     Optional<Movie> findMovieDetailsById(@Param("id") Integer id);
+    
+    /**
+     * Recupera i dettagli di un film tramite il suo ID con query nativa per debug.
+     * 
+     * @param id L'ID del film da cercare.
+     * @return Un {@link Optional} contenente l'entità {@link Movie} con tutti i dettagli.
+     */
+    @Query(value = "SELECT * FROM movies WHERE id = :id AND name IS NOT NULL AND name != ''", nativeQuery = true)
+    Optional<Movie> findMovieDetailsByIdNative(@Param("id") Integer id);
 
     /**
      * Trova una lista di film il cui nome contiene la stringa specificata, ignorando maiuscole/minuscole.
@@ -86,10 +95,12 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
     Page<Movie> findSuggestionsByName(@Param("name") String name, Pageable pageable);
     
     /**
-     * Cerca film applicando vari filtri come titolo, rating minimo/massimo, anno di produzione e durata.
+     * Cerca film applicando vari filtri come titolo, genere, rating minimo/massimo, anno di produzione e durata.
      * Il nome del film non deve essere nullo o vuoto.
      *
      * @param title La stringa da cercare nel titolo del film (può essere {@code null} per ignorare).
+     * @param titlePattern Il pattern per la ricerca nel titolo.
+     * @param genre Il genere del film da filtrare (può essere {@code null} per ignorare).
      * @param minRating Il rating minimo del film (può essere {@code null} per ignorare).
      * @param maxRating Il rating massimo del film (può essere {@code null} per ignorare).
      * @param yearFrom L'anno di inizio dell'intervallo di produzione (può essere {@code null} per ignorare).
@@ -100,10 +111,12 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
      * @return Una {@link Page} di {@link Movie} che soddisfano tutti i criteri di filtro.
      */
     @Query("SELECT DISTINCT m FROM Movie m " +
+           "LEFT JOIN m.genres g " +
            "WHERE m.name IS NOT NULL AND m.name != '' " +
            "AND (:title IS NULL OR LOWER(m.name) LIKE LOWER(:titlePattern)) AND " +
-           "(:minRating IS NULL OR m.rating >= :minRating) AND " +
-           "(:maxRating IS NULL OR m.rating <= :maxRating) AND " +
+           "(:genre IS NULL OR g.genre = :genre) AND " +
+           "(:minRating IS NULL OR (m.rating IS NOT NULL AND m.rating >= :minRating)) AND " +
+           "(:maxRating IS NULL OR (m.rating IS NOT NULL AND m.rating <= :maxRating)) AND " +
            "(:yearFrom IS NULL OR m.date >= :yearFrom) AND " +
            "(:yearTo IS NULL OR m.date <= :yearTo) AND " +
            "(:minDuration IS NULL OR m.minute >= :minDuration) AND " +
@@ -111,6 +124,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
     Page<Movie> searchMoviesWithFilters(
         @Param("title") String title,
         @Param("titlePattern") String titlePattern,
+        @Param("genre") String genre,
         @Param("minRating") Double minRating,
         @Param("maxRating") Double maxRating,
         @Param("yearFrom") Integer yearFrom,

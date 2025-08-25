@@ -17,7 +17,10 @@ public class MovieDetailDto {
     private Integer date;
     private String tagline;
     private String description;
+    @JsonProperty("minute")
     private Double minute;
+    
+    @JsonProperty("rating")
     private Double rating;
 
     /**

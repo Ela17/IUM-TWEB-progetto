@@ -124,12 +124,59 @@ function onListening() {
  * Graceful shutdown
  */
 
-process.on('SIGINT', async () => {
-  console.log('\n🛑 Shutting down server...');
-  server.close();
-  await databaseManager.disconnect();
-  console.log('👋 Shutdown completed');
+let isShuttingDown = false;
+
+/**
+ * @function forceKill
+ * @description Termina immediatamente il processo senza graceful shutdown
+ */
+function forceKill() {
+  console.log('💀 Terminazione forzata del processo MongoDB...');
   process.exit(0);
+}
+
+/**
+ * @function gracefulShutdown
+ * @description Gestisce la chiusura ordinata del server
+ */
+async function gracefulShutdown() {
+  if (isShuttingDown) {
+    console.log('🔄 Shutdown già in corso...');
+    return;
+  }
+
+  isShuttingDown = true;
+  console.log('\n🛑 Shutting down MongoDB server...');
+  
+  try {
+    server.close();
+    await databaseManager.disconnect();
+    console.log('👋 Shutdown completed');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Errore durante lo shutdown:', error);
+    process.exit(1);
+  }
+}
+
+// Gestione più robusta dei segnali
+process.on('SIGINT', () => {
+  console.log('\n🛑 Ricevuto SIGINT (Ctrl+C)');
+  // Per Ctrl+C facciamo un kill immediato
+  forceKill();
+});
+
+process.on('SIGTERM', () => gracefulShutdown());
+
+// Gestione errori non catturati
+process.on('uncaughtException', (err) => {
+  console.error('💥 Uncaught Exception:', err);
+  gracefulShutdown();
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('💥 Unhandled Rejection at:', promise, 'reason:', reason);
+  gracefulShutdown();
 });
 
 startServer();

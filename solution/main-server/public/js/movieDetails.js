@@ -138,17 +138,35 @@ class MovieDetailsPage {
     // Aggiorna il titolo della pagina
     document.title = `${movie.name || 'Unknown Movie'} - CinemaHub`;
     
-    // Informazioni base
+    // Informazioni base (sempre disponibili se abbiamo movieDetails)
     this.displayBasicInfo(movie);
     
-    // Statistiche e recensioni
-    if (this.movieData.reviewsStat) {
-      this.displayStatistics(this.movieData.reviewsStat);
+    // Statistiche e recensioni (opzionali - non devono bloccare il resto)
+    try {
+      if (this.movieData.reviewsStat && Object.keys(this.movieData.reviewsStat).length > 0) {
+        this.displayStatistics(this.movieData.reviewsStat);
+      } else {
+        console.log('No review statistics available');
+        this.updateElement('avg-rating', 'N/A');
+        this.updateElement('total-reviews', '0');
+      }
+    } catch (statsError) {
+      console.warn('Error displaying statistics:', statsError);
+      this.updateElement('avg-rating', 'N/A');
+      this.updateElement('total-reviews', '0');
     }
     
-    if (this.movieData.reviews) {
-      this.displayReviews(this.movieData.reviews);
-      this.reviewsLoaded = true;
+    try {
+      if (this.movieData.reviews && Array.isArray(this.movieData.reviews)) {
+        this.displayReviews(this.movieData.reviews);
+        this.reviewsLoaded = true;
+      } else {
+        console.log('No reviews available');
+        this.displayReviews([]);
+      }
+    } catch (reviewsError) {
+      console.warn('Error displaying reviews:', reviewsError);
+      this.displayReviews([]);
     }
     
     // Cast e crew (se disponibili)
@@ -197,7 +215,7 @@ class MovieDetailsPage {
     // Poster
     const poster = document.getElementById('movie-poster');
     if (poster) {
-      poster.src = movie.poster_url || '/images/no-poster.jpg';
+      poster.src = movie.poster_url || '/images/no-image.svg';
       poster.alt = `${movie.name || 'Movie'} poster`;
       
       // Aggiorna anche il backdrop se disponibile
@@ -222,12 +240,18 @@ class MovieDetailsPage {
     const container = document.getElementById('reviews-container');
     if (!container) return;
     
+    // Assicurati che reviews sia un array
+    if (!Array.isArray(reviews)) {
+      console.warn('Reviews is not an array:', reviews);
+      reviews = [];
+    }
+    
     if (!reviews || reviews.length === 0) {
       container.innerHTML = `
         <div class="text-center py-4">
           <i class="bi bi-chat-left-quote fs-1 text-muted mb-2"></i>
           <p class="text-muted">No reviews available for this movie yet.</p>
-          <small class="text-muted">Be the first to share your thoughts!</small>
+          
         </div>
       `;
       return;

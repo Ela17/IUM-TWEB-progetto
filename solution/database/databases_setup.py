@@ -94,7 +94,13 @@ def main():
 
     try:
         # Carica configurazioni
-        load_dotenv('.env')
+        script_dir = Path(__file__).parent
+        env_path = script_dir / '.env'
+        if env_path.exists():
+            load_dotenv(env_path)
+        else:
+            # Fallback alla directory principale
+            load_dotenv('.env')
         validate_environment()
 
         validate_data_directory(data_path)
@@ -133,7 +139,8 @@ def main():
                 ('studios', 'studios'),
                 ('themes', 'themes'),
                 ('releases', 'releases'),
-                ('posters', 'posters')
+                ('posters', 'posters'),
+                ('the_oscar_awards', 'oscars') 
             ]
 
             for data_key, table_name in pg_tables:
@@ -185,13 +192,7 @@ def main():
                     raise Exception("Inserimento recensioni fallito.")
                 mongo_total += inserted
 
-            if 'the_oscar_awards' in cleaned_data:
-                inserted = mongo.insert_dataframe(cleaned_data['the_oscar_awards'], 'oscar_awards')
-                if inserted == 0:
-                    logger.error("❌ Nessun premio Oscar inserito")
-                    mongo.cleanup()
-                    raise Exception("Inserimento Oscar fallito")
-                mongo_total += inserted
+            # Gli Oscar sono stati spostati in PostgreSQL - non più in MongoDB
 
             if mongo_total == 0:
                 logger.error("❌ Nessun record inserito in MongoDB")

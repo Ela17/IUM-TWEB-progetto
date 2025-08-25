@@ -268,11 +268,11 @@ class CinemaHub {
     
     results.movies.forEach((movie, index) => {
       html += `
-        <a href="/api/movies/${movie.id}" class="search-item" data-index="${index}">
-          <img src="${movie.poster_url || '/images/no-poster.jpg'}" 
+        <a href="/movies/${movie.id}" class="search-item" data-index="${index}">
+          <img src="${movie.poster_url || '/images/no-image.svg'}" 
               alt="${this.escapeHtml(movie.name)}" 
               class="search-item-image"
-              onerror="this.src='/images/no-poster.jpg'">
+              onerror="this.src='/images/no-image.svg'">
           <div class="search-item-info">
             <h6>${this.highlightSearchTerm(movie.name, results.query)}</h6>
             <small>

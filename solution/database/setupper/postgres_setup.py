@@ -206,8 +206,18 @@ class PostgreSQLSetup:
             placeholders = ', '.join(['%s'] * len(df.columns))
             query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
             
-            # Conversione DataFrame in lista di tuple
-            data = [tuple(row) for row in df.values]
+            # Conversione DataFrame in lista di tuple con gestione esplicita dei None/NaN
+            data = []
+            for _, row in df.iterrows():
+                # Converti ogni valore, assicurandoti che None rimanga None
+                row_data = []
+                for value in row:
+                    if pd.isna(value) or value is None:
+                        row_data.append(None)
+                    else:
+                        row_data.append(value)
+                data.append(tuple(row_data))
+            
             total_inserted = 0
             
             # Inserimento a batch

@@ -240,7 +240,7 @@ reviewSchema.statics.getReviewsByMovieId = async function (
       totCount,
       currentPage: pageNum,
       totalPages: Math.ceil(totCount / limitNum),
-      hasNextPage: pageNum < Math.ceil(totalCount / limitNum),
+      hasNextPage: pageNum < Math.ceil(totCount / limitNum),
       hasPrevPage: pageNum > 1,
     };
   } catch (error) {

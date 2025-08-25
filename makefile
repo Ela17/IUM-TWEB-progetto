@@ -67,7 +67,7 @@ clean_springboot:
 
 
 ## Gestione del secondo server Express (Express Node.js)
-.PHONY: install_express_server_deps run_express_server clean_express_server
+.PHONY: install_express_server_deps run_express_server clean_express_server stop_express_server
 
 # Installa le dipendenze Node.js specificate in package.json.
 install_express_server_deps:
@@ -81,6 +81,12 @@ run_express_server: install_express_server_deps
 	cd $(EXPRESS_SERVER_DIR) && npm start &
 	@echo "Server express avviato in background."
 
+# Ferma il server express
+stop_express_server:
+	@echo "Arresto del server express..."
+	cd $(EXPRESS_SERVER_DIR) && npm run stop || echo "Server express non in esecuzione o già fermato"
+	@echo "Server express fermato."
+
 # Pulisce le dipendenze Node.js rimuovendo la cartella node_modules.
 clean_express_server:
 	@echo "Pulizia delle dipendenze Node.js..."
@@ -89,7 +95,7 @@ clean_express_server:
 
 
 ## Gestione del server principale (Express Node.js)
-.PHONY: install_main_server_deps run_main_server clean_main_server
+.PHONY: install_main_server_deps run_main_server clean_main_server stop_main_server
 
 # Installa le dipendenze Node.js specificate in package.json.
 install_main_server_deps:
@@ -103,6 +109,12 @@ run_main_server: install_main_server_deps
 	cd $(MAIN_SERVER_DIR) && npm start &
 	@echo "Server principale avviato in background."
 
+# Ferma il server principale
+stop_main_server:
+	@echo "Arresto del server principale..."
+	cd $(MAIN_SERVER_DIR) && npm run stop || echo "Server principale non in esecuzione o già fermato"
+	@echo "Server principale fermato."
+
 # Pulisce le dipendenze Node.js rimuovendo la cartella node_modules.
 clean_main_server:
 	@echo "Pulizia delle dipendenze Node.js..."
@@ -112,7 +124,7 @@ clean_main_server:
 
 
 ## Esecuzione di script Python
-.PHONY: run_db_setup
+.PHONY: run_db_setup backup_db restore_db
 
 # Esegue lo script di setup del database Python.
 # $(PATH_PARAM) è una variabile che puoi passare da riga di comando (es. make run_db_setup PATH_PARAM=/path/to/data)
@@ -121,10 +133,22 @@ run_db_setup: install_python_deps
 	$(PYTHON) solution/database/databases_setup.py $(PATH_PARAM)
 	@echo "Setup del database completato."
 
+# Crea un backup completo dei database
+backup_db: install_python_deps
+	@echo "Creazione backup dei database..."
+	$(PYTHON) solution/database/backup_database.py
+	@echo "Backup completato."
+
+# Ripristina un backup esistente dei database
+restore_db: install_python_deps
+	@echo "Ripristino backup dei database..."
+	$(PYTHON) solution/database/restore_database.py
+	@echo "Restore completato."
+
 
 
 ## Regole composite per setup e avvio
-.PHONY: setup_all run_all
+.PHONY: setup_all run_all stop_all
 
 # Target per installare tutte le dipendenze di tutti i componenti
 setup_all: install_python_deps install_java_deps install_express_server_deps install_main_server_deps
@@ -137,6 +161,11 @@ run_all: run_springboot run_express_server run_main_server
 	@echo "Il makefile ha completato l'esecuzione. I server sono in background."
 	@echo "Potrebbe essere necessario terminare i processi manualmente (es. con 'killall java' o 'killall node')."
 
+# Target per fermare tutti i servizi del progetto.
+stop_all: stop_main_server stop_express_server
+	@echo "Arresto di tutti i servizi..."
+	@echo "Per fermare Spring Boot: killall java"
+	@echo "Tutti i servizi sono stati fermati."
 
 
 ## Pulizia generale del progetto

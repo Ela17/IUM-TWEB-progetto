@@ -42,15 +42,22 @@ router.get("/movies", function (req, res, next) {
 
 /**
  * @swagger
- * /movie-details:
+ * /movies/{movieId}:
  *   get:
- *     summary: Dettagli singolo film
+ *     summary: Pagina dettagli singolo film
  *     tags: [Pages]
+ *     parameters:
+ *       - in: path
+ *         name: movieId
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
- *       200
+ *       200:
+ *         description: Pagina dettagli film servita con successo
  */
-router.get("/movies", function (req, res, next) {
-  res.render("pages/movies", { 
+router.get("/movies/:movieId", function (req, res, next) {
+  res.render("pages/movie-details", { 
     title: "Movie Details - CinemaHub",
     currentPage: "movies",
     isMovieDetailsPage: true

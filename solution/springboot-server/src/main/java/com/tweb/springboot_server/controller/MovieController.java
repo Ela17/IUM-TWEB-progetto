@@ -28,6 +28,8 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.tweb.springboot_server.model.Movie;
+import com.tweb.springboot_server.repository.MovieRepository;
 
 /**
  * Controller RESTful per la gestione delle operazioni relative ai film.
@@ -47,6 +49,9 @@ public class MovieController {
 
     @Autowired
     private MovieService movieService;
+
+    @Autowired
+    private MovieRepository movieRepository;
 
     /**
      * Endpoint API per recuperare i dettagli completi di un film tramite il suo ID.
@@ -78,6 +83,53 @@ public class MovieController {
             logger.error("❌ Error in getMovieDetails for ID {}: {}", movieId, e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ApiResponse<>(false, null, "Server Internal Error"));
+        }
+    }
+
+    /**
+     * Endpoint di test per verificare il mapping JPA dei campi base.
+     *
+     * @param movieId L'ID del film da testare.
+     * @return Una {@link ResponseEntity} con i campi base del film per debug.
+     * 
+     * @apiNote GET /api/movies/{movieId}/test
+     */
+    @GetMapping("/{movieId}/test")
+    public ResponseEntity<Map<String, Object>> testMovieMapping(
+            @PathVariable 
+            @Min(value = MovieConstants.MIN_MOVIE_ID, message = "Movie ID must be positive") 
+            Integer movieId) {
+        try {
+            Optional<Movie> movieOptional = movieRepository.findMovieDetailsByIdNative(movieId);
+            
+            Map<String, Object> result = new HashMap<>();
+            
+            if (movieOptional.isPresent()) {
+                Movie movie = movieOptional.get();
+                result.put("success", true);
+                result.put("id", movie.getId());
+                result.put("name", movie.getName());
+                result.put("date", movie.getDate());
+                result.put("rating", movie.getRating());
+                result.put("minute", movie.getMinute());
+                result.put("tagline", movie.getTagline());
+                result.put("description", movie.getDescription());
+                
+                logger.debug("Test mapping for movie ID {}: date={}, rating={}", 
+                           movieId, movie.getDate(), movie.getRating());
+            } else {
+                result.put("success", false);
+                result.put("message", "Movie not found");
+            }
+            
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            logger.error("❌ Error in testMovieMapping for ID {}: {}", movieId, e.getMessage(), e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Server Internal Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -202,6 +254,7 @@ public class MovieController {
         
         // Filtri di ricerca
         filters.put("title", filterDto.getTitle());
+        filters.put("genre", filterDto.getGenre());
         filters.put("min_rating", filterDto.getMinRating());
         filters.put("max_rating", filterDto.getMaxRating());
         filters.put("year_from", filterDto.getYearFrom());

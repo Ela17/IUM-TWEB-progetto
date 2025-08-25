@@ -67,9 +67,9 @@ exports.getReviewsByMovieId = async function (req, res, next) {
         reviews: reviewsById.reviews,
         pagination: {
           currentPage: pagination.page,
-          totalPages: Math.ceil(reviewsById.totalCount / pagination.limit),
-          totalResults: reviewsById.totalCount,
-          hasNext: pagination.page * pagination.limit < reviewsById.totalCount,
+          totalPages: Math.ceil(reviewsById.totCount / pagination.limit),
+          totalResults: reviewsById.totCount,
+          hasNext: pagination.page * pagination.limit < reviewsById.totCount,
           hasPrev: pagination.page > 1,
         },
         count: reviewsById.reviews.length,
