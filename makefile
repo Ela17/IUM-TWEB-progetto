@@ -22,9 +22,9 @@ venv:
 	@echo "Ambiente virtuale Python creato."
 
 # Installa le dipendenze Python specificate in requirements.txt
-install_python_deps: venv
+install_python_deps: 
 	@echo "Installazione delle dipendenze Python da $(REQUIREMENTS)..."
-	$(PIP) install -r $(REQUIREMENTS)
+	pip install -r $(REQUIREMENTS)
 	@echo "Dipendenze Python installate."
 
 # Rimuove l'ambiente virtuale Python
@@ -124,26 +124,14 @@ clean_main_server:
 
 
 ## Esecuzione di script Python
-.PHONY: run_db_setup backup_db restore_db
+.PHONY: run_db_setup
 
 # Esegue lo script di setup del database Python.
 # $(PATH_PARAM) è una variabile che puoi passare da riga di comando (es. make run_db_setup PATH_PARAM=/path/to/data)
 run_db_setup: install_python_deps
 	@echo "Esecuzione dello script di setup del database..."
-	$(PYTHON) solution/database/databases_setup.py $(PATH_PARAM)
+	python solution/database/databases_setup.py $(PATH_PARAM)
 	@echo "Setup del database completato."
-
-# Crea un backup completo dei database
-backup_db: install_python_deps
-	@echo "Creazione backup dei database..."
-	$(PYTHON) solution/database/backup_database.py
-	@echo "Backup completato."
-
-# Ripristina un backup esistente dei database
-restore_db: install_python_deps
-	@echo "Ripristino backup dei database..."
-	$(PYTHON) solution/database/restore_database.py
-	@echo "Restore completato."
 
 
 
