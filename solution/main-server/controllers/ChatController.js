@@ -105,13 +105,12 @@ const createRoom = async (req, res, next) => {
  */
 const getRoomsList = async (req, res, next) => {
   try {
-    console.log("📋 Fetching list of chat rooms");
-
     const endpoint = "/api/rooms/all";
     const roomsResponse = await proxyService.callOtherExpress(endpoint);
 
     // Restituisce l'array delle stanze direttamente
-    res.json(roomsResponse.data.data.rooms);
+    const rooms = roomsResponse.data.data.rooms;
+    res.json(rooms);
   } catch (error) {
     console.error("❌ Error fetching room list:", error.message);
     next(error);

@@ -93,19 +93,7 @@ class ChatPage {
     }
 
     // Welcome screen actions
-    const quickJoinBtn = document.getElementById("quick-join-btn");
-    if (quickJoinBtn) {
-      quickJoinBtn.addEventListener("click", () => {
-        this.quickJoinRoom();
-      });
-    }
-
-    const browseRoomsBtn = document.getElementById("browse-rooms-btn");
-    if (browseRoomsBtn) {
-      browseRoomsBtn.addEventListener("click", () => {
-        this.toggleRoomsList();
-      });
-    }
+    // Bottoni rimossi - non più necessari
   }
 
   /**
@@ -258,12 +246,15 @@ class ChatPage {
 
       // Carica anche da API REST come fallback
       const response = await fetch("/api/chat/rooms");
+      
       if (response.ok) {
         const rooms = await response.json();
         this.updateRoomsList(rooms);
+      } else {
+        console.error("❌ REST API error:", response.status, response.statusText);
       }
     } catch (error) {
-      console.error("Error loading rooms:", error);
+      console.error("❌ Error loading rooms:", error);
     }
   }
 
@@ -273,27 +264,30 @@ class ChatPage {
    */
   updateRoomsList(rooms) {
     const roomsList = document.getElementById("rooms-list");
-    if (!roomsList) return;
+    if (!roomsList) {
+      console.error("❌ rooms-list element not found");
+      return;
+    }
 
     if (!rooms || rooms.length === 0) {
       roomsList.innerHTML = `
         <div class="text-center py-4">
-          <i class="bi bi-chat-square-text text-muted mb-2" style="font-size: 2rem;"></i>
-          <p class="text-muted mb-0">No active rooms</p>
-          <small class="text-muted">Create the first one!</small>
+          <i class="bi bi-chat-square-text text-primary mb-2" style="font-size: 2rem;"></i>
+          <p class="text-primary mb-0">No active rooms</p>
+          <small class="text-primary">Create the first one!</small>
         </div>
       `;
       return;
     }
 
     let html = "";
-    rooms.forEach((room) => {
-      this.availableRooms.set(room.name, room);
-      const isActive = this.currentRoom === room.name;
+    rooms.forEach((room, index) => {
+      this.availableRooms.set(room.roomName, room);
+      const isActive = this.currentRoom === room.roomName;
 
       html += `
-        <div class="room-item ${isActive ? "active" : ""}" data-room="${this.escapeHtml(room.name)}">
-          <div class="room-name">${this.escapeHtml(room.name)}</div>
+        <div class="room-item ${isActive ? "active" : ""}" data-room="${this.escapeHtml(room.roomName)}">
+          <div class="room-name">${this.escapeHtml(room.roomName)}</div>
           ${room.topic ? `<div class="room-topic">${this.escapeHtml(room.topic)}</div>` : ""}
           <div class="room-users-count">${room.userCount || 0}</div>
         </div>
@@ -679,28 +673,6 @@ class ChatPage {
     const messagesContainer = document.getElementById("messages-container");
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-  }
-
-  /**
-   * @method quickJoinRoom
-   * @description Join rapido a una stanza popolare
-   */
-  quickJoinRoom() {
-    const popularRooms = ["general", "movie-reviews", "cinema-discussion"];
-    const randomRoom =
-      popularRooms[Math.floor(Math.random() * popularRooms.length)];
-    this.joinRoom(randomRoom);
-  }
-
-  /**
-   * @method toggleRoomsList
-   * @description Toggle della visibilità della lista stanze
-   */
-  toggleRoomsList() {
-    const sidebar = document.querySelector(".chat-sidebar");
-    if (sidebar) {
-      sidebar.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
