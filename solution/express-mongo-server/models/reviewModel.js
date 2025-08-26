@@ -393,7 +393,12 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$positiveScoreReviews", "$totalReviewsWithScore"] },
+                      {
+                        $divide: [
+                          "$positiveScoreReviews",
+                          "$totalReviewsWithScore",
+                        ],
+                      },
                       100,
                     ],
                   },
@@ -411,7 +416,12 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$negativeScoreReviews", "$totalReviewsWithScore"] },
+                      {
+                        $divide: [
+                          "$negativeScoreReviews",
+                          "$totalReviewsWithScore",
+                        ],
+                      },
                       100,
                     ],
                   },
@@ -429,7 +439,9 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
                 $round: [
                   {
                     $multiply: [
-                      { $divide: ["$topCriticsCount", "$totalReviewsWithScore"] },
+                      {
+                        $divide: ["$topCriticsCount", "$totalReviewsWithScore"],
+                      },
                       100,
                     ],
                   },
@@ -448,7 +460,8 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
       this.aggregate(statsPipeline),
     ]);
 
-    const totalReviews = totalResult.length > 0 ? totalResult[0].totalReviews : 0;
+    const totalReviews =
+      totalResult.length > 0 ? totalResult[0].totalReviews : 0;
     const stats = statsResult.length > 0 ? statsResult[0] : null;
 
     if (stats) {

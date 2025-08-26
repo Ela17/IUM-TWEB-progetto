@@ -18,8 +18,7 @@ const getChatPage = async (req, res, next) => {
     res.render("pages/chat", {
       title: "Cinema Chat",
       isChatPage: true,
-      serverUrl:
-        `http://${process.env.MAIN_SERVER_HOST || 'localhost'}:${process.env.MAIN_SERVER_PORT || 3000}`
+      serverUrl: `http://${process.env.MAIN_SERVER_HOST || "localhost"}:${process.env.MAIN_SERVER_PORT || 3000}`,
     });
   } catch (error) {
     next(error);
@@ -111,7 +110,8 @@ const getRoomsList = async (req, res, next) => {
     const endpoint = "/api/rooms/all";
     const roomsResponse = await proxyService.callOtherExpress(endpoint);
 
-    res.json(roomsResponse.data.data);
+    // Restituisce l'array delle stanze direttamente
+    res.json(roomsResponse.data.data.rooms);
   } catch (error) {
     console.error("❌ Error fetching room list:", error.message);
     next(error);

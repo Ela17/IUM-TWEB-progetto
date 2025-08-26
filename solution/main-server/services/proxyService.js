@@ -1,6 +1,6 @@
 /**
  * @fileoverview Servizio proxy per le chiamate HTTP ai microservizi esterni.
- * 
+ *
  * Modulo che gestisce le chiamate a Spring Boot e Other Express Server.
  * Agisce come livello di proxy centralizzato per la comunicazione tra servizi.
  */

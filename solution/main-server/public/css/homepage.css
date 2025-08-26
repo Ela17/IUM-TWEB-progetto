@@ -6,7 +6,11 @@
 /* HERO SECTION */
 
 .hero-section {
-  background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--cinema-dark-bg) 0%,
+    var(--cinema-accent) 100%
+  );
   color: white;
   padding: 4rem 0;
   margin: -2rem -15px 3rem -15px;
@@ -17,19 +21,28 @@
 }
 
 .hero-section::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -50%;
   width: 200%;
   height: 100%;
-  background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(212, 175, 55, 0.1),
+    transparent
+  );
   animation: shimmer 3s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .hero-section .display-3 {
@@ -108,13 +121,18 @@
 }
 
 .stats-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
   width: 200%;
   height: 200%;
-  background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
   animation: rotate 4s linear infinite;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -125,7 +143,9 @@
 }
 
 @keyframes rotate {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .stats-card:hover {
@@ -180,7 +200,7 @@
 }
 
 .display-5::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -10px;
   left: 50%;
@@ -199,24 +219,24 @@
     padding-top: 80px !important;
     margin: -1rem -15px 2rem -15px;
   }
-  
+
   .hero-section .display-3 {
     font-size: 2.5rem;
   }
-  
+
   .stats-card {
     padding: 1.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .stats-card .display-6 {
     font-size: 2rem;
   }
-  
+
   .movie-card .card-body {
     padding: 1.5rem;
   }
-  
+
   .feature-icon {
     font-size: 2.5rem !important;
   }
@@ -227,30 +247,30 @@
     padding: 2rem 0;
     padding-top: 70px !important;
   }
-  
+
   .hero-section .display-3 {
     font-size: 2rem;
   }
-  
+
   .hero-section .lead {
     font-size: 1.1rem;
   }
-  
+
   .hero-section .btn {
     display: block;
     width: 80%;
     max-width: 250px;
     margin: 0.75rem auto;
   }
-  
+
   .stats-card .display-6 {
     font-size: 1.8rem;
   }
-  
+
   .stats-card h5 {
     font-size: 1rem;
   }
-  
+
   .display-5::after {
     width: 60px;
     height: 2px;

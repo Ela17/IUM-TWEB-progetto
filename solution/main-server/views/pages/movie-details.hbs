@@ -1,7 +1,7 @@
-{{!-- 
+{{! 
   Pagina dettagli film di CinemaHub
   Mostra informazioni complete, cast, crew e recensioni
---}}
+}}
 
 <!-- Movie Hero Section -->
 <div class="movie-hero-section" id="movie-hero">
@@ -10,8 +10,13 @@
     <div class="row align-items-center">
       <div class="col-md-4 text-center">
         <div class="movie-poster-container">
-          <img id="movie-poster" src="" alt="" class="movie-poster img-fluid rounded shadow-lg" 
-              onerror="this.src='/images/no-image.svg'">
+          <img
+            id="movie-poster"
+            src=""
+            alt=""
+            class="movie-poster img-fluid rounded shadow-lg"
+            onerror="this.src='/images/no-image.svg'"
+          />
         </div>
       </div>
       <div class="col-md-8">
@@ -19,29 +24,43 @@
           <!-- Movie Title & Year -->
           <h1 class="display-4 fw-bold mb-2" id="movie-title">Loading...</h1>
           <p class="lead mb-3" id="movie-tagline"></p>
-          
+
           <!-- Movie Meta Info -->
-          <div class="movie-meta d-flex flex-wrap align-items-center gap-3 mb-4">
+          <div
+            class="movie-meta d-flex flex-wrap align-items-center gap-3 mb-4"
+          >
             <span class="movie-rating">
               <i class="bi bi-star-fill text-cinema-gold me-1"></i>
               <span id="movie-rating">N/A</span>
             </span>
             <span id="movie-year" class="text-light">Unknown</span>
             <span id="movie-duration" class="text-light"></span>
-            <span id="movie-genre" class="badge bg-cinema-gold text-dark"></span>
+            <span
+              id="movie-genre"
+              class="badge bg-cinema-gold text-dark"
+            ></span>
           </div>
 
           <!-- Action Buttons -->
           <div class="d-flex gap-3 mb-4">
-            <button class="btn btn-cinema-gold btn-lg hover-lift" id="start-discussion-btn">
+            <button
+              class="btn btn-cinema-gold btn-lg hover-lift"
+              id="start-discussion-btn"
+            >
               <i class="bi bi-chat-dots me-2"></i>
               Start Discussion
             </button>
-            <button class="btn btn-outline-light btn-lg hover-lift" id="share-movie-btn">
+            <button
+              class="btn btn-outline-light btn-lg hover-lift"
+              id="share-movie-btn"
+            >
               <i class="bi bi-share me-2"></i>
               Share Movie
             </button>
-            <button class="btn btn-outline-light btn-lg hover-lift" onclick="history.back()">
+            <button
+              class="btn btn-outline-light btn-lg hover-lift"
+              onclick="history.back()"
+            >
               <i class="bi bi-arrow-left me-2"></i>
               Back to Catalogue
             </button>
@@ -54,7 +73,7 @@
 
 <!-- Main Content -->
 <div class="container mt-5">
-  
+
   <!-- Movie Overview -->
   <div class="row mb-5">
     <div class="col-12">
@@ -95,7 +114,10 @@
         <div class="card-body">
           <div id="countries-container">
             <div class="text-center py-2">
-              <div class="spinner-border spinner-border-sm text-cinema-gold" role="status"></div>
+              <div
+                class="spinner-border spinner-border-sm text-cinema-gold"
+                role="status"
+              ></div>
             </div>
           </div>
         </div>
@@ -113,7 +135,10 @@
         <div class="card-body">
           <div id="releases-container">
             <div class="text-center py-2">
-              <div class="spinner-border spinner-border-sm text-cinema-gold" role="status"></div>
+              <div
+                class="spinner-border spinner-border-sm text-cinema-gold"
+                role="status"
+              ></div>
             </div>
           </div>
         </div>
@@ -158,12 +183,17 @@
     <!-- Reviews Summary -->
     <div class="col-md-8 mb-4">
       <div class="card theme-card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
           <h5 class="mb-0">
             <i class="bi bi-chat-left-quote me-2 text-cinema-gold"></i>
             Recent Reviews
           </h5>
-          <button class="btn btn-sm btn-outline-cinema-gold" id="load-more-reviews">
+          <button
+            class="btn btn-sm btn-outline-cinema-gold"
+            id="load-more-reviews"
+          >
             <i class="bi bi-arrow-down me-1"></i>
             Load More
           </button>
@@ -186,8 +216,13 @@
 <div class="container">
   <div id="error-state" class="alert alert-danger d-none" role="alert">
     <i class="bi bi-exclamation-triangle me-2"></i>
-    <strong>Error loading movie:</strong> <span id="error-message"></span>
-    <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="location.reload()">
+    <strong>Error loading movie:</strong>
+    <span id="error-message"></span>
+    <button
+      type="button"
+      class="btn btn-outline-danger btn-sm ms-2"
+      onclick="location.reload()"
+    >
       <i class="bi bi-arrow-clockwise me-1"></i>
       Try Again
     </button>

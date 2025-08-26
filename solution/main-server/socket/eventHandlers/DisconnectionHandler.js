@@ -29,9 +29,7 @@ class DisconnectionHandler {
   handleDisconnection(clientSocket, reason) {
     console.log(`🔌 Disconnection ${clientSocket.id}, reason: ${reason}`);
 
-    const userProfile = usersMetadataManager.getUserProfile(
-      clientSocket.id,
-    );
+    const userProfile = usersMetadataManager.getUserProfile(clientSocket.id);
 
     if (userProfile) {
       console.log(`👋 User ${userProfile.userName} disconnecting...`);
@@ -55,9 +53,7 @@ class DisconnectionHandler {
   handleConnectionError(clientSocket, error) {
     console.error(`❌ Connection error for ${clientSocket.id}:`, error.message);
 
-    const userProfile = usersMetadataManager.getUserProfile(
-      clientSocket.id,
-    );
+    const userProfile = usersMetadataManager.getUserProfile(clientSocket.id);
 
     if (userProfile) {
       usersMetadataManager.removeUser(clientSocket.id);

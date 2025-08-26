@@ -1,15 +1,18 @@
 <!-- Contenuto principale dell'errore -->
 <div class="container">
   <div class="text-center py-5 error-page-container">
-    
+
     <!-- Icona di errore basata sul tipo di status -->
     <div class="mb-4">
-      <i class="bi bi-exclamation-circle-fill text-cinema-gold" style="font-size: 6rem;"></i>
+      <i
+        class="bi bi-exclamation-circle-fill text-cinema-gold"
+        style="font-size: 6rem;"
+      ></i>
     </div>
-    
+
     <!-- Codice di errore -->
     <h1 class="display-1 fw-bold text-cinema-gold mb-3">{{status}}</h1>
-    
+
     <!-- Titolo dell'errore -->
     <h2 class="h2 fw-bold mb-3 text-primary">
       {{#if title}}
@@ -18,27 +21,30 @@
         Oops! Something went wrong
       {{/if}}
     </h2>
-    
+
     <!-- Messaggio di errore -->
     <p class="lead mb-4 text-secondary mx-auto" style="max-width: 600px;">
       {{#if message}}
         {{message}}
       {{else}}
-        An unexpected error occurred while processing your request. 
-        Please try again or contact support if the problem persists.
+        An unexpected error occurred while processing your request. Please try
+        again or contact support if the problem persists.
       {{/if}}
     </p>
-    
+
     <!-- Azioni principali -->
     <div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
       <a href="/" class="btn btn-cinema-gold btn-lg hover-lift">
         <i class="bi bi-house me-2"></i>Go Home
       </a>
-      <button onclick="history.back()" class="btn btn-outline-primary btn-lg hover-lift">
+      <button
+        onclick="history.back()"
+        class="btn btn-outline-primary btn-lg hover-lift"
+      >
         <i class="bi bi-arrow-left me-2"></i>Go Back
       </button>
     </div>
-    
+
     <!-- Suggerimenti -->
     <div class="mt-4">
       <p class="text-secondary mb-3">You can also try:</p>
@@ -52,28 +58,22 @@
         <a href="/api-docs" class="btn btn-sm btn-outline-secondary hover-lift">
           <i class="bi bi-book me-1"></i>API Docs
         </a>
-        <button onclick="location.reload()" class="btn btn-sm btn-outline-secondary hover-lift">
+        <button
+          onclick="location.reload()"
+          class="btn btn-sm btn-outline-secondary hover-lift"
+        >
           <i class="bi bi-arrow-clockwise me-1"></i>Refresh Page
         </button>
       </div>
     </div>
-    
+
   </div>
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎬 Error page loaded');
-    
-    console.error('Error Page loaded at:', new Date().toISOString());
-
-    if (window.cinemaHub) {
-      setTimeout(() => {
-        window.cinemaHub.showNotification(
-          'Page not found - redirecting options available', 
-          'info'
-        );
-      }, 1000);
-    }
-  });
+  document.addEventListener('DOMContentLoaded', function() { console.log('🎬
+  Error page loaded'); console.error('Error Page loaded at:', new
+  Date().toISOString()); if (window.cinemaHub) { setTimeout(() => {
+  window.cinemaHub.showNotification( 'Page not found - redirecting options
+  available', 'info' ); }, 1000); } });
 </script>

@@ -1,5 +1,4 @@
 function standardErrorHandler(err, req, res, next) {
-
   let statusCode = err.status || err.statusCode || 500;
   let userMessage = "Si è verificato un errore interno del server";
   let errorMessage = err.message || null;
@@ -7,32 +6,33 @@ function standardErrorHandler(err, req, res, next) {
   let additionalDetails = err.additionalDetails || null;
   let logLevel = "error";
 
-  if (err.name === "ValidationError" || (typeof err.code === 'string' && err.code.startsWith("VALIDATION_"))) {
-
+  if (
+    err.name === "ValidationError" ||
+    (typeof err.code === "string" && err.code.startsWith("VALIDATION_"))
+  ) {
     statusCode = 400;
-    userMessage = "Errore di validazione"
+    userMessage = "Errore di validazione";
     errorCode = err.code || "VALIDATION_ERROR";
     logLevel = "warn";
-
   } else if (
     err.code === "ECONNREFUSED" ||
-    (typeof err.code === 'string' && err.code?.includes("SERVICE_UNAVAILABLE"))
+    (typeof err.code === "string" && err.code?.includes("SERVICE_UNAVAILABLE"))
   ) {
-
     // Errori di servizi esterni: problemi con microservizi o database
 
     statusCode = 503;
     userMessage = "Il servizio è temporaneamente non disponibile.";
     errorCode = err.code || "SERVICE_UNAVAILABLE";
     logLevel = "error";
-
-  } else if (err.status === 404 || (typeof err.code === 'string' && err.code?.includes("NOT_FOUND"))) {
+  } else if (
+    err.status === 404 ||
+    (typeof err.code === "string" && err.code?.includes("NOT_FOUND"))
+  ) {
     // Risorsa non trovata: l'ID richiesto non esiste
     statusCode = 404;
     userMessage = "La risorsa richiesta non è stata trovata.";
     errorCode = err.code || "RESOURCE_NOT_FOUND";
     logLevel = "info";
-
   } else if (err.status && err.status >= 400 && err.status < 500) {
     // Altri errori client: mantieni il status code originale se ragionevole
     statusCode = err.status;
@@ -42,7 +42,6 @@ function standardErrorHandler(err, req, res, next) {
   }
 
   const logEntry = {
-
     metadata: {
       timestamp: new Date().toISOString(),
       level: logLevel,
@@ -53,10 +52,10 @@ function standardErrorHandler(err, req, res, next) {
       statusCode: statusCode,
       errorMessage: errorMessage,
       userMessage: userMessage,
-      code: errorCode
+      code: errorCode,
     },
     additionalDetails: { ...additionalDetails },
-    stack: err.stack?.split("\n")
+    stack: err.stack?.split("\n"),
   };
 
   if (logLevel === "error") {

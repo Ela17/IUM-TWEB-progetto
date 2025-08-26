@@ -30,14 +30,19 @@ class UserCountHandler {
      * Listener per l'evento 'request_user_count'
      * Il client può richiedere il conteggio corrente degli utenti online
      */
-    clientSocket.on('request_user_count', () => {
+    clientSocket.on("request_user_count", () => {
       try {
         const currentCount = usersMetadataManager.getCurrentConnections();
-        console.log(`📊 User count requested by ${clientSocket.id}: ${currentCount}`);
-        
-        clientSocket.emit('user_count_update', currentCount);
+        console.log(
+          `📊 User count requested by ${clientSocket.id}: ${currentCount}`,
+        );
+
+        clientSocket.emit("user_count_update", currentCount);
       } catch (error) {
-        console.error(`❌ Error handling user count request from ${clientSocket.id}:`, error);
+        console.error(
+          `❌ Error handling user count request from ${clientSocket.id}:`,
+          error,
+        );
         errorSocketHandler.emitAndLogError(error);
       }
     });
@@ -51,12 +56,12 @@ class UserCountHandler {
   broadcastUserCount() {
     try {
       const currentCount = usersMetadataManager.getCurrentConnections();
-      
+
       console.log(`📡 Broadcasting user count update: ${currentCount}`);
 
-      this.io.emit('user_count_update', currentCount);
+      this.io.emit("user_count_update", currentCount);
     } catch (error) {
-      console.error('❌ Error broadcasting user count:', error);
+      console.error("❌ Error broadcasting user count:", error);
     }
   }
 
@@ -64,18 +69,23 @@ class UserCountHandler {
    * @method sendUserCountToClient
    * @description Invia il conteggio utenti corrente a un client specifico.
    * Utile per inviare il dato iniziale quando un utente si connette.
-   * 
+   *
    * @param {Socket} clientSocket - La socket del client a cui inviare il conteggio
    */
   sendUserCountToClient(clientSocket) {
     try {
       const currentCount = usersMetadataManager.getCurrentConnections();
-      
-      console.log(`📤 Sending user count to ${clientSocket.id}: ${currentCount}`);
-      
-      clientSocket.emit('user_count_update', currentCount);
+
+      console.log(
+        `📤 Sending user count to ${clientSocket.id}: ${currentCount}`,
+      );
+
+      clientSocket.emit("user_count_update", currentCount);
     } catch (error) {
-      console.error(`❌ Error sending user count to ${clientSocket.id}:`, error);
+      console.error(
+        `❌ Error sending user count to ${clientSocket.id}:`,
+        error,
+      );
     }
   }
 
@@ -83,14 +93,14 @@ class UserCountHandler {
    * @method getUserStats
    * @description Recupera le statistiche complete degli utenti.
    * Include sia le connessioni correnti che quelle totali.
-   * 
+   *
    * @returns {Object} Oggetto con le statistiche degli utenti
    */
   getUserStats() {
     return {
       currentConnections: usersMetadataManager.getCurrentConnections(),
       totalConnectionsEver: usersMetadataManager.getTotalConnectionsEver(),
-      activeRooms: usersMetadataManager.getActiveUsersPerRoom()
+      activeRooms: usersMetadataManager.getActiveUsersPerRoom(),
     };
   }
 }

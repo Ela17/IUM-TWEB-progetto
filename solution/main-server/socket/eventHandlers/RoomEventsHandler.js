@@ -4,6 +4,7 @@ const {
   ROOM_EVENTS,
   CHAT_ERROR_CODES,
 } = require("../constants/socketConstants");
+const proxyService = require("../../services/proxyService");
 
 /**
  * @class RoomEventsHandler
@@ -33,14 +34,33 @@ class RoomEventsHandler {
      * @param {string} data.userName - Il nome dell'utente che crea la stanza.
      * @param {string} data.topic - L'argomento o la descrizione della stanza.
      */
-    clientSocket.on(SOCKET_ROOM_EVENTS.CREATE_ROOM, (data) => {
+    clientSocket.on(SOCKET_ROOM_EVENTS.CREATE_ROOM, async (data) => {
       try {
-        console.log(data);
         const { roomName, userName, topic } = data;
-        /* TODO: DA METTERE UN CONTROLLO SE LA STANZA è GIA PRESENTE!!! */
-        console.log(
-          `🎬 ${userName} (${clientSocket.id}) creates room: ${roomName}`,
-        );
+
+        // Salva la stanza nel database del server Express-MongoDB
+        try {
+          const roomData = {
+            roomName: roomName,
+            description: topic || `Chat room for ${roomName}`,
+            maxUsers: 50,
+            createdAt: new Date().toISOString(),
+            lastActivity: new Date().toISOString(),
+            isActive: true,
+          };
+
+          const endpoint = "/api/rooms";
+          const response = await proxyService.callOtherExpress(
+            endpoint,
+            "POST",
+            roomData,
+          );
+        } catch (dbError) {
+          console.warn(
+            `⚠️ Failed to save room to database: ${dbError.message}`,
+          );
+          // Continua comunque con la creazione della stanza in memoria
+        }
 
         clientSocket.join(roomName);
         usersMetadataManager.updateCurrentRoom(
@@ -51,6 +71,15 @@ class RoomEventsHandler {
 
         // Emette una conferma al client che ha creato la stanza
         clientSocket.emit(SOCKET_ROOM_EVENTS.ROOM_CREATED, {
+          success: true,
+          roomName: roomName,
+          message: `Room "${roomName}" created successfully!`,
+          topic: topic,
+          timestamp: new Date().toISOString(),
+        });
+
+        // Emette anche l'evento specifico per la chat
+        clientSocket.emit("room_creation_result_chat", {
           success: true,
           roomName: roomName,
           message: `Room "${roomName}" created successfully!`,
@@ -75,13 +104,25 @@ class RoomEventsHandler {
      * @param {string} data.roomName - Il nome della stanza a cui unirsi.
      * @param {string} data.userName - Il nome dell'utente che si unisce.
      */
-    clientSocket.on(SOCKET_ROOM_EVENTS.JOIN_ROOM, (data) => {
+    clientSocket.on(SOCKET_ROOM_EVENTS.JOIN_ROOM, async (data) => {
       try {
         console.log(
           `📥 ${SOCKET_ROOM_EVENTS.JOIN_ROOM} from ${clientSocket.id}`,
         );
 
         const { roomName, userName } = data;
+
+        // Aggiorna l'attività della stanza nel database
+        try {
+          const endpoint = `/api/rooms/${encodeURIComponent(roomName)}`;
+          await proxyService.callOtherExpress(endpoint, "PUT", {
+            lastActivity: new Date().toISOString(),
+          });
+          console.log(`✅ Updated activity for room: ${roomName}`);
+        } catch (dbError) {
+          console.warn(`⚠️ Failed to update room activity: ${dbError.message}`);
+          // Continua comunque con l'unione alla stanza
+        }
 
         clientSocket.join(roomName);
         usersMetadataManager.updateCurrentRoom(
@@ -94,6 +135,15 @@ class RoomEventsHandler {
         clientSocket.emit(SOCKET_ROOM_EVENTS.ROOM_JOINED, {
           roomName: roomName,
           message: `You joined room: ${roomName}`,
+          timestamp: new Date().toISOString(),
+        });
+
+        // Emette anche l'evento specifico per la chat
+        clientSocket.emit("room_joined_chat", {
+          success: true,
+          roomName: roomName,
+          message: `Successfully joined room "${roomName}"!`,
+          topic: `Chat room for ${roomName}`,
           timestamp: new Date().toISOString(),
         });
 
@@ -151,6 +201,61 @@ class RoomEventsHandler {
 
         errorSocketHandler.emitAndLogError(error);
       }
+    });
+
+    /**
+     * Listener per l'evento `SOCKET_ROOM_EVENTS.GET_ROOMS_LIST`.
+     * Chiamato quando un client richiede la lista delle stanze disponibili.
+     * Recupera la lista dal server Express-MongoDB e la invia al client.
+     * @event SOCKET_ROOM_EVENTS.GET_ROOMS_LIST
+     */
+    clientSocket.on(SOCKET_ROOM_EVENTS.GET_ROOMS_LIST, async () => {
+      try {
+        console.log(`📋 Client ${clientSocket.id} requesting rooms list`);
+
+        // Chiama l'API del server Express-MongoDB per ottenere la lista delle stanze
+        const endpoint = "/api/rooms/all";
+        const roomsResponse = await proxyService.callOtherExpress(endpoint);
+
+        if (roomsResponse && roomsResponse.data && roomsResponse.data.data) {
+          const rooms = roomsResponse.data.data.rooms || [];
+
+          // Invia la lista delle stanze al client
+          clientSocket.emit(SOCKET_ROOM_EVENTS.ROOM_LIST, rooms);
+          console.log(
+            `✅ Sent ${rooms.length} rooms to client ${clientSocket.id}`,
+          );
+        } else {
+          console.warn(
+            `⚠️ No rooms data received for client ${clientSocket.id}`,
+          );
+          clientSocket.emit(SOCKET_ROOM_EVENTS.ROOM_LIST, []);
+        }
+      } catch (error) {
+        console.error(
+          `❌ Error fetching rooms list for client ${clientSocket.id}:`,
+          error.message,
+        );
+
+        // Invia lista vuota in caso di errore
+        clientSocket.emit(SOCKET_ROOM_EVENTS.ROOM_LIST, []);
+
+        error.socket = clientSocket;
+        error.event = SOCKET_ROOM_EVENTS.GET_ROOMS_LIST;
+        error.code = CHAT_ERROR_CODES.VALIDATION_ERROR_ROOM_DATA;
+        errorSocketHandler.emitAndLogError(error);
+      }
+    });
+
+    /**
+     * Listener per l'evento `connect_chat`.
+     * Chiamato quando la pagina chat si connette e vuole essere notificata della connessione.
+     * @event connect_chat
+     */
+    clientSocket.on("connect_chat", () => {
+      console.log(`🔌 Chat page connected for client ${clientSocket.id}`);
+      // Emette l'evento connect_chat per notificare la pagina chat
+      clientSocket.emit("connect_chat");
     });
   }
 }

@@ -1,7 +1,7 @@
 const getRoomEventsHandler = require("./eventHandlers/RoomEventsHandler");
 const getMessageEventsHandler = require("./eventHandlers/MessageEventsHandler");
 const getUserCountHandler = require("./eventHandlers/UserCountHandler");
-const usersMetadataManager = require("./utils/UsersMetadataManager")
+const usersMetadataManager = require("./utils/UsersMetadataManager");
 const disconnectionHandler = require("./eventHandlers/DisconnectionHandler");
 
 /**
@@ -18,11 +18,7 @@ const disconnectionHandler = require("./eventHandlers/DisconnectionHandler");
  * @param {Server} io - L'istanza Socket.IO globale
  * @throws {Error} Rilancia eventuali errori incontrati durante la configurazione iniziale per la gestione centralizzata.
  */
-function setupClientSocket(
-  clientSocket,
-  io,
-  errorSocketHandler,
-) {
+function setupClientSocket(clientSocket, io, errorSocketHandler) {
   const roomEventsHandler = getRoomEventsHandler(io);
   const messageEventsHandler = getMessageEventsHandler(io);
   const userCountHandler = getUserCountHandler(io);

@@ -24,7 +24,7 @@ const app = express();
 
 app.set("views", path.join(__dirname, "views"));
 const { engine } = require("express-handlebars");
-const layouts = require('handlebars-layouts');
+const layouts = require("handlebars-layouts");
 app.engine(
   "hbs",
   engine({
@@ -46,11 +46,11 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/", indexRouter);      // Pagine HTML
-app.use("/", healthRouter);     // Health check
-app.use("/api", moviesRouter);  // API movies
+app.use("/", indexRouter); // Pagine HTML
+app.use("/", healthRouter); // Health check
+app.use("/api", moviesRouter); // API movies
 app.use("/api/chat", chatRouter); // API chat
-app.use("/chat", chatRouter);    // HTML chat page
+app.use("/chat", chatRouter); // HTML chat page
 
 app.use(function (req, res, next) {
   const error = new Error("Not Found");

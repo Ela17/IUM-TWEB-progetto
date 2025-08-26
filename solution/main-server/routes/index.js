@@ -13,10 +13,10 @@ const router = express.Router();
  *         description: Homepage servita con successo
  */
 router.get("/", function (req, res, next) {
-  res.render("pages/index", { 
+  res.render("pages/index", {
     title: "CinemaHub - Your Cinema Data Hub",
     currentPage: "home",
-    isHomepage: true
+    isHomepage: true,
   });
 });
 
@@ -32,11 +32,11 @@ router.get("/", function (req, res, next) {
  *         description: Pagina catalogo servita con successo
  */
 router.get("/movies", function (req, res, next) {
-  res.render("pages/movies", { 
+  res.render("pages/movies", {
     title: "Movies Catalogue - CinemaHub",
     description: "Discover amazing movies from our curated collections",
     currentPage: "movies",
-    isMoviesPage: true
+    isMoviesPage: true,
   });
 });
 
@@ -57,10 +57,10 @@ router.get("/movies", function (req, res, next) {
  *         description: Pagina dettagli film servita con successo
  */
 router.get("/movies/:movieId", function (req, res, next) {
-  res.render("pages/movie-details", { 
+  res.render("pages/movie-details", {
     title: "Movie Details - CinemaHub",
     currentPage: "movies",
-    isMovieDetailsPage: true
+    isMovieDetailsPage: true,
   });
 });
 

@@ -7,8 +7,9 @@ const mongoose = require("mongoose");
 const { DATABASE_CONFIG } = require("../config/constants");
 
 // Configurazione database
-const mongoDB = process.env.MONGODB_URI || 
-  `mongodb://localhost:27017/${process.env.DB_NAME || 'cinema_db'}`
+const mongoDB =
+  process.env.MONGODB_URI ||
+  `mongodb://localhost:27017/${process.env.DB_NAME || "cinema_db"}`;
 
 mongoose.Promise = global.Promise;
 
@@ -24,7 +25,9 @@ async function connect() {
     });
 
     console.log("✅ MongoDB connection successful!");
-    console.log(`🔗 Connected to database: ${mongoose.connection.db.databaseName}`);
+    console.log(
+      `🔗 Connected to database: ${mongoose.connection.db.databaseName}`,
+    );
 
     // Gestione eventi di connessione
     mongoose.connection.on("error", (err) => {
@@ -57,19 +60,19 @@ async function disconnect() {
   }
 }
 
-process.on('SIGINT', async () => {
-  console.log('\n🛑 Shutting down database connection...');
+process.on("SIGINT", async () => {
+  console.log("\n🛑 Shutting down database connection...");
   await disconnect();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
-  console.log('\n🛑 Received SIGTERM, shutting down database...');
+process.on("SIGTERM", async () => {
+  console.log("\n🛑 Received SIGTERM, shutting down database...");
   await disconnect();
   process.exit(0);
 });
 
 module.exports = {
   connect,
-  disconnect
+  disconnect,
 };

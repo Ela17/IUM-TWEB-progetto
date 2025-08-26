@@ -40,12 +40,12 @@ exports.getReviewsByMovieId = async function (req, res, next) {
       page: page,
       limit: VALIDATION_LIMITS.DEFAULT_PAGE_SIZE,
       sortBy: sortBy,
-      sortOrder: orderBy
+      sortOrder: orderBy,
     };
 
     const reviewsById = await reviewModel.getReviewsByMovieId(
       movieId,
-      pagination
+      pagination,
     );
 
     if (reviewsById.reviews.length === 0) {
@@ -57,7 +57,7 @@ exports.getReviewsByMovieId = async function (req, res, next) {
           reviews: [],
           count: 0,
         },
-        error: null
+        error: null,
       });
     }
 
@@ -73,9 +73,9 @@ exports.getReviewsByMovieId = async function (req, res, next) {
           hasPrev: pagination.page > 1,
         },
         count: reviewsById.reviews.length,
-        message: `${reviewsById.reviews.length} reviews found`
+        message: `${reviewsById.reviews.length} reviews found`,
       },
-      error: null
+      error: null,
     });
   } catch (error) {
     next(error);
@@ -116,9 +116,9 @@ exports.getMovieReviewStats = async function (req, res, next) {
             negativePercentage: null,
             publisherCount: 0,
             reviewTypeDistribution: {},
-          }
+          },
         },
-        error: null
+        error: null,
       });
     }
 
@@ -130,7 +130,7 @@ exports.getMovieReviewStats = async function (req, res, next) {
         message: `statistics calculated from ${stats.totalReviews} reviews`,
         stats: stats,
       },
-      error: null
+      error: null,
     });
   } catch (error) {
     next(error);

@@ -37,10 +37,7 @@ router.get("/", chatController.getChatPage);
  *       404:
  *         description: Stanza non trovata.
  */
-router.get(
-  "/messages/:roomName",
-  chatController.getChatHistory,
-);
+router.get("/messages/:roomName", chatController.getChatHistory);
 
 /**
  * @swagger

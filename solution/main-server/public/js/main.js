@@ -5,7 +5,7 @@
 
 /**
  * @class CinemaHub
- * @description Gestisce tutta l'interattività del lato client, inclusa la ricerca, 
+ * @description Gestisce tutta l'interattività del lato client, inclusa la ricerca,
  * la gestione dei socket e le interazioni con l'interfaccia utente.
  */
 class CinemaHub {
@@ -15,7 +15,7 @@ class CinemaHub {
     this.onlineUsers = 0;
     this.searchCache = new Map();
     this.searchHistory = [];
-    
+
     this.init();
   }
 
@@ -24,14 +24,14 @@ class CinemaHub {
    * @description Metodo principale di inizializzazione che avvia tutti i componenti.
    */
   init() {
-    console.log('🎬 Initializing CinemaHub...');
-    
+    console.log("🎬 Initializing CinemaHub...");
+
     this.setupEventListeners();
     this.initializeSearch();
     this.initializeSocket();
     this.initializeThemeManager();
-    
-    console.log('✅ CinemaHub initialized successfully');
+
+    console.log("✅ CinemaHub initialized successfully");
   }
 
   // ======================
@@ -44,7 +44,7 @@ class CinemaHub {
    */
   initializeThemeManager() {
     this.themeManager = new ThemeManager();
-    console.log('🎨 Theme manager initialized');
+    console.log("🎨 Theme manager initialized");
   }
 
   /**
@@ -52,7 +52,7 @@ class CinemaHub {
    * @returns {string} Il tema corrente ('light' o 'dark').
    */
   getCurrentTheme() {
-    return this.themeManager ? this.themeManager.getCurrentTheme() : 'light';
+    return this.themeManager ? this.themeManager.getCurrentTheme() : "light";
   }
 
   /**
@@ -75,43 +75,45 @@ class CinemaHub {
    */
   setupEventListeners() {
     // Invio del form di ricerca
-    const searchForm = document.getElementById('quick-search');
+    const searchForm = document.getElementById("quick-search");
     if (searchForm) {
-      searchForm.addEventListener('submit', (e) => {
+      searchForm.addEventListener("submit", (e) => {
         e.preventDefault();
         this.performQuickSearch();
       });
     }
 
     // Input di ricerca in tempo reale
-    const searchInput = document.getElementById('search-input');
+    const searchInput = document.getElementById("search-input");
     if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
+      searchInput.addEventListener("input", (e) => {
         this.handleSearchInput(e.target.value);
       });
 
       // Nasconde risultati quando si clicca fuori
-      document.addEventListener('click', (e) => {
-        const searchResults = document.getElementById('search-results');
-        if (!searchInput.contains(e.target) && 
-            (!searchResults || !searchResults.contains(e.target))) {
+      document.addEventListener("click", (e) => {
+        const searchResults = document.getElementById("search-results");
+        if (
+          !searchInput.contains(e.target) &&
+          (!searchResults || !searchResults.contains(e.target))
+        ) {
           this.hideSearchResults();
         }
       });
 
       // Navigazione con tastiera
-      searchInput.addEventListener('keydown', (e) => {
+      searchInput.addEventListener("keydown", (e) => {
         this.handleSearchKeyNavigation(e);
       });
     }
 
     // Navbar scroll effect
-    window.addEventListener('scroll', () => {
+    window.addEventListener("scroll", () => {
       this.handleNavbarScroll();
     });
 
     // Visibilità pagina per socket
-    document.addEventListener('visibilitychange', () => {
+    document.addEventListener("visibilitychange", () => {
       this.handleVisibilityChange();
     });
   }
@@ -126,7 +128,9 @@ class CinemaHub {
    */
   initializeSearch() {
     this.searchCache = new Map();
-    this.searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+    this.searchHistory = JSON.parse(
+      localStorage.getItem("searchHistory") || "[]",
+    );
     this.selectedSearchIndex = -1;
   }
 
@@ -136,7 +140,7 @@ class CinemaHub {
    */
   handleSearchInput(query) {
     clearTimeout(this.searchTimeout);
-    
+
     if (query.length < 2) {
       this.hideSearchResults();
       return;
@@ -152,34 +156,37 @@ class CinemaHub {
    * @param {KeyboardEvent} e - L'evento di pressione del tasto.
    */
   handleSearchKeyNavigation(e) {
-    const searchResults = document.getElementById('search-results');
-    if (!searchResults || searchResults.classList.contains('d-none')) {
+    const searchResults = document.getElementById("search-results");
+    if (!searchResults || searchResults.classList.contains("d-none")) {
       return;
     }
 
-    const items = searchResults.querySelectorAll('.search-item');
-    
+    const items = searchResults.querySelectorAll(".search-item");
+
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        this.selectedSearchIndex = Math.min(this.selectedSearchIndex + 1, items.length - 1);
+        this.selectedSearchIndex = Math.min(
+          this.selectedSearchIndex + 1,
+          items.length - 1,
+        );
         this.updateSearchSelection(items);
         break;
-      
-      case 'ArrowUp':
+
+      case "ArrowUp":
         e.preventDefault();
         this.selectedSearchIndex = Math.max(this.selectedSearchIndex - 1, -1);
         this.updateSearchSelection(items);
         break;
-      
-      case 'Enter':
+
+      case "Enter":
         if (this.selectedSearchIndex >= 0 && items[this.selectedSearchIndex]) {
           e.preventDefault();
           items[this.selectedSearchIndex].click();
         }
         break;
-      
-      case 'Escape':
+
+      case "Escape":
         this.hideSearchResults();
         break;
     }
@@ -192,10 +199,10 @@ class CinemaHub {
   updateSearchSelection(items) {
     items.forEach((item, index) => {
       if (index === this.selectedSearchIndex) {
-        item.classList.add('active');
-        item.scrollIntoView({ block: 'nearest' });
+        item.classList.add("active");
+        item.scrollIntoView({ block: "nearest" });
       } else {
-        item.classList.remove('active');
+        item.classList.remove("active");
       }
     });
   }
@@ -214,23 +221,22 @@ class CinemaHub {
 
     try {
       this.showSearchLoading();
-      
+
       const response = await axios.get(`/api/movies/suggestions`, {
         params: { q: query },
-        timeout: 5000
+        timeout: 5000,
       });
 
       const results = {
         query: query,
-        movies: response.data || []
+        movies: response.data || [],
       };
 
       this.searchCache.set(query, results);
       this.displaySearchResults(results);
-      
     } catch (error) {
-      console.error('Search error:', error);
-      this.displaySearchError('Search failed. Please try again.');
+      console.error("Search error:", error);
+      this.displaySearchError("Search failed. Please try again.");
     } finally {
       this.hideSearchLoading();
     }
@@ -241,7 +247,7 @@ class CinemaHub {
    * @description Esegue una ricerca completa reindirizzando alla pagina dei risultati.
    */
   performQuickSearch() {
-    const query = document.getElementById('search-input').value.trim();
+    const query = document.getElementById("search-input").value.trim();
     if (query) {
       this.addToSearchHistory(query);
       window.location.href = `/movies?search=${encodeURIComponent(query)}`;
@@ -253,8 +259,8 @@ class CinemaHub {
    * @param {object} results - I risultati di ricerca.
    */
   displaySearchResults(results) {
-    const resultsContainer = document.getElementById('search-results');
-    
+    const resultsContainer = document.getElementById("search-results");
+
     if (!results || !results.movies?.length) {
       this.displaySearchEmpty();
       return;
@@ -264,28 +270,28 @@ class CinemaHub {
 
     let html = '<div class="search-results-content">';
     html += '<div class="search-category">';
-    html += '<h6>Movies</h6>';
-    
+    html += "<h6>Movies</h6>";
+
     results.movies.forEach((movie, index) => {
       html += `
         <a href="/movies/${movie.id}" class="search-item" data-index="${index}">
-          <img src="${movie.poster_url || '/images/no-image.svg'}" 
+          <img src="${movie.poster_url || "/images/no-image.svg"}" 
               alt="${this.escapeHtml(movie.name)}" 
               class="search-item-image"
               onerror="this.src='/images/no-image.svg'">
           <div class="search-item-info">
             <h6>${this.highlightSearchTerm(movie.name, results.query)}</h6>
             <small>
-              ${movie.year || 'Unknown year'} • 
-              <i class="bi bi-star-fill text-cinema-gold"></i> ${movie.rating || 'N/A'}
-              ${movie.duration ? ` • ${movie.duration}min` : ''}
+              ${movie.year || "Unknown year"} • 
+              <i class="bi bi-star-fill text-cinema-gold"></i> ${movie.rating || "N/A"}
+              ${movie.duration ? ` • ${movie.duration}min` : ""}
             </small>
           </div>
         </a>
       `;
     });
-    
-    html += '</div></div>';
+
+    html += "</div></div>";
 
     if (resultsContainer) {
       resultsContainer.innerHTML = html;
@@ -297,7 +303,7 @@ class CinemaHub {
    * @method displaySearchEmpty
    */
   displaySearchEmpty() {
-    const resultsContainer = document.getElementById('search-results');
+    const resultsContainer = document.getElementById("search-results");
     if (resultsContainer) {
       resultsContainer.innerHTML = `
         <div class="search-results-content text-center py-4">
@@ -315,7 +321,7 @@ class CinemaHub {
    * @param {string} message - Il messaggio di errore.
    */
   displaySearchError(message) {
-    const resultsContainer = document.getElementById('search-results');
+    const resultsContainer = document.getElementById("search-results");
     if (resultsContainer) {
       resultsContainer.innerHTML = `
         <div class="search-results-content text-center py-4">
@@ -334,7 +340,7 @@ class CinemaHub {
    * @method showSearchLoading
    */
   showSearchLoading() {
-    const resultsContainer = document.getElementById('search-results');
+    const resultsContainer = document.getElementById("search-results");
     if (resultsContainer) {
       resultsContainer.innerHTML = `
         <div class="search-results-content text-center py-4">
@@ -351,16 +357,16 @@ class CinemaHub {
   }
 
   showSearchResults() {
-    const resultsContainer = document.getElementById('search-results');
+    const resultsContainer = document.getElementById("search-results");
     if (resultsContainer) {
-      resultsContainer.classList.remove('d-none');
+      resultsContainer.classList.remove("d-none");
     }
   }
 
   hideSearchResults() {
-    const resultsContainer = document.getElementById('search-results');
+    const resultsContainer = document.getElementById("search-results");
     if (resultsContainer) {
-      resultsContainer.classList.add('d-none');
+      resultsContainer.classList.add("d-none");
     }
     this.selectedSearchIndex = -1;
   }
@@ -373,9 +379,9 @@ class CinemaHub {
    */
   highlightSearchTerm(text, term) {
     if (!term || !text) return this.escapeHtml(text);
-    
-    const regex = new RegExp(`(${this.escapeRegex(term)})`, 'gi');
-    return this.escapeHtml(text).replace(regex, '<mark>$1</mark>');
+
+    const regex = new RegExp(`(${this.escapeRegex(term)})`, "gi");
+    return this.escapeHtml(text).replace(regex, "<mark>$1</mark>");
   }
 
   /**
@@ -383,10 +389,10 @@ class CinemaHub {
    * @param {string} query - La query da aggiungere allo storico.
    */
   addToSearchHistory(query) {
-    this.searchHistory = this.searchHistory.filter(item => item !== query);
+    this.searchHistory = this.searchHistory.filter((item) => item !== query);
     this.searchHistory.unshift(query);
     this.searchHistory = this.searchHistory.slice(0, 10);
-    localStorage.setItem('searchHistory', JSON.stringify(this.searchHistory));
+    localStorage.setItem("searchHistory", JSON.stringify(this.searchHistory));
   }
 
   // ================
@@ -398,94 +404,95 @@ class CinemaHub {
    * @description Inizializza la connessione Socket.IO.
    */
   initializeSocket() {
-    if (typeof io === 'undefined') {
-      console.warn('Socket.IO not loaded, chat features disabled');
+    if (typeof io === "undefined") {
+      console.warn("Socket.IO not loaded, chat features disabled");
       return;
     }
 
     try {
       this.socket = io({
         timeout: 5000,
-        retries: 3
+        retries: 3,
       });
-      
-      this.socket.on('connect', () => {
-        console.log('✅ Connected to chat server');
+
+      this.socket.on("connect", () => {
+        console.log("✅ Connected to chat server");
         this.updateChatIndicator(true);
-        this.showNotification('Connected to live chat', 'success');
+        this.showNotification("Connected to live chat", "success");
 
-        this.socket.emit('request_user_count');
+        this.socket.emit("request_user_count");
       });
 
-      this.socket.on('disconnect', (reason) => {
-        console.log('❌ Disconnected from chat server:', reason);
+      this.socket.on("disconnect", (reason) => {
+        console.log("❌ Disconnected from chat server:", reason);
         this.updateChatIndicator(false);
-        
-        if (reason === 'io server disconnect') {
+
+        if (reason === "io server disconnect") {
           this.socket.connect();
         }
       });
 
-      this.socket.on('connect_error', (error) => {
-        console.error('Socket connection error:', error);
+      this.socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
         this.updateChatIndicator(false);
       });
 
-      this.socket.on('welcome', (data) => {
-        console.log('🎯 Welcome message received:', data);
+      this.socket.on("welcome", (data) => {
+        console.log("🎯 Welcome message received:", data);
         if (data.success) {
           this.currentUser = {
             userName: data.userName,
-            socketId: data.socketId
+            socketId: data.socketId,
           };
-          this.showNotification(`Welcome ${data.userName}!`, 'success');
+          this.showNotification(`Welcome ${data.userName}!`, "success");
         }
       });
 
-      this.socket.on('room_creation_result', (data) => {
+      this.socket.on("room_creation_result", (data) => {
         if (data.success) {
           console.log(`🎬 Room "${data.roomName}" created successfully`);
           this.currentRoom = data.roomName;
-          this.showNotification(`Room "${data.roomName}" created!`, 'success');
+          this.showNotification(`Room "${data.roomName}" created!`, "success");
         }
       });
 
-      this.socket.on('room_joined', (data) => {
+      this.socket.on("room_joined", (data) => {
         console.log(`🚪 Joined room: ${data.roomName}`);
         this.currentRoom = data.roomName;
-        this.showNotification(`Joined room: ${data.roomName}`, 'info');
+        this.showNotification(`Joined room: ${data.roomName}`, "info");
       });
 
-      this.socket.on('user_joined', (data) => {
+      this.socket.on("user_joined", (data) => {
         console.log(`👋 ${data.userName} joined ${data.roomName}`);
-        this.showNotification(`${data.userName} joined the room`, 'info');
+        this.showNotification(`${data.userName} joined the room`, "info");
       });
 
-      this.socket.on('user_left', (data) => {
+      this.socket.on("user_left", (data) => {
         console.log(`👋 ${data.userName} left ${data.roomName}`);
-        this.showNotification(`${data.userName} left the room`, 'info');
+        this.showNotification(`${data.userName} left the room`, "info");
       });
 
-      this.socket.on('room_message_received', (data) => {
-        console.log(`💬 Message in ${data.roomName} from ${data.userName}: ${data.message}`);
+      this.socket.on("room_message_received", (data) => {
+        console.log(
+          `💬 Message in ${data.roomName} from ${data.userName}: ${data.message}`,
+        );
         this.handleIncomingMessage(data);
       });
 
-      this.socket.on('error', (error) => {
-        console.error('Socket error:', error);
-        this.showNotification('Chat connection error', 'error');
+      this.socket.on("error", (error) => {
+        console.error("Socket error:", error);
+        this.showNotification("Chat connection error", "error");
       });
 
-      this.socket.on('user_count_update', (count) => {
+      this.socket.on("user_count_update", (count) => {
         this.updateOnlineUsersCount(count);
       });
 
-      this.socket.on('notification', (data) => {
-        this.showNotification(data.message, data.type || 'info');
+      this.socket.on("notification", (data) => {
+        this.showNotification(data.message, data.type || "info");
       });
-
     } catch (error) {
-      console.error('Socket initialization failed:', error);
+      console.error("Socket initialization failed:", error);
     }
   }
 
@@ -496,9 +503,9 @@ class CinemaHub {
    */
   joinRoom(roomName, userName) {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('join_room', {
+      this.socket.emit("join_room", {
         roomName: roomName,
-        userName: userName
+        userName: userName,
       });
     }
   }
@@ -509,12 +516,12 @@ class CinemaHub {
    * @param {string} userName - Nome utente
    * @param {string} topic - Argomento della stanza
    */
-  createRoom(roomName, userName, topic = '') {
+  createRoom(roomName, userName, topic = "") {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('create_room', {
+      this.socket.emit("create_room", {
         roomName: roomName,
         userName: userName,
-        topic: topic
+        topic: topic,
       });
     }
   }
@@ -526,9 +533,9 @@ class CinemaHub {
    */
   leaveRoom(roomName, userName) {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('leave_room', {
+      this.socket.emit("leave_room", {
         roomName: roomName,
-        userName: userName
+        userName: userName,
       });
       this.currentRoom = null;
     }
@@ -542,10 +549,10 @@ class CinemaHub {
    */
   sendMessage(roomName, userName, message) {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('room_message', {
+      this.socket.emit("room_message", {
         roomName: roomName,
         userName: userName,
-        message: message
+        message: message,
       });
     }
   }
@@ -555,16 +562,16 @@ class CinemaHub {
    * @param {boolean} connected - Stato della connessione.
    */
   updateChatIndicator(connected) {
-    const indicator = document.getElementById('chat-indicator');
+    const indicator = document.getElementById("chat-indicator");
     if (indicator) {
       if (connected) {
-        indicator.classList.add('text-success');
-        indicator.classList.remove('text-danger');
-        indicator.title = 'Chat online';
+        indicator.classList.add("text-success");
+        indicator.classList.remove("text-danger");
+        indicator.title = "Chat online";
       } else {
-        indicator.classList.add('text-danger');
-        indicator.classList.remove('text-success');
-        indicator.title = 'Chat offline';
+        indicator.classList.add("text-danger");
+        indicator.classList.remove("text-success");
+        indicator.title = "Chat offline";
       }
     }
   }
@@ -575,22 +582,22 @@ class CinemaHub {
    */
   updateOnlineUsersCount(count) {
     const counters = [
-      'navbar-online-users',
-      'home-online-users', 
-      'chat-online-users',
-      'footer-online-users'
+      "navbar-online-users",
+      "home-online-users",
+      "chat-online-users",
+      "footer-online-users",
     ];
 
-    counters.forEach(id => {
+    counters.forEach((id) => {
       const element = document.getElementById(id);
       if (element) {
         const prevCount = parseInt(element.textContent) || 0;
         element.textContent = count || 0;
-        
+
         if (count !== prevCount) {
-          element.style.animation = 'none';
+          element.style.animation = "none";
           element.offsetHeight;
-          element.style.animation = 'fadeIn 0.5s ease';
+          element.style.animation = "fadeIn 0.5s ease";
         }
       }
     });
@@ -605,21 +612,21 @@ class CinemaHub {
    * @description Gestisce l'effetto di scroll sulla navbar.
    */
   handleNavbarScroll() {
-    const navbar = document.querySelector('.navbar');
+    const navbar = document.querySelector(".navbar");
     if (!navbar) return;
-    
+
     if (window.scrollY > 50) {
-      navbar.classList.add('navbar-scrolled');
-      navbar.style.backdropFilter = 'blur(15px)';
-      
-      const isDark = this.getCurrentTheme() === 'dark';
-      navbar.style.backgroundColor = isDark 
-        ? 'rgba(20, 20, 20, 0.95)' 
-        : 'rgba(44, 62, 80, 0.95)';
+      navbar.classList.add("navbar-scrolled");
+      navbar.style.backdropFilter = "blur(15px)";
+
+      const isDark = this.getCurrentTheme() === "dark";
+      navbar.style.backgroundColor = isDark
+        ? "rgba(20, 20, 20, 0.95)"
+        : "rgba(44, 62, 80, 0.95)";
     } else {
-      navbar.classList.remove('navbar-scrolled');
-      navbar.style.backdropFilter = 'blur(10px)';
-      navbar.style.backgroundColor = '';
+      navbar.classList.remove("navbar-scrolled");
+      navbar.style.backdropFilter = "blur(10px)";
+      navbar.style.backgroundColor = "";
     }
   }
 
@@ -630,11 +637,11 @@ class CinemaHub {
   handleVisibilityChange() {
     if (document.hidden) {
       if (this.socket && this.socket.connected) {
-        this.socket.emit('user_inactive');
+        this.socket.emit("user_inactive");
       }
     } else {
       if (this.socket && this.socket.connected) {
-        this.socket.emit('user_active');
+        this.socket.emit("user_active");
       }
     }
   }
@@ -644,7 +651,7 @@ class CinemaHub {
    * @param {string} message - Il messaggio della notifica.
    * @param {string} [type='info'] - Il tipo di notifica.
    */
-  showNotification(message, type = 'info') {
+  showNotification(message, type = "info") {
     const toastHtml = `
       <div class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
@@ -656,24 +663,25 @@ class CinemaHub {
         </div>
       </div>
     `;
-    
-    let toastContainer = document.querySelector('.toast-container');
+
+    let toastContainer = document.querySelector(".toast-container");
     if (!toastContainer) {
-      toastContainer = document.createElement('div');
-      toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
-      toastContainer.style.zIndex = '1055';
+      toastContainer = document.createElement("div");
+      toastContainer.className =
+        "toast-container position-fixed top-0 end-0 p-3";
+      toastContainer.style.zIndex = "1055";
       document.body.appendChild(toastContainer);
     }
-    
-    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-    
+
+    toastContainer.insertAdjacentHTML("beforeend", toastHtml);
+
     const toastElement = toastContainer.lastElementChild;
     const toast = new bootstrap.Toast(toastElement, {
-      delay: type === 'error' ? 5000 : 3000
+      delay: type === "error" ? 5000 : 3000,
     });
     toast.show();
-    
-    toastElement.addEventListener('hidden.bs.toast', () => {
+
+    toastElement.addEventListener("hidden.bs.toast", () => {
       toastElement.remove();
     });
   }
@@ -685,12 +693,12 @@ class CinemaHub {
    */
   getIconForType(type) {
     const icons = {
-      'success': 'check-circle text-success',
-      'error': 'exclamation-circle text-danger',
-      'warning': 'exclamation-triangle text-warning',
-      'info': 'info-circle text-primary'
+      success: "check-circle text-success",
+      error: "exclamation-circle text-danger",
+      warning: "exclamation-triangle text-warning",
+      info: "info-circle text-primary",
     };
-    return icons[type] || 'info-circle text-primary';
+    return icons[type] || "info-circle text-primary";
   }
 
   // ======================
@@ -698,11 +706,11 @@ class CinemaHub {
   // ======================
 
   showLoading() {
-    let overlay = document.getElementById('loading-overlay');
+    let overlay = document.getElementById("loading-overlay");
     if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'loading-overlay';
-      overlay.className = 'loading-overlay';
+      overlay = document.createElement("div");
+      overlay.id = "loading-overlay";
+      overlay.className = "loading-overlay";
       overlay.innerHTML = `
         <div class="text-center">
           <div class="spinner-border text-cinema-gold mb-3" role="status">
@@ -713,13 +721,13 @@ class CinemaHub {
       `;
       document.body.appendChild(overlay);
     }
-    overlay.classList.remove('d-none');
+    overlay.classList.remove("d-none");
   }
 
   hideLoading() {
-    const overlay = document.getElementById('loading-overlay');
+    const overlay = document.getElementById("loading-overlay");
     if (overlay) {
-      overlay.classList.add('d-none');
+      overlay.classList.add("d-none");
     }
   }
 
@@ -729,7 +737,7 @@ class CinemaHub {
    * @returns {string} Il testo sanificato.
    */
   escapeHtml(text) {
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
@@ -740,16 +748,16 @@ class CinemaHub {
    * @returns {string} La stringa sanificata.
    */
   escapeRegex(text) {
-    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   formatNumber(num) {
-    return new Intl.NumberFormat('en-US').format(num);
+    return new Intl.NumberFormat("en-US").format(num);
   }
 
   truncateText(text, maxLength = 100) {
     if (!text || text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
+    return text.substring(0, maxLength).trim() + "...";
   }
 
   debounce(func, delay) {
@@ -771,86 +779,91 @@ class CinemaHub {
  */
 class ThemeManager {
   constructor() {
-    this.themeToggle = document.getElementById('theme-toggle');
-    this.themeText = document.getElementById('theme-text');
+    this.themeToggle = document.getElementById("theme-toggle");
+    this.themeText = document.getElementById("theme-text");
     this.init();
   }
 
   init() {
     this.loadTheme();
-    
+
     if (this.themeToggle) {
-      this.themeToggle.addEventListener('click', () => this.toggleTheme());
+      this.themeToggle.addEventListener("click", () => this.toggleTheme());
     }
-    
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-      if (!localStorage.getItem('theme')) {
-        this.setTheme(e.matches ? 'dark' : 'light');
-      }
-    });
+
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        if (!localStorage.getItem("theme")) {
+          this.setTheme(e.matches ? "dark" : "light");
+        }
+      });
   }
 
   loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    
+    const savedTheme = localStorage.getItem("theme");
+
     if (savedTheme) {
       this.setTheme(savedTheme);
     } else {
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.setTheme(systemPrefersDark ? 'dark' : 'light');
+      const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      this.setTheme(systemPrefersDark ? "dark" : "light");
     }
   }
 
   setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    
+    document.documentElement.setAttribute("data-theme", theme);
+
     if (this.themeText) {
-      this.themeText.textContent = theme === 'light' ? 'Dark' : 'Light';
+      this.themeText.textContent = theme === "light" ? "Dark" : "Light";
     }
-    
+
     if (this.themeToggle) {
-      this.themeToggle.setAttribute('title', 
-        theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'
+      this.themeToggle.setAttribute(
+        "title",
+        theme === "light" ? "Switch to dark mode" : "Switch to light mode",
       );
     }
-    
+
     console.log(`🎨 Theme set to: ${theme}`);
   }
 
   toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    
+    const currentTheme = document.documentElement.getAttribute("data-theme");
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+
     this.setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    
+    localStorage.setItem("theme", newTheme);
+
     if (this.themeToggle) {
-      this.themeToggle.style.transform = 'scale(0.95)';
+      this.themeToggle.style.transform = "scale(0.95)";
       setTimeout(() => {
-        this.themeToggle.style.transform = '';
+        this.themeToggle.style.transform = "";
       }, 150);
     }
-    
+
     this.showThemeToast(newTheme);
   }
 
   showThemeToast(theme) {
     if (window.cinemaHub) {
-      const icon = theme === 'dark' ? '🌙' : '☀️';
+      const icon = theme === "dark" ? "🌙" : "☀️";
       window.cinemaHub.showNotification(
-        `${icon} Switched to ${theme} mode`, 
-        'info'
+        `${icon} Switched to ${theme} mode`,
+        "info",
       );
     }
   }
 
   getCurrentTheme() {
-    return document.documentElement.getAttribute('data-theme') || 'light';
+    return document.documentElement.getAttribute("data-theme") || "light";
   }
 
   forceTheme(theme) {
     this.setTheme(theme);
-    localStorage.setItem('theme', theme);
+    localStorage.setItem("theme", theme);
   }
 }
 
@@ -858,57 +871,57 @@ class ThemeManager {
 // FUNZIONI GLOBALI
 // =================================
 
-window.showLoading = function() {
+window.showLoading = function () {
   if (window.cinemaHub) {
     window.cinemaHub.showLoading();
   }
 };
 
-window.hideLoading = function() {
+window.hideLoading = function () {
   if (window.cinemaHub) {
     window.cinemaHub.hideLoading();
   }
 };
 
-window.showNotification = function(message, type = 'info') {
+window.showNotification = function (message, type = "info") {
   if (window.cinemaHub) {
     window.cinemaHub.showNotification(message, type);
   }
 };
 
-window.formatNumber = function(num) {
+window.formatNumber = function (num) {
   if (window.cinemaHub) {
     return window.cinemaHub.formatNumber(num);
   }
   return num;
 };
 
-window.setTheme = function(theme) {
+window.setTheme = function (theme) {
   if (window.cinemaHub) {
     window.cinemaHub.setTheme(theme);
   }
 };
 
-window.getCurrentTheme = function() {
+window.getCurrentTheme = function () {
   if (window.cinemaHub) {
     return window.cinemaHub.getCurrentTheme();
   }
-  return 'light';
+  return "light";
 };
 
-window.joinRoom = function(roomName, userName) {
+window.joinRoom = function (roomName, userName) {
   if (window.cinemaHub) {
     window.cinemaHub.joinRoom(roomName, userName);
   }
 };
 
-window.createRoom = function(roomName, userName, topic = '') {
+window.createRoom = function (roomName, userName, topic = "") {
   if (window.cinemaHub) {
     window.cinemaHub.createRoom(roomName, userName, topic);
   }
 };
 
-window.sendMessage = function(roomName, userName, message) {
+window.sendMessage = function (roomName, userName, message) {
   if (window.cinemaHub) {
     window.cinemaHub.sendMessage(roomName, userName, message);
   }
@@ -918,34 +931,34 @@ window.sendMessage = function(roomName, userName, message) {
 // INIZIALIZZAZIONE
 // ======================
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   window.cinemaHub = new CinemaHub();
-  console.log('🎬 CinemaHub layout initialized');
+  console.log("🎬 CinemaHub layout initialized");
 });
 
-window.addEventListener('beforeunload', function() {
+window.addEventListener("beforeunload", function () {
   if (window.cinemaHub && window.cinemaHub.socket) {
     window.cinemaHub.socket.disconnect();
   }
 });
 
-window.addEventListener('online', function() {
+window.addEventListener("online", function () {
   if (window.cinemaHub) {
-    window.cinemaHub.showNotification('Connection restored', 'success');
+    window.cinemaHub.showNotification("Connection restored", "success");
     if (window.cinemaHub.socket && !window.cinemaHub.socket.connected) {
       window.cinemaHub.socket.connect();
     }
   }
 });
 
-window.addEventListener('offline', function() {
+window.addEventListener("offline", function () {
   if (window.cinemaHub) {
-    window.cinemaHub.showNotification('Connection lost', 'warning');
+    window.cinemaHub.showNotification("Connection lost", "warning");
   }
 });
 
 // CSS personalizzate
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-10px); }

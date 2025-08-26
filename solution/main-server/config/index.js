@@ -83,16 +83,14 @@ const servicesConfig = {
  */
 const socketConfig = {
   cors: {
-    origin: [
-      getEnvOrDefault("MAIN_SERVER_URL", "http://localhost:3000"),
-    ],
+    origin: [getEnvOrDefault("MAIN_SERVER_URL", "http://localhost:3000")],
     methods: ["GET", "POST"],
     credentials: false,
   },
   pingTimeout: 60000, // 60 secondi
   pingInterval: 25000, // 25 secondi
   maxHttpBufferSize: 1e6, // 1MB
-  transports: ['websocket', 'polling'], // Preferisce WebSocket
+  transports: ["websocket", "polling"], // Preferisce WebSocket
 };
 
 /**

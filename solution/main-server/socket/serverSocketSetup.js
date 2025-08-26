@@ -21,10 +21,12 @@ function createSocketServer(httpServer, options = socketConfig) {
     // Gestione connessioni con logging migliorato
     io.on("connection", (clientSocket) => {
       console.log(`🔌 Nuova connessione Socket.io: ${clientSocket.id}`);
-      
+
       // Gestione disconnessione
       clientSocket.on("disconnect", (reason) => {
-        console.log(`🔌 Disconnessione Socket.io ${clientSocket.id}: ${reason}`);
+        console.log(
+          `🔌 Disconnessione Socket.io ${clientSocket.id}: ${reason}`,
+        );
       });
 
       // Gestione errori del client
@@ -32,11 +34,7 @@ function createSocketServer(httpServer, options = socketConfig) {
         console.error(`❌ Errore Socket.io ${clientSocket.id}:`, error);
       });
 
-      setupClientSocket(
-        clientSocket,
-        io,
-        errorSocketHandler,
-      );
+      setupClientSocket(clientSocket, io, errorSocketHandler);
     });
 
     // Gestione errori del server
@@ -44,7 +42,9 @@ function createSocketServer(httpServer, options = socketConfig) {
       console.error("❌ Errore connessione Socket.io:", err);
     });
 
-    console.log("✅ Server socket configurato con gestione connessioni migliorata");
+    console.log(
+      "✅ Server socket configurato con gestione connessioni migliorata",
+    );
     return io;
   } catch (error) {
     console.error("++ CRITICO ++ , ERROR IN SETUP SOCKET SERVER", error);

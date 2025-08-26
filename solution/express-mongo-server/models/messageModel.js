@@ -70,8 +70,8 @@ const messageSchema = new mongoose.Schema(
       required: [true, "User name is required"],
       trim: true,
       maxlength: [
-        VALIDATION_LIMITS.USERNAME_MAX_LENGTH,
-        `userName cannot exeed ${VALIDATION_LIMITS.USERNAME_MAX_LENGTH} characters`,
+        VALIDATION_LIMITS.NICKNAME_MAX_LENGTH,
+        `userName cannot exceed ${VALIDATION_LIMITS.NICKNAME_MAX_LENGTH} characters`,
       ],
     },
 

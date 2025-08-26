@@ -42,6 +42,8 @@ const SOCKET_ROOM_EVENTS = Object.freeze({
   CREATE_ROOM: "create_room",
   JOIN_ROOM: "join_room",
   LEAVE_ROOM: "leave_room",
+  GET_ROOMS_LIST: "get_rooms_list",
+  ROOM_LIST: "room_list",
   ROOM_CREATED: "room_creation_result",
   ROOM_JOINED: "room_joined",
   USER_JOINED: "user_joined",

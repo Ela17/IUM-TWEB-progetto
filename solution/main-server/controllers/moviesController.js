@@ -28,28 +28,41 @@ const searchMovies = async (req, res, next) => {
     if (req.query.genre) searchParams.set("genre", req.query.genre);
     if (req.query.year_from) searchParams.set("yearFrom", req.query.year_from);
     if (req.query.year_to) searchParams.set("yearTo", req.query.year_to);
-    if (req.query.min_rating) searchParams.set("minRating", req.query.min_rating);
-    if (req.query.max_rating) searchParams.set("maxRating", req.query.max_rating);
+    if (req.query.min_rating)
+      searchParams.set("minRating", req.query.min_rating);
+    if (req.query.max_rating)
+      searchParams.set("maxRating", req.query.max_rating);
 
     const endpoint = `/api/movies/search?${searchParams.toString()}`;
-    console.log(`🔍 Controller: Calling Spring Boot with endpoint: ${endpoint}`);
-    
+    console.log(
+      `🔍 Controller: Calling Spring Boot with endpoint: ${endpoint}`,
+    );
+
     try {
       const springResponse = await proxyService.callSpringBoot(endpoint);
-      console.log(`✅ Controller: Spring Boot response received:`, springResponse.status);
+      console.log(
+        `✅ Controller: Spring Boot response received:`,
+        springResponse.status,
+      );
       const payload = springResponse.data;
       // Normalizza i campi per il frontend: aggiunge alias `year` e garantisce rating numerico
       if (Array.isArray(payload?.data)) {
         payload.data = payload.data.map((m) => ({
           ...m,
           year: m.year ?? m.date ?? undefined,
-          rating: typeof m.rating === 'number' && !Number.isNaN(m.rating) ? Math.round(m.rating * 10) / 10 : m.rating,
+          rating:
+            typeof m.rating === "number" && !Number.isNaN(m.rating)
+              ? Math.round(m.rating * 10) / 10
+              : m.rating,
         }));
       }
       res.json(payload);
     } catch (proxyError) {
       console.error(`❌ Controller: Proxy error:`, proxyError.message);
-      console.error(`❌ Controller: Proxy error details:`, proxyError.response?.data);
+      console.error(
+        `❌ Controller: Proxy error details:`,
+        proxyError.response?.data,
+      );
       throw proxyError;
     }
   } catch (error) {
@@ -81,51 +94,65 @@ const getMovieDetails = async (req, res, next) => {
 
     // Recupera i dettagli del film (chiamata principale)
     try {
-      const movieResponse = await proxyService.callSpringBoot(`/api/movies/${movieId}`);
+      const movieResponse = await proxyService.callSpringBoot(
+        `/api/movies/${movieId}`,
+      );
       const rawDetails = movieResponse?.data?.data ?? null;
       if (rawDetails) {
         movieDetails = transformMovieDetails(rawDetails);
       }
     } catch (movieError) {
-      console.error(`❌ Failed to retrieve movie details: ${movieError.message}`);
+      console.error(
+        `❌ Failed to retrieve movie details: ${movieError.message}`,
+      );
       // Non lanciamo l'errore, continuiamo con recensioni e statistiche
     }
 
     // Recupera le recensioni (chiamata opzionale)
     try {
-      const reviewsResponse = await proxyService.callOtherExpress(`/api/reviews/movie/${movieId}`);
+      const reviewsResponse = await proxyService.callOtherExpress(
+        `/api/reviews/movie/${movieId}`,
+      );
       reviews = reviewsResponse.data?.data?.reviews || [];
-      console.log(`✅ Retrieved ${reviews.length} reviews for movie ${movieId}`);
+      console.log(
+        `✅ Retrieved ${reviews.length} reviews for movie ${movieId}`,
+      );
     } catch (reviewsError) {
-      console.warn(`⚠️ Reviews not available for movie ${movieId}: ${reviewsError.message}`);
+      console.warn(
+        `⚠️ Reviews not available for movie ${movieId}: ${reviewsError.message}`,
+      );
       reviews = [];
     }
-    
+
     // Recupera le statistiche (chiamata opzionale)
     try {
-      const statsResponse = await proxyService.callOtherExpress(`/api/reviews/movie/${movieId}/stats`);
+      const statsResponse = await proxyService.callOtherExpress(
+        `/api/reviews/movie/${movieId}/stats`,
+      );
       stats = statsResponse.data?.data?.stats || {};
       console.log(`✅ Retrieved review stats for movie ${movieId}`);
     } catch (statsError) {
-      console.warn(`⚠️ Stats not available for movie ${movieId}: ${statsError.message}`);
+      console.warn(
+        `⚠️ Stats not available for movie ${movieId}: ${statsError.message}`,
+      );
       stats = {};
     }
 
     // Se non abbiamo nemmeno i dettagli del film, restituiamo un errore
     if (!movieDetails) {
       return res.status(404).json({
-        error: 'Movie not found or service unavailable',
-        message: 'Unable to retrieve movie details. Please try again later.',
-        movieId: movieId
+        error: "Movie not found or service unavailable",
+        message: "Unable to retrieve movie details. Please try again later.",
+        movieId: movieId,
       });
     }
 
     const movieData = {
       movieDetails: movieDetails,
       reviews: reviews,
-      reviewsStat: stats
+      reviewsStat: stats,
     };
-    
+
     console.log(`✅ Successfully assembled movie data for ID ${movieId}`);
     res.json(movieData);
   } catch (error) {
@@ -182,7 +209,10 @@ function transformMovieDetails(details) {
     year: details.date,
     duration: details.minute,
     poster_url: details.poster_url,
-    genre: Array.isArray(details.genres) && details.genres.length > 0 ? details.genres[0] : undefined,
+    genre:
+      Array.isArray(details.genres) && details.genres.length > 0
+        ? details.genres[0]
+        : undefined,
     countries: details.countries,
     cast,
     releases,

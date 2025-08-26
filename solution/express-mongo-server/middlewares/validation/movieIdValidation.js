@@ -11,5 +11,5 @@ const validationErrorHandler = require("./validationErrorHandler");
 const validateMovieId = [valMovieId, validationErrorHandler];
 
 module.exports = {
-  validateMovieId
+  validateMovieId,
 };

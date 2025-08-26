@@ -1,6 +1,10 @@
 /* Movie Hero Section */
 .movie-hero-section {
-  background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--cinema-dark-bg) 0%,
+    var(--cinema-accent) 100%
+  );
   min-height: 60vh;
   position: relative;
   display: flex;
@@ -361,27 +365,27 @@
     min-height: 50vh;
     padding-top: 80px;
   }
-  
+
   .movie-poster {
     max-width: 200px;
     margin-bottom: 2rem;
   }
-  
+
   .movie-meta {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .cast-grid {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 0.75rem;
   }
-  
+
   .cast-member {
     padding: 0.75rem;
   }
-  
+
   .section-title {
     font-size: 1.5rem;
   }
@@ -391,15 +395,15 @@
   .movie-hero-section .container {
     padding: 0 1rem;
   }
-  
+
   .movie-info h1 {
     font-size: 2rem;
   }
-  
+
   .movie-meta span {
     font-size: 1rem;
   }
-  
+
   .cast-grid {
     grid-template-columns: repeat(2, 1fr);
   }

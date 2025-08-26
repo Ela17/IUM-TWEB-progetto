@@ -140,7 +140,7 @@ const saveDirectToMongoDB = async (formattedMessage) => {
     }
 
     console.log(
-      `${response.status} 💾 Message ${messageData.uniqueTimestamp} saved`,
+      `${response.status} 💾 Message ${formattedMessage.uniqueTimestamp} saved`,
     );
 
     return response.data;
@@ -148,9 +148,9 @@ const saveDirectToMongoDB = async (formattedMessage) => {
     console.error(`❌ Direct save error:: ${error.message}`);
 
     activateRecoveryMode();
-    addToQueue(messageData);
+    addToQueue(formattedMessage);
     console.log(
-      `📦 Message ${messageData.uniqueTimestamp} added to queue after failure`,
+      `📦 Message ${formattedMessage.uniqueTimestamp} added to queue after failure`,
     );
   }
 };

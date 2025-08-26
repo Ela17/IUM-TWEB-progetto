@@ -28,12 +28,18 @@
           <i class="bi bi-funnel me-2"></i>
           Search & Filters
         </h6>
-        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedSearchForm" aria-expanded="true">
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#advancedSearchForm"
+          aria-expanded="true"
+        >
           <i class="bi bi-chevron-up" id="collapse-icon"></i>
         </button>
       </div>
     </div>
-    
+
     <div class="collapse show" id="advancedSearchForm">
       <div class="card-body">
         <!-- Search Form -->
@@ -43,43 +49,83 @@
             <div class="col-12">
               <label class="form-label fw-medium">Quick Collections</label>
               <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="collection-filter active" data-collection="top-rated">
+                <button
+                  type="button"
+                  class="collection-filter active"
+                  data-collection="top-rated"
+                >
                   <i class="bi bi-star me-1"></i>
                   <span>Top Rated</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="recent">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="recent"
+                >
                   <i class="bi bi-calendar me-1"></i>
                   <span>Recent Releases</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="drama">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="drama"
+                >
                   <i class="bi bi-mask me-1"></i>
                   <span>Drama</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="comedy">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="comedy"
+                >
                   <i class="bi bi-emoji-laughing me-1"></i>
                   <span>Comedy</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="action">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="action"
+                >
                   <i class="bi bi-lightning me-1"></i>
                   <span>Action</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="horror">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="horror"
+                >
                   <i class="bi bi-eye me-1"></i>
                   <span>Horror</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="documentary">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="documentary"
+                >
                   <i class="bi bi-camera-video me-1"></i>
                   <span>Documentary</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="animation">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="animation"
+                >
                   <i class="bi bi-palette me-1"></i>
                   <span>Animation</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="thriller">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="thriller"
+                >
                   <i class="bi bi-exclamation-triangle me-1"></i>
                   <span>Thriller</span>
                 </button>
-                <button type="button" class="collection-filter" data-collection="custom">
+                <button
+                  type="button"
+                  class="collection-filter"
+                  data-collection="custom"
+                >
                   <i class="bi bi-sliders me-1"></i>
                   <span>Custom Search</span>
                 </button>
@@ -97,8 +143,14 @@
                   <span class="input-group-text">
                     <i class="bi bi-search"></i>
                   </span>
-                  <input type="text" class="form-control" id="search-title" name="title" 
-                        placeholder="Enter movie title..." autocomplete="off">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="search-title"
+                    name="title"
+                    placeholder="Enter movie title..."
+                    autocomplete="off"
+                  />
                 </div>
               </div>
             </div>
@@ -130,22 +182,40 @@
                   <option value="Western">Western</option>
                 </select>
               </div>
-              
+
               <div class="col-md-3">
                 <label for="search-year-from" class="form-label">Year From</label>
-                <input type="number" class="form-control" id="search-year-from" name="year_from" 
-                      min="1900" max="2025" placeholder="1990">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="search-year-from"
+                  name="year_from"
+                  min="1900"
+                  max="2025"
+                  placeholder="1990"
+                />
               </div>
-              
+
               <div class="col-md-3">
                 <label for="search-year-to" class="form-label">Year To</label>
-                <input type="number" class="form-control" id="search-year-to" name="year_to" 
-                      min="1900" max="2025" placeholder="2025">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="search-year-to"
+                  name="year_to"
+                  min="1900"
+                  max="2025"
+                  placeholder="2025"
+                />
               </div>
-              
+
               <div class="col-md-3">
                 <label for="search-min-rating" class="form-label">Min Rating</label>
-                <select class="form-select" id="search-min-rating" name="min_rating">
+                <select
+                  class="form-select"
+                  id="search-min-rating"
+                  name="min_rating"
+                >
                   <option value="">Any Rating</option>
                   <option value="1">1+ Stars</option>
                   <option value="2">2+ Stars</option>
@@ -154,10 +224,14 @@
                   <option value="5">5 Stars</option>
                 </select>
               </div>
-              
+
               <div class="col-md-3">
                 <label for="search-max-rating" class="form-label">Max Rating</label>
-                <select class="form-select" id="search-max-rating" name="max_rating">
+                <select
+                  class="form-select"
+                  id="search-max-rating"
+                  name="max_rating"
+                >
                   <option value="">Any Rating</option>
                   <option value="5">Up to 5 Stars</option>
                   <option value="4">Up to 4 Stars</option>
@@ -166,7 +240,7 @@
                   <option value="1">Up to 1 Star</option>
                 </select>
               </div>
-              
+
               <div class="col-md-3">
                 <label for="search-limit" class="form-label">Results per page</label>
                 <select class="form-select" id="search-limit" name="limit">
@@ -175,14 +249,18 @@
                   <option value="48">48 results</option>
                 </select>
               </div>
-              
+
               <div class="col-md-3">
                 <div class="d-flex gap-2 align-items-end h-100">
                   <button type="submit" class="btn btn-cinema-gold hover-lift">
                     <i class="bi bi-search me-1"></i>
                     Search
                   </button>
-                  <button type="button" class="btn btn-outline-secondary hover-lift" id="clear-filters">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary hover-lift"
+                    id="clear-filters"
+                  >
                     <i class="bi bi-x-circle me-1"></i>
                     Clear
                   </button>
@@ -201,7 +279,8 @@
   <div class="row align-items-center mb-3">
     <div class="col-md-8">
       <h3 id="collection-title" class="mb-0">Top Rated Movies</h3>
-      <small id="collection-description" class="text-secondary">Movies with rating 4+ stars</small>
+      <small id="collection-description" class="text-secondary">Movies with
+        rating 4+ stars</small>
     </div>
     <div class="col-md-4 text-end">
       <small id="results-info" class="text-secondary"></small>
@@ -230,8 +309,13 @@
 <div class="container">
   <div id="error-state" class="alert alert-danger d-none" role="alert">
     <i class="bi bi-exclamation-triangle me-2"></i>
-    <strong>Error loading movies:</strong> <span id="error-message"></span>
-    <button type="button" class="btn btn-outline-danger btn-sm ms-2" onclick="loadCurrentCollection()">
+    <strong>Error loading movies:</strong>
+    <span id="error-message"></span>
+    <button
+      type="button"
+      class="btn btn-outline-danger btn-sm ms-2"
+      onclick="loadCurrentCollection()"
+    >
       <i class="bi bi-arrow-repeat me-1"></i>
       Try Again
     </button>
@@ -250,8 +334,9 @@
   <div id="no-results" class="text-center py-5 d-none">
     <i class="bi bi-film fs-1 text-secondary mb-3"></i>
     <h4>No movies found</h4>
-    <p class="text-secondary">Try a different collection or use our advanced search</p>
-            <a href="/search" class="btn btn-cinema-gold hover-lift">
+    <p class="text-secondary">Try a different collection or use our advanced
+      search</p>
+    <a href="/search" class="btn btn-cinema-gold hover-lift">
       <i class="bi bi-search me-1"></i>
       Advanced Search
     </a>

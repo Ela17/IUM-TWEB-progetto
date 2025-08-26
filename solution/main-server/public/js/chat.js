@@ -16,7 +16,8 @@ class ChatPage {
     this.availableRooms = new Map();
     this.typingTimeout = null;
     this.messageCache = new Map();
-    
+    this.autoJoinAttempted = false;
+
     this.init();
   }
 
@@ -25,14 +26,10 @@ class ChatPage {
    * @description Inizializza il controller della lobby chat
    */
   init() {
-    console.log('💬 Initializing Chat Lobby Page...');
-    
     this.setupEventListeners();
     this.checkUrlParameters();
     this.setupSocketHandlers();
     this.loadAvailableRooms();
-    
-    console.log('✅ Chat Lobby Page initialized successfully');
   }
 
   /**
@@ -41,71 +38,71 @@ class ChatPage {
    */
   setupEventListeners() {
     // Message form submission
-    const messageForm = document.getElementById('message-form');
+    const messageForm = document.getElementById("message-form");
     if (messageForm) {
-      messageForm.addEventListener('submit', (e) => {
+      messageForm.addEventListener("submit", (e) => {
         e.preventDefault();
         this.sendMessage();
       });
     }
 
     // Message input events
-    const messageInput = document.getElementById('message-input');
+    const messageInput = document.getElementById("message-input");
     if (messageInput) {
-      messageInput.addEventListener('input', (e) => {
+      messageInput.addEventListener("input", (e) => {
         this.handleMessageInput(e.target.value);
       });
 
-      messageInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+      messageInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
           e.preventDefault();
-          messageForm.dispatchEvent(new Event('submit'));
+          messageForm.dispatchEvent(new Event("submit"));
         }
       });
     }
 
     // Room creation
-    const createRoomBtn = document.getElementById('create-room-btn');
+    const createRoomBtn = document.getElementById("create-room-btn");
     if (createRoomBtn) {
-      createRoomBtn.addEventListener('click', () => {
+      createRoomBtn.addEventListener("click", () => {
         this.showCreateRoomModal();
       });
     }
 
-    const createRoomForm = document.getElementById('create-room-form');
+    const createRoomForm = document.getElementById("create-room-form");
     if (createRoomForm) {
-      createRoomForm.addEventListener('submit', (e) => {
+      createRoomForm.addEventListener("submit", (e) => {
         e.preventDefault();
         this.createNewRoom();
       });
     }
 
     // Room actions
-    const leaveRoomBtn = document.getElementById('leave-room-btn');
+    const leaveRoomBtn = document.getElementById("leave-room-btn");
     if (leaveRoomBtn) {
-      leaveRoomBtn.addEventListener('click', () => {
+      leaveRoomBtn.addEventListener("click", () => {
         this.leaveCurrentRoom();
       });
     }
 
-    const roomInfoBtn = document.getElementById('room-info-btn');
+    const roomInfoBtn = document.getElementById("room-info-btn");
     if (roomInfoBtn) {
-      roomInfoBtn.addEventListener('click', () => {
+      roomInfoBtn.addEventListener("click", () => {
         this.showRoomInfoModal();
       });
     }
 
     // Welcome screen actions
-    const quickJoinBtn = document.getElementById('quick-join-btn');
+    const quickJoinBtn = document.getElementById("quick-join-btn");
     if (quickJoinBtn) {
-      quickJoinBtn.addEventListener('click', () => {
+      quickJoinBtn.addEventListener("click", () => {
         this.quickJoinRoom();
       });
     }
 
-    const browseRoomsBtn = document.getElementById('browse-rooms-btn');
+    const browseRoomsBtn = document.getElementById("browse-rooms-btn");
     if (browseRoomsBtn) {
-      browseRoomsBtn.addEventListener('click', () => {
+      browseRoomsBtn.addEventListener("click", () => {
         this.toggleRoomsList();
       });
     }
@@ -117,24 +114,19 @@ class ChatPage {
    */
   checkUrlParameters() {
     const urlParams = new URLSearchParams(window.location.search);
-    const roomName = urlParams.get('room');
-    const topic = urlParams.get('topic');
-    const autoJoin = urlParams.get('autoJoin') === 'true';
+    const roomName = urlParams.get("room");
+    const topic = urlParams.get("topic");
+    const autoJoin = urlParams.get("autoJoin") === "true";
 
     if (roomName && autoJoin) {
-      // Aspetta che la connessione Socket.IO sia stabilita
-      setTimeout(() => {
-        if (this.isConnected) {
-          this.joinSpecificRoom(roomName, topic);
-        } else {
-          // Retry dopo altri 2 secondi se non connesso
-          setTimeout(() => {
-            if (this.isConnected) {
-              this.joinSpecificRoom(roomName, topic);
-            }
-          }, 2000);
-        }
-      }, 1000);
+      // Se già connesso, join immediatamente
+      if (this.isConnected) {
+        this.joinSpecificRoom(roomName, topic);
+        this.autoJoinAttempted = true; // Marca come completato solo dopo il join
+      } else {
+        // Il join verrà fatto quando onSocketConnected viene chiamato
+        // NON impostare autoJoinAttempted qui
+      }
     }
   }
 
@@ -144,8 +136,8 @@ class ChatPage {
    */
   setupSocketHandlers() {
     if (!window.cinemaHub || !window.cinemaHub.socket) {
-      console.error('Socket.IO not available from main.js');
-      this.showConnectionError('Socket.IO connection not available');
+      console.error("Socket.IO not available from main.js");
+      this.showConnectionError("Socket.IO connection not available");
       return;
     }
 
@@ -157,46 +149,58 @@ class ChatPage {
     };
 
     // Handler specifici per la lobby chat
-    socket.on('room_list', (rooms) => {
+    socket.on("room_list", (rooms) => {
       this.updateRoomsList(rooms);
     });
 
-    socket.on('room_users_update', (data) => {
+    socket.on("room_users_update", (data) => {
       this.updateRoomUsersCount(data);
     });
 
-    socket.on('user_typing', (data) => {
+    socket.on("user_typing", (data) => {
       this.showTypingIndicator(data);
     });
 
-    socket.on('user_stopped_typing', (data) => {
+    socket.on("user_stopped_typing", (data) => {
       this.hideTypingIndicator(data);
     });
 
-    socket.on('message_history', (messages) => {
+    socket.on("message_history", (messages) => {
       this.loadMessageHistory(messages);
     });
 
     // Override eventi dal main.js per la pagina chat
-    socket.on('room_joined', (data) => {
-      console.log(`🚪 Joined room: ${data.roomName}`);
+    socket.on("room_joined", (data) => {
       this.onRoomJoined(data);
     });
 
-    socket.on('room_creation_result', (data) => {
+    // Evento specifico per la chat (emesso dal backend)
+    socket.on("room_joined_chat", (data) => {
+      this.onRoomJoined(data);
+    });
+
+    socket.on("room_creation_result", (data) => {
       if (data.success) {
-        console.log(`🎬 Room "${data.roomName}" created successfully`);
         this.onRoomCreated(data);
       } else {
-        this.showError('Failed to create room: ' + data.message);
+        this.showError("Failed to create room: " + data.message);
       }
     });
 
-    socket.on('connect', () => {
+    // Evento specifico per la creazione stanza nella chat
+    socket.on("room_creation_result_chat", (data) => {
+      if (data.success) {
+        this.onRoomCreated(data);
+      } else {
+        this.showError("Failed to create room: " + data.message);
+      }
+    });
+
+    socket.on("connect", () => {
       this.onSocketConnected();
     });
 
-    socket.on('disconnect', () => {
+    socket.on("disconnect", () => {
       this.onSocketDisconnected();
     });
   }
@@ -208,19 +212,24 @@ class ChatPage {
   onSocketConnected() {
     this.isConnected = true;
     this.hideConnectionStatus();
-    
+
     // Ottieni info utente corrente
     if (window.cinemaHub.currentUser) {
       this.currentUser = window.cinemaHub.currentUser;
     } else {
       this.currentUser = {
         userName: `Guest${Math.floor(Math.random() * 1000)}`,
-        socketId: window.cinemaHub.socket.id
+        socketId: window.cinemaHub.socket.id,
       };
     }
-    
+
     this.updateCurrentUsername();
     this.loadAvailableRooms();
+
+    // Ricontrolla i parametri URL dopo la connessione
+    if (!this.autoJoinAttempted) {
+      this.checkUrlParameters();
+    }
   }
 
   /**
@@ -229,7 +238,7 @@ class ChatPage {
    */
   onSocketDisconnected() {
     this.isConnected = false;
-    this.showConnectionStatus('disconnected', 'Disconnected from chat server');
+    this.showConnectionStatus("disconnected", "Disconnected from chat server");
     this.currentRoom = null;
     this.showWelcomeScreen();
   }
@@ -244,17 +253,17 @@ class ChatPage {
     try {
       // Richiedi lista stanze al server
       if (window.cinemaHub.socket) {
-        window.cinemaHub.socket.emit('get_rooms_list');
+        window.cinemaHub.socket.emit("get_rooms_list");
       }
-      
+
       // Carica anche da API REST come fallback
-      const response = await fetch('/api/chat/rooms');
+      const response = await fetch("/api/chat/rooms");
       if (response.ok) {
         const rooms = await response.json();
         this.updateRoomsList(rooms);
       }
     } catch (error) {
-      console.error('Error loading rooms:', error);
+      console.error("Error loading rooms:", error);
     }
   }
 
@@ -263,7 +272,7 @@ class ChatPage {
    * @param {Array} rooms - Lista delle stanze
    */
   updateRoomsList(rooms) {
-    const roomsList = document.getElementById('rooms-list');
+    const roomsList = document.getElementById("rooms-list");
     if (!roomsList) return;
 
     if (!rooms || rooms.length === 0) {
@@ -277,15 +286,15 @@ class ChatPage {
       return;
     }
 
-    let html = '';
-    rooms.forEach(room => {
+    let html = "";
+    rooms.forEach((room) => {
       this.availableRooms.set(room.name, room);
       const isActive = this.currentRoom === room.name;
-      
+
       html += `
-        <div class="room-item ${isActive ? 'active' : ''}" data-room="${this.escapeHtml(room.name)}">
+        <div class="room-item ${isActive ? "active" : ""}" data-room="${this.escapeHtml(room.name)}">
           <div class="room-name">${this.escapeHtml(room.name)}</div>
-          ${room.topic ? `<div class="room-topic">${this.escapeHtml(room.topic)}</div>` : ''}
+          ${room.topic ? `<div class="room-topic">${this.escapeHtml(room.topic)}</div>` : ""}
           <div class="room-users-count">${room.userCount || 0}</div>
         </div>
       `;
@@ -293,8 +302,8 @@ class ChatPage {
 
     roomsList.innerHTML = html;
 
-    roomsList.querySelectorAll('.room-item').forEach(item => {
-      item.addEventListener('click', () => {
+    roomsList.querySelectorAll(".room-item").forEach((item) => {
+      item.addEventListener("click", () => {
         const roomName = item.dataset.room;
         if (roomName !== this.currentRoom) {
           this.joinRoom(roomName);
@@ -309,14 +318,14 @@ class ChatPage {
    */
   joinRoom(roomName) {
     if (!this.isConnected || !this.currentUser) {
-      this.showError('Not connected to chat server');
+      this.showError("Not connected to chat server");
       return;
     }
 
     if (window.cinemaHub.socket) {
-      window.cinemaHub.socket.emit('join_room', {
+      window.cinemaHub.socket.emit("join_room", {
         roomName: roomName,
-        userName: this.currentUser.userName
+        userName: this.currentUser.userName,
       });
     }
   }
@@ -328,17 +337,19 @@ class ChatPage {
    */
   joinSpecificRoom(roomName, topic) {
     if (!this.isConnected || !this.currentUser) {
-      this.showError('Not connected to chat server');
+      this.showError("Not connected to chat server");
       return;
     }
 
     // Prima prova a creare la stanza, se esiste già verrà gestito dal server
     if (topic && window.cinemaHub.socket) {
-      window.cinemaHub.socket.emit('create_room', {
+      const createRoomData = {
         roomName: roomName,
         userName: this.currentUser.userName,
-        topic: topic
-      });
+        topic: topic,
+      };
+
+      window.cinemaHub.socket.emit("create_room", createRoomData);
     } else {
       this.joinRoom(roomName);
     }
@@ -354,9 +365,12 @@ class ChatPage {
     this.updateCurrentRoomInfo(data);
     this.loadRoomHistory(data.roomName);
     this.updateActiveRoomInList();
-    
+
     if (window.cinemaHub) {
-      window.cinemaHub.showNotification(`Joined room: ${data.roomName}`, 'success');
+      window.cinemaHub.showNotification(
+        `Joined room: ${data.roomName}`,
+        "success",
+      );
     }
   }
 
@@ -370,9 +384,12 @@ class ChatPage {
     this.updateCurrentRoomInfo(data);
     this.updateActiveRoomInList();
     this.hideCreateRoomModal();
-    
+
     if (window.cinemaHub) {
-      window.cinemaHub.showNotification(`Room "${data.roomName}" created!`, 'success');
+      window.cinemaHub.showNotification(
+        `Room "${data.roomName}" created!`,
+        "success",
+      );
     }
   }
 
@@ -381,11 +398,11 @@ class ChatPage {
    * @description Mostra l'interfaccia di chat attiva
    */
   showChatInterface() {
-    const welcome = document.getElementById('chat-welcome');
-    const chatInterface = document.getElementById('chat-interface');
-    
-    if (welcome) welcome.classList.add('d-none');
-    if (chatInterface) chatInterface.classList.remove('d-none');
+    const welcome = document.getElementById("chat-welcome");
+    const chatInterface = document.getElementById("chat-interface");
+
+    if (welcome) welcome.classList.add("d-none");
+    if (chatInterface) chatInterface.classList.remove("d-none");
   }
 
   /**
@@ -393,12 +410,12 @@ class ChatPage {
    * @description Mostra la schermata di benvenuto
    */
   showWelcomeScreen() {
-    const welcome = document.getElementById('chat-welcome');
-    const chatInterface = document.getElementById('chat-interface');
-    
-    if (welcome) welcome.classList.remove('d-none');
-    if (chatInterface) chatInterface.classList.add('d-none');
-    
+    const welcome = document.getElementById("chat-welcome");
+    const chatInterface = document.getElementById("chat-interface");
+
+    if (welcome) welcome.classList.remove("d-none");
+    if (chatInterface) chatInterface.classList.add("d-none");
+
     this.clearMessages();
   }
 
@@ -407,11 +424,12 @@ class ChatPage {
    * @param {Object} data - Informazioni della stanza
    */
   updateCurrentRoomInfo(data) {
-    const roomNameEl = document.getElementById('current-room-name');
-    const roomTopicEl = document.getElementById('current-room-topic');
-    
-    if (roomNameEl) roomNameEl.textContent = data.roomName || 'Unknown Room';
-    if (roomTopicEl) roomTopicEl.textContent = data.topic || 'General discussion';
+    const roomNameEl = document.getElementById("current-room-name");
+    const roomTopicEl = document.getElementById("current-room-topic");
+
+    if (roomNameEl) roomNameEl.textContent = data.roomName || "Unknown Room";
+    if (roomTopicEl)
+      roomTopicEl.textContent = data.topic || "General discussion";
   }
 
   /**
@@ -419,11 +437,11 @@ class ChatPage {
    * @description Aggiorna quale stanza è attiva nella lista
    */
   updateActiveRoomInList() {
-    const roomItems = document.querySelectorAll('.room-item');
-    roomItems.forEach(item => {
-      item.classList.remove('active');
+    const roomItems = document.querySelectorAll(".room-item");
+    roomItems.forEach((item) => {
+      item.classList.remove("active");
       if (item.dataset.room === this.currentRoom) {
-        item.classList.add('active');
+        item.classList.add("active");
       }
     });
   }
@@ -434,13 +452,15 @@ class ChatPage {
    */
   async loadRoomHistory(roomName) {
     try {
-      const response = await fetch(`/api/chat/messages/${encodeURIComponent(roomName)}?page=1`);
+      const response = await fetch(
+        `/api/chat/messages/${encodeURIComponent(roomName)}?page=1`,
+      );
       if (response.ok) {
         const messages = await response.json();
         this.loadMessageHistory(messages);
       }
     } catch (error) {
-      console.error('Error loading room history:', error);
+      console.error("Error loading room history:", error);
     }
   }
 
@@ -450,19 +470,22 @@ class ChatPage {
    */
   loadMessageHistory(messages) {
     this.clearMessages();
-    
+
     if (!messages || messages.length === 0) {
       this.showEmptyMessages();
       return;
     }
 
-    messages.forEach(message => {
-      this.displayMessage({
-        userName: message.userName,
-        message: message.message,
-        timestamp: message.timestamp,
-        roomName: message.roomName
-      }, false);
+    messages.forEach((message) => {
+      this.displayMessage(
+        {
+          userName: message.userName,
+          message: message.message,
+          timestamp: message.timestamp,
+          roomName: message.roomName,
+        },
+        false,
+      );
     });
 
     this.scrollToBottom();
@@ -473,20 +496,20 @@ class ChatPage {
    * @description Invia un messaggio nella stanza corrente
    */
   sendMessage() {
-    const messageInput = document.getElementById('message-input');
+    const messageInput = document.getElementById("message-input");
     if (!messageInput) return;
 
     const message = messageInput.value.trim();
     if (!message || !this.currentRoom || !this.isConnected) return;
 
     if (window.cinemaHub.socket && this.currentUser) {
-      window.cinemaHub.socket.emit('room_message', {
+      window.cinemaHub.socket.emit("room_message", {
         roomName: this.currentRoom,
         userName: this.currentUser.userName,
-        message: message
+        message: message,
       });
 
-      messageInput.value = '';
+      messageInput.value = "";
       this.updateCharCount(0);
 
       messageInput.focus();
@@ -499,26 +522,27 @@ class ChatPage {
    * @param {boolean} animate - Se animare il messaggio
    */
   displayMessage(data, animate = true) {
-    const messagesContainer = document.getElementById('messages-container');
+    const messagesContainer = document.getElementById("messages-container");
     if (!messagesContainer) return;
 
-    const emptyState = messagesContainer.querySelector('.empty-messages');
+    const emptyState = messagesContainer.querySelector(".empty-messages");
     if (emptyState) emptyState.remove();
 
-    const isOwnMessage = this.currentUser && data.userName === this.currentUser.userName;
-    const isSystemMessage = data.userName === 'System';
+    const isOwnMessage =
+      this.currentUser && data.userName === this.currentUser.userName;
+    const isSystemMessage = data.userName === "System";
 
-    const messageEl = document.createElement('div');
-    messageEl.className = `message ${isOwnMessage ? 'message-own' : ''} ${isSystemMessage ? 'message-system' : ''}`;
+    const messageEl = document.createElement("div");
+    messageEl.className = `message ${isOwnMessage ? "message-own" : ""} ${isSystemMessage ? "message-system" : ""}`;
 
     if (!animate) {
-      messageEl.style.animation = 'none';
+      messageEl.style.animation = "none";
     }
 
     const timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
-    const timeString = timestamp.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    const timeString = timestamp.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
 
     if (isSystemMessage) {
@@ -542,7 +566,7 @@ class ChatPage {
     this.scrollToBottom();
 
     // Mantieni solo gli ultimi 100 messaggi per performance
-    const messages = messagesContainer.querySelectorAll('.message');
+    const messages = messagesContainer.querySelectorAll(".message");
     if (messages.length > 100) {
       messages[0].remove();
     }
@@ -554,14 +578,17 @@ class ChatPage {
    * @returns {string} Contenuto formattato
    */
   formatMessageContent(content) {
-    if (!content) return '';
+    if (!content) return "";
 
     let formatted = this.escapeHtml(content);
 
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    formatted = formatted.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+    formatted = formatted.replace(
+      urlRegex,
+      '<a href="$1" target="_blank" rel="noopener">$1</a>',
+    );
 
-    formatted = formatted.replace(/\n/g, '<br>');
+    formatted = formatted.replace(/\n/g, "<br>");
 
     return formatted;
   }
@@ -580,17 +607,17 @@ class ChatPage {
    * @param {number} count - Numero di caratteri
    */
   updateCharCount(count) {
-    const charCountEl = document.getElementById('char-count');
+    const charCountEl = document.getElementById("char-count");
     if (charCountEl) {
       charCountEl.textContent = count;
-      
+
       if (count > 450) {
-        charCountEl.classList.add('text-warning');
+        charCountEl.classList.add("text-warning");
       } else if (count > 480) {
-        charCountEl.classList.remove('text-warning');
-        charCountEl.classList.add('text-danger');
+        charCountEl.classList.remove("text-warning");
+        charCountEl.classList.add("text-danger");
       } else {
-        charCountEl.classList.remove('text-warning', 'text-danger');
+        charCountEl.classList.remove("text-warning", "text-danger");
       }
     }
   }
@@ -600,7 +627,7 @@ class ChatPage {
    * @param {boolean} enabled - Se abilitare il bottone
    */
   updateSendButton(enabled) {
-    const sendBtn = document.getElementById('send-btn');
+    const sendBtn = document.getElementById("send-btn");
     if (sendBtn) {
       sendBtn.disabled = !enabled || !this.isConnected;
     }
@@ -610,7 +637,7 @@ class ChatPage {
    * @method updateCurrentUsername
    */
   updateCurrentUsername() {
-    const usernameEl = document.getElementById('current-username');
+    const usernameEl = document.getElementById("current-username");
     if (usernameEl && this.currentUser) {
       usernameEl.textContent = this.currentUser.userName;
     }
@@ -621,9 +648,9 @@ class ChatPage {
    * @description Pulisce tutti i messaggi
    */
   clearMessages() {
-    const messagesContainer = document.getElementById('messages-container');
+    const messagesContainer = document.getElementById("messages-container");
     if (messagesContainer) {
-      messagesContainer.innerHTML = '';
+      messagesContainer.innerHTML = "";
     }
   }
 
@@ -632,7 +659,7 @@ class ChatPage {
    * @description Mostra stato vuoto per messaggi
    */
   showEmptyMessages() {
-    const messagesContainer = document.getElementById('messages-container');
+    const messagesContainer = document.getElementById("messages-container");
     if (messagesContainer) {
       messagesContainer.innerHTML = `
         <div class="empty-messages">
@@ -649,7 +676,7 @@ class ChatPage {
    * @description Scrolla alla fine dei messaggi
    */
   scrollToBottom() {
-    const messagesContainer = document.getElementById('messages-container');
+    const messagesContainer = document.getElementById("messages-container");
     if (messagesContainer) {
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
@@ -660,8 +687,9 @@ class ChatPage {
    * @description Join rapido a una stanza popolare
    */
   quickJoinRoom() {
-    const popularRooms = ['general', 'movie-reviews', 'cinema-discussion'];
-    const randomRoom = popularRooms[Math.floor(Math.random() * popularRooms.length)];
+    const popularRooms = ["general", "movie-reviews", "cinema-discussion"];
+    const randomRoom =
+      popularRooms[Math.floor(Math.random() * popularRooms.length)];
     this.joinRoom(randomRoom);
   }
 
@@ -670,9 +698,9 @@ class ChatPage {
    * @description Toggle della visibilità della lista stanze
    */
   toggleRoomsList() {
-    const sidebar = document.querySelector('.chat-sidebar');
+    const sidebar = document.querySelector(".chat-sidebar");
     if (sidebar) {
-      sidebar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      sidebar.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }
 
@@ -680,7 +708,9 @@ class ChatPage {
    * @method showCreateRoomModal
    */
   showCreateRoomModal() {
-    const modal = new bootstrap.Modal(document.getElementById('createRoomModal'));
+    const modal = new bootstrap.Modal(
+      document.getElementById("createRoomModal"),
+    );
     modal.show();
   }
 
@@ -688,7 +718,9 @@ class ChatPage {
    * @method hideCreateRoomModal
    */
   hideCreateRoomModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('createRoomModal'));
+    const modal = bootstrap.Modal.getInstance(
+      document.getElementById("createRoomModal"),
+    );
     if (modal) modal.hide();
   }
 
@@ -697,9 +729,9 @@ class ChatPage {
    * @description Crea una nuova stanza
    */
   createNewRoom() {
-    const roomNameInput = document.getElementById('new-room-name');
-    const roomTopicInput = document.getElementById('new-room-topic');
-    
+    const roomNameInput = document.getElementById("new-room-name");
+    const roomTopicInput = document.getElementById("new-room-topic");
+
     if (!roomNameInput || !this.isConnected || !this.currentUser) return;
 
     const roomName = roomNameInput.value.trim();
@@ -711,15 +743,15 @@ class ChatPage {
     }
 
     if (window.cinemaHub.socket) {
-      window.cinemaHub.socket.emit('create_room', {
+      window.cinemaHub.socket.emit("create_room", {
         roomName: roomName,
         userName: this.currentUser.userName,
-        topic: roomTopic || ''
+        topic: roomTopic || "",
       });
     }
 
-    roomNameInput.value = '';
-    roomTopicInput.value = '';
+    roomNameInput.value = "";
+    roomTopicInput.value = "";
   }
 
   /**
@@ -730,18 +762,18 @@ class ChatPage {
     if (!this.currentRoom || !this.isConnected || !this.currentUser) return;
 
     if (window.cinemaHub.socket) {
-      window.cinemaHub.socket.emit('leave_room', {
+      window.cinemaHub.socket.emit("leave_room", {
         roomName: this.currentRoom,
-        userName: this.currentUser.userName
+        userName: this.currentUser.userName,
       });
     }
 
     this.currentRoom = null;
     this.showWelcomeScreen();
     this.updateActiveRoomInList();
-    
+
     if (window.cinemaHub) {
-      window.cinemaHub.showNotification('Left the room', 'info');
+      window.cinemaHub.showNotification("Left the room", "info");
     }
   }
 
@@ -753,14 +785,17 @@ class ChatPage {
     if (!this.currentRoom) return;
 
     const roomData = this.availableRooms.get(this.currentRoom);
-    
-    // Aggiorna contenuto modal
-    document.getElementById('info-room-name').textContent = this.currentRoom;
-    document.getElementById('info-room-topic').textContent = roomData?.topic || 'No topic set';
-    document.getElementById('info-room-users').textContent = roomData?.userCount || '0';
-    document.getElementById('info-room-created').textContent = roomData?.created || 'Unknown';
 
-    const modal = new bootstrap.Modal(document.getElementById('roomInfoModal'));
+    // Aggiorna contenuto modal
+    document.getElementById("info-room-name").textContent = this.currentRoom;
+    document.getElementById("info-room-topic").textContent =
+      roomData?.topic || "No topic set";
+    document.getElementById("info-room-users").textContent =
+      roomData?.userCount || "0";
+    document.getElementById("info-room-created").textContent =
+      roomData?.created || "Unknown";
+
+    const modal = new bootstrap.Modal(document.getElementById("roomInfoModal"));
     modal.show();
   }
 
@@ -769,13 +804,15 @@ class ChatPage {
    * @param {Object} data - Dati aggiornamento utenti
    */
   updateRoomUsersCount(data) {
-    const roomCountEl = document.getElementById('current-room-users');
+    const roomCountEl = document.getElementById("current-room-users");
     if (roomCountEl && data.roomName === this.currentRoom) {
       roomCountEl.textContent = data.userCount || 0;
     }
 
     // Aggiorna anche nella lista stanze
-    const roomItem = document.querySelector(`[data-room="${data.roomName}"] .room-users-count`);
+    const roomItem = document.querySelector(
+      `[data-room="${data.roomName}"] .room-users-count`,
+    );
     if (roomItem) {
       roomItem.textContent = data.userCount || 0;
     }
@@ -787,13 +824,13 @@ class ChatPage {
    * @param {string} message - Messaggio
    */
   showConnectionStatus(type, message) {
-    const statusEl = document.getElementById('connection-status');
-    const messageEl = document.getElementById('connection-message');
-    
+    const statusEl = document.getElementById("connection-status");
+    const messageEl = document.getElementById("connection-message");
+
     if (statusEl && messageEl) {
       statusEl.className = `connection-status ${type}`;
       messageEl.textContent = message;
-      statusEl.classList.remove('d-none');
+      statusEl.classList.remove("d-none");
     }
   }
 
@@ -801,9 +838,9 @@ class ChatPage {
    * @method hideConnectionStatus
    */
   hideConnectionStatus() {
-    const statusEl = document.getElementById('connection-status');
+    const statusEl = document.getElementById("connection-status");
     if (statusEl) {
-      statusEl.classList.add('d-none');
+      statusEl.classList.add("d-none");
     }
   }
 
@@ -813,7 +850,7 @@ class ChatPage {
    */
   showError(message) {
     if (window.cinemaHub) {
-      window.cinemaHub.showNotification(message, 'error');
+      window.cinemaHub.showNotification(message, "error");
     }
   }
 
@@ -826,14 +863,13 @@ class ChatPage {
     if (window.cinemaHub && window.cinemaHub.escapeHtml) {
       return window.cinemaHub.escapeHtml(text);
     }
-    
-    const div = document.createElement('div');
+
+    const div = document.createElement("div");
     div.textContent = text;
     return div.innerHTML;
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   window.ChatPage = new ChatPage();
-  console.log('💬 Chat Lobby Page Controller initialized');
 });

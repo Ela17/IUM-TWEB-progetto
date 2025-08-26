@@ -84,9 +84,14 @@ function standardErrorHandler(err, req, res, next) {
   // GESTIONE RISPOSTA: HTML vs JSON
 
   // Determina se la richiesta è per una API (JSON) o una pagina web (HTML)
-  const acceptsJson = req.accepts(['html', 'json']) === 'json' || req.originalUrl.startsWith('/api');
-  const isApiRequest = req.originalUrl.startsWith('/api') || req.xhr || req.get('Content-Type') === 'application/json';
-  
+  const acceptsJson =
+    req.accepts(["html", "json"]) === "json" ||
+    req.originalUrl.startsWith("/api");
+  const isApiRequest =
+    req.originalUrl.startsWith("/api") ||
+    req.xhr ||
+    req.get("Content-Type") === "application/json";
+
   if (isApiRequest || acceptsJson) {
     // RISPOSTA JSON PER API
     const response = {
@@ -101,23 +106,22 @@ function standardErrorHandler(err, req, res, next) {
         path: req.originalUrl,
         method: req.method,
       },
-      additionalDetails: { ...additionalDetails }
+      additionalDetails: { ...additionalDetails },
     };
 
     if (process.env.NODE_ENV === "development") {
       response.debug = {
         originalMessage: err.message,
         errorName: err.name,
-        stack: err.stack?.split("\n").slice(0, 10)
+        stack: err.stack?.split("\n").slice(0, 10),
       };
     }
 
     // Invio della risposta JSON al client
     res.status(statusCode).json(response);
-    
   } else {
     // RENDER PAGINA HTML DI ERRORE
-    
+
     // Titoli specifici per ogni tipo di errore
     let title = "Error";
     switch (statusCode) {
@@ -133,18 +137,18 @@ function standardErrorHandler(err, req, res, next) {
       default:
         title = `Error ${statusCode}`;
     }
-    
+
     // Dati per il template error.hbs
     const templateData = {
       title: `${title} - CinemaHub`,
       status: statusCode,
       message: userMessage,
       isDevelopment: process.env.NODE_ENV === "development",
-      stack: process.env.NODE_ENV === "development" ? err.stack : null
+      stack: process.env.NODE_ENV === "development" ? err.stack : null,
     };
-    
+
     // Render della pagina di errore
-    res.status(statusCode).render('pages/error', templateData);
+    res.status(statusCode).render("pages/error", templateData);
   }
 }
 

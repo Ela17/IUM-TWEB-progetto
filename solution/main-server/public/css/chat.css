@@ -5,7 +5,11 @@
 
 /* CHAT LOBBY HEADER */
 .chat-header {
-  background: linear-gradient(135deg, var(--cinema-dark-bg) 0%, var(--cinema-accent) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--cinema-dark-bg) 0%,
+    var(--cinema-accent) 100%
+  );
   color: white;
   padding: 4rem 0;
   margin: -2rem -15px 3rem -15px;
@@ -16,19 +20,28 @@
 }
 
 .chat-header::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   right: -50%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(212, 175, 55, 0.1),
+    transparent
+  );
   animation: slideRight 4s ease-in-out infinite;
 }
 
 @keyframes slideRight {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
 .chat-stats .fw-bold {
@@ -69,7 +82,7 @@
 }
 
 .room-item.active::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 0;
   top: 50%;
@@ -395,31 +408,31 @@ textarea.form-control {
   .chat-header .display-5 {
     font-size: 1.5rem;
   }
-  
+
   .chat-stats {
     margin-top: 1rem;
     justify-content: center;
   }
-  
+
   .messages-container {
     height: 300px;
   }
-  
+
   .message {
     margin-bottom: 0.75rem;
     padding: 0.5rem;
   }
-  
+
   .message-own {
     margin-left: 1rem;
   }
-  
+
   .welcome-actions {
     flex-direction: column;
     align-items: center;
     gap: 1rem;
   }
-  
+
   .welcome-actions .btn {
     width: 100%;
     max-width: 250px;
@@ -430,28 +443,28 @@ textarea.form-control {
   .chat-header {
     padding: 2rem 0;
   }
-  
+
   .chat-header .display-5 {
     font-size: 1.3rem;
   }
-  
+
   .messages-container {
     height: 250px;
     padding: 0.75rem;
   }
-  
+
   .message {
     padding: 0.5rem;
   }
-  
+
   .message-own {
     margin-left: 0.5rem;
   }
-  
+
   .room-item {
     padding: 0.5rem 0.75rem;
   }
-  
+
   .room-users-count {
     font-size: 0.6rem;
     padding: 0.15rem 0.3rem;

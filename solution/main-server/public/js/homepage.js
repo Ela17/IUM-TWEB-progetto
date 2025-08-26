@@ -12,9 +12,9 @@ class Homepage {
     this.statsAnimated = false;
     this.observerOptions = {
       threshold: 0.3,
-      rootMargin: '0px 0px -50px 0px'
+      rootMargin: "0px 0px -50px 0px",
     };
-    
+
     this.init();
   }
 
@@ -23,13 +23,13 @@ class Homepage {
    * @description Inizializza tutti i componenti della homepage
    */
   init() {
-    console.log('🏠 Initializing Homepage Controller...');
-    
+    console.log("🏠 Initializing Homepage Controller...");
+
     this.setupIntersectionObserver();
     this.setupHeroAnimations();
     this.setupFeatureCardAnimations();
-    
-    console.log('✅ Homepage Controller initialized successfully');
+
+    console.log("✅ Homepage Controller initialized successfully");
   }
 
   /**
@@ -37,10 +37,10 @@ class Homepage {
    * @description Configura l'observer per le animazioni on-scroll
    */
   setupIntersectionObserver() {
-    if ('IntersectionObserver' in window) {
+    if ("IntersectionObserver" in window) {
       this.observer = new IntersectionObserver(
-        (entries) => this.handleIntersection(entries), 
-        this.observerOptions
+        (entries) => this.handleIntersection(entries),
+        this.observerOptions,
       );
 
       this.observeElements();
@@ -53,16 +53,16 @@ class Homepage {
    */
   observeElements() {
     // Stats cards per l'animazione counter
-    const statCards = document.querySelectorAll('.stats-card .display-6');
-    statCards.forEach(card => this.observer.observe(card));
+    const statCards = document.querySelectorAll(".stats-card .display-6");
+    statCards.forEach((card) => this.observer.observe(card));
 
     // Feature cards per l'animazione di entrata
-    const featureCards = document.querySelectorAll('.movie-card');
-    featureCards.forEach(card => this.observer.observe(card));
+    const featureCards = document.querySelectorAll(".movie-card");
+    featureCards.forEach((card) => this.observer.observe(card));
 
     // Section titles
-    const sectionTitles = document.querySelectorAll('.display-5');
-    sectionTitles.forEach(title => this.observer.observe(title));
+    const sectionTitles = document.querySelectorAll(".display-5");
+    sectionTitles.forEach((title) => this.observer.observe(title));
   }
 
   /**
@@ -70,7 +70,7 @@ class Homepage {
    * @param {IntersectionObserverEntry[]} entries - Gli elementi intersecati
    */
   handleIntersection(entries) {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         this.animateElement(entry.target);
       }
@@ -82,11 +82,11 @@ class Homepage {
    * @param {Element} element - L'elemento da animare
    */
   animateElement(element) {
-    if (element.classList.contains('display-6')) {
+    if (element.classList.contains("display-6")) {
       this.animateStatCounter(element);
-    } else if (element.classList.contains('movie-card')) {
+    } else if (element.classList.contains("movie-card")) {
       this.animateFeatureCard(element);
-    } else if (element.classList.contains('display-5')) {
+    } else if (element.classList.contains("display-5")) {
       this.animateSectionTitle(element);
     }
   }
@@ -96,13 +96,13 @@ class Homepage {
    * @param {Element} statElement - L'elemento del contatore
    */
   animateStatCounter(statElement) {
-    if (statElement.dataset.animated === 'true') return;
-    
+    if (statElement.dataset.animated === "true") return;
+
     const finalValue = statElement.textContent.trim();
     const numericValue = this.extractNumericValue(finalValue);
-    
+
     if (numericValue > 0) {
-      statElement.dataset.animated = 'true';
+      statElement.dataset.animated = "true";
       this.countUpAnimation(statElement, 0, numericValue, finalValue, 2000);
     }
   }
@@ -116,10 +116,10 @@ class Homepage {
     // Estrae numeri da stringhe come "940K+", "5.7M+", "10K+", etc.
     const match = text.match(/[\d.]+/);
     if (!match) return 0;
-    
+
     const num = parseFloat(match[0]);
-    if (text.includes('K')) return num * 1000;
-    if (text.includes('M')) return num * 1000000;
+    if (text.includes("K")) return num * 1000;
+    if (text.includes("M")) return num * 1000000;
     return num;
   }
 
@@ -133,25 +133,25 @@ class Homepage {
    */
   countUpAnimation(element, start, end, finalText, duration) {
     const startTime = performance.now();
-    
+
     const animate = (currentTime) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Easing function (ease-out)
       const easedProgress = 1 - Math.pow(1 - progress, 3);
       const currentValue = Math.floor(start + (end - start) * easedProgress);
-      
+
       element.textContent = this.formatStatValue(currentValue, finalText);
-      
+
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
         element.textContent = finalText; // Assicura il valore finale
-        element.style.animation = 'pulse 0.5s ease';
+        element.style.animation = "pulse 0.5s ease";
       }
     };
-    
+
     requestAnimationFrame(animate);
   }
 
@@ -162,11 +162,11 @@ class Homepage {
    * @returns {string} Valore formattato
    */
   formatStatValue(value, originalText) {
-    if (originalText.includes('K')) {
-      return (value / 1000).toFixed(0) + 'K+';
+    if (originalText.includes("K")) {
+      return (value / 1000).toFixed(0) + "K+";
     }
-    if (originalText.includes('M')) {
-      return (value / 1000000).toFixed(1) + 'M+';
+    if (originalText.includes("M")) {
+      return (value / 1000000).toFixed(1) + "M+";
     }
     return value.toString();
   }
@@ -176,21 +176,21 @@ class Homepage {
    * @param {Element} card - Card da animare
    */
   animateFeatureCard(card) {
-    if (card.dataset.animated === 'true') return;
-    
-    card.dataset.animated = 'true';
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(30px)';
-    
+    if (card.dataset.animated === "true") return;
+
+    card.dataset.animated = "true";
+    card.style.opacity = "0";
+    card.style.transform = "translateY(30px)";
+
     // Delay basato sull'indice per effetto cascata
-    const cards = Array.from(document.querySelectorAll('.movie-card'));
+    const cards = Array.from(document.querySelectorAll(".movie-card"));
     const index = cards.indexOf(card);
     const delay = index * 150;
-    
+
     setTimeout(() => {
-      card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
+      card.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+      card.style.opacity = "1";
+      card.style.transform = "translateY(0)";
     }, delay);
   }
 
@@ -199,16 +199,16 @@ class Homepage {
    * @param {Element} title - Titolo da animare
    */
   animateSectionTitle(title) {
-    if (title.dataset.animated === 'true') return;
-    
-    title.dataset.animated = 'true';
-    title.style.opacity = '0';
-    title.style.transform = 'translateX(-30px)';
-    
+    if (title.dataset.animated === "true") return;
+
+    title.dataset.animated = "true";
+    title.style.opacity = "0";
+    title.style.transform = "translateX(-30px)";
+
     setTimeout(() => {
-      title.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-      title.style.opacity = '1';
-      title.style.transform = 'translateX(0)';
+      title.style.transition = "opacity 0.8s ease, transform 0.8s ease";
+      title.style.opacity = "1";
+      title.style.transform = "translateX(0)";
     }, 100);
   }
 
@@ -217,32 +217,35 @@ class Homepage {
    * @description Configura le animazioni per la sezione hero
    */
   setupHeroAnimations() {
-    const heroTitle = document.querySelector('.hero-section .display-3');
-    const heroSubtitle = document.querySelector('.hero-section .lead');
-    const heroButtons = document.querySelectorAll('.hero-section .btn');
-    
+    const heroTitle = document.querySelector(".hero-section .display-3");
+    const heroSubtitle = document.querySelector(".hero-section .lead");
+    const heroButtons = document.querySelectorAll(".hero-section .btn");
+
     if (heroTitle) {
       // Animazione typing effect per il titolo
       this.typeWriterEffect(heroTitle, 50);
     }
-    
+
     if (heroSubtitle) {
       // Animazione fade-in per il sottotitolo
       setTimeout(() => {
-        heroSubtitle.style.animation = 'fadeIn 1s ease forwards';
+        heroSubtitle.style.animation = "fadeIn 1s ease forwards";
       }, 1000);
     }
-    
+
     // Animazione staggered per i bottoni
     heroButtons.forEach((button, index) => {
-      button.style.opacity = '0';
-      button.style.transform = 'translateY(20px)';
-      
-      setTimeout(() => {
-        button.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        button.style.opacity = '1';
-        button.style.transform = 'translateY(0)';
-      }, 1500 + (index * 200));
+      button.style.opacity = "0";
+      button.style.transform = "translateY(20px)";
+
+      setTimeout(
+        () => {
+          button.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+          button.style.opacity = "1";
+          button.style.transform = "translateY(0)";
+        },
+        1500 + index * 200,
+      );
     });
   }
 
@@ -253,11 +256,11 @@ class Homepage {
    */
   typeWriterEffect(element, speed = 100) {
     if (!element) return;
-    
+
     const originalText = element.textContent;
-    element.textContent = '';
-    element.style.opacity = '1';
-    
+    element.textContent = "";
+    element.style.opacity = "1";
+
     let index = 0;
     const typeNextChar = () => {
       if (index < originalText.length) {
@@ -266,7 +269,7 @@ class Homepage {
         setTimeout(typeNextChar, speed);
       }
     };
-    
+
     // Inizia dopo un piccolo delay
     setTimeout(typeNextChar, 300);
   }
@@ -276,20 +279,20 @@ class Homepage {
    * @description Configura animazioni hover per le feature cards
    */
   setupFeatureCardAnimations() {
-    const featureCards = document.querySelectorAll('.movie-card');
-    
-    featureCards.forEach(card => {
-      card.addEventListener('mouseenter', () => {
-        const icon = card.querySelector('.feature-icon');
+    const featureCards = document.querySelectorAll(".movie-card");
+
+    featureCards.forEach((card) => {
+      card.addEventListener("mouseenter", () => {
+        const icon = card.querySelector(".feature-icon");
         if (icon) {
-          icon.style.animation = 'bounce 0.6s ease';
+          icon.style.animation = "bounce 0.6s ease";
         }
       });
-      
-      card.addEventListener('mouseleave', () => {
-        const icon = card.querySelector('.feature-icon');
+
+      card.addEventListener("mouseleave", () => {
+        const icon = card.querySelector(".feature-icon");
         if (icon) {
-          icon.style.animation = 'none';
+          icon.style.animation = "none";
         }
       });
     });
@@ -307,20 +310,20 @@ class Homepage {
 }
 
 // Inizializzazione al caricamento della pagina
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   window.homepageController = new Homepage();
-  console.log('🏠 Homepage Controller initialized');
+  console.log("🏠 Homepage Controller initialized");
 });
 
 // Cleanup al cambio pagina
-window.addEventListener('beforeunload', function() {
+window.addEventListener("beforeunload", function () {
   if (window.homepageController) {
     window.homepageController.destroy();
   }
 });
 
 // CSS per le animazioni aggiuntive
-const additionalStyles = document.createElement('style');
+const additionalStyles = document.createElement("style");
 additionalStyles.textContent = `
   @keyframes bounce {
     0%, 100% { transform: scale(1); }
