@@ -408,6 +408,14 @@ footer .text-muted {
   color: var(--cinema-gold) !important;
 }
 
+.text-primary {
+  color: var(--text-primary) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
 .bg-cinema-gold {
   background-color: var(--cinema-gold) !important;
 }
