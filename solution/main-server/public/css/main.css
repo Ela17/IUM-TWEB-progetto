@@ -55,6 +55,14 @@
   --cinema-dark-bg: #141414;
   --cinema-light-bg: #2f2f2f;
   --cinema-accent: #404040;
+
+  .btn-close {
+    filter: invert(1);
+  }
+
+  .btn-close:hover {
+    filter: invert(1) brightness(0.8);
+  }
 }
 
 /* THEME TOGGLE */
