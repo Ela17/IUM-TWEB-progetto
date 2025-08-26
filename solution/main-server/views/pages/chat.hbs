@@ -58,7 +58,7 @@
                 class="spinner-border spinner-border-sm text-cinema-gold"
                 role="status"
               ></div>
-              <p class="mt-2 mb-0 small">Loading rooms...</p>
+              <p class="mt-2 mb-0 text-primary">Loading rooms...</p>
             </div>
           </div>
         </div>
@@ -74,28 +74,11 @@
           <div class="card-body py-5">
             <i
               class="bi bi-chat-heart text-cinema-gold mb-3"
-              style="font-size: 4rem;"
+              style="font-size: 3rem;"
             ></i>
-            <h3 class="mb-3">Welcome to Cinema Chat Lobby!</h3>
-            <p class="text-muted mb-4">Join a room to start discussing movies,
+            <h3 class="mb-3 text-cinema-gold">Welcome to Cinema Chat Lobby!</h3>
+            <p class="text-primary mb-4">Join a room to start discussing movies,
               reviews, and cinema insights with fellow enthusiasts.</p>
-
-            <div class="welcome-actions">
-              <button
-                class="btn btn-cinema-gold btn-lg me-2 hover-lift"
-                id="quick-join-btn"
-              >
-                <i class="bi bi-lightning me-2"></i>
-                Quick Join
-              </button>
-              <button
-                class="btn btn-outline-primary btn-lg hover-lift"
-                id="browse-rooms-btn"
-              >
-                <i class="bi bi-search me-2"></i>
-                Browse Rooms
-              </button>
-            </div>
           </div>
         </div>
 
@@ -108,7 +91,7 @@
               <div class="d-flex justify-content-between align-items-center">
                 <div>
                   <h5 class="mb-1" id="current-room-name">General Discussion</h5>
-                  <small class="text-muted" id="current-room-topic">Welcome to
+                  <small class="text-primary" id="current-room-topic">Welcome to
                     the general chat room</small>
                 </div>
                 <div class="d-flex gap-2">
@@ -163,11 +146,11 @@
                 </button>
               </form>
               <div class="d-flex justify-content-between mt-2">
-                <small class="text-muted">
+                <small class="text-primary">
                   Connected as:
                   <span id="current-username" class="fw-bold">Guest</span>
                 </small>
-                <small class="text-muted">
+                <small class="text-primary">
                   <span id="char-count">0</span>/500
                 </small>
               </div>
@@ -261,19 +244,19 @@
         <div class="row">
           <div class="col-12 mb-3">
             <h6>Room Name:</h6>
-            <p id="info-room-name" class="text-muted">-</p>
+            <p id="info-room-name" class="text-primary">-</p>
           </div>
           <div class="col-12 mb-3">
             <h6>Topic:</h6>
-            <p id="info-room-topic" class="text-muted">-</p>
+            <p id="info-room-topic" class="text-primary">-</p>
           </div>
           <div class="col-6 mb-3">
             <h6>Users Online:</h6>
-            <p id="info-room-users" class="text-muted">-</p>
+            <p id="info-room-users" class="text-primary">-</p>
           </div>
           <div class="col-6 mb-3">
             <h6>Created:</h6>
-            <p id="info-room-created" class="text-muted">-</p>
+            <p id="info-room-created" class="text-primary">-</p>
           </div>
         </div>
       </div>
