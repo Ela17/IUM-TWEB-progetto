@@ -15,6 +15,7 @@ class CinemaHub {
     this.onlineUsers = 0;
     this.searchCache = new Map();
     this.searchHistory = [];
+    this.liveSearchAbortController = null;
 
     this.init();
   }
@@ -211,6 +212,15 @@ class CinemaHub {
    * @param {string} query - La stringa di ricerca.
    */
   async performLiveSearch(query) {
+    // Annulla la richiesta precedente se ancora in volo
+    try {
+      if (this.liveSearchAbortController) {
+        this.liveSearchAbortController.abort();
+      }
+    } catch (_) {}
+
+    this.liveSearchAbortController = new AbortController();
+    const signal = this.liveSearchAbortController.signal;
     // Controlla cache
     if (this.searchCache.has(query)) {
       this.displaySearchResults(this.searchCache.get(query));
@@ -223,6 +233,7 @@ class CinemaHub {
       const response = await axios.get(`/api/movies/suggestions`, {
         params: { q: query },
         timeout: 5000,
+        signal,
       });
 
       const results = {
@@ -233,6 +244,10 @@ class CinemaHub {
       this.searchCache.set(query, results);
       this.displaySearchResults(results);
     } catch (error) {
+      if (axios.isCancel?.(error) || error?.name === "CanceledError" || error?.name === "AbortError") {
+        // richiesta annullata: non mostrare errori
+        return;
+      }
       console.error("Search error:", error);
       this.displaySearchError("Search failed. Please try again.");
     } finally {
@@ -305,9 +320,9 @@ class CinemaHub {
     if (resultsContainer) {
       resultsContainer.innerHTML = `
         <div class="search-results-content text-center py-4">
-          <i class="bi bi-search fs-1 text-muted mb-2"></i>
-          <p class="text-muted">No results found</p>
-          <small class="text-muted">Try different keywords or browse our collections</small>
+          <i class="bi bi-search fs-1 text-secondary mb-2"></i>
+          <p class="text-secondary">No results found</p>
+          <small class="text-secondary">Try different keywords or browse our collections</small>
         </div>
       `;
       this.showSearchResults();
@@ -528,12 +543,10 @@ class CinemaHub {
       const element = document.getElementById(id);
       if (element) {
         const prevCount = parseInt(element.textContent) || 0;
-        element.textContent = count || 0;
+        const nextCount = count || 0;
 
-        if (count !== prevCount) {
-          element.style.animation = "none";
-          element.offsetHeight;
-          element.style.animation = "fadeIn 0.5s ease";
+        if (nextCount !== prevCount) {
+          this.animateNumber(element, prevCount, nextCount, 600);
         }
       }
     });
@@ -692,6 +705,27 @@ class CinemaHub {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => func.apply(this, args), delay);
     };
+  }
+
+  /**
+   * @method animateNumber
+   * @param {HTMLElement} element
+   * @param {number} from
+   * @param {number} to
+   * @param {number} duration
+   */
+  animateNumber(element, from, to, duration = 800) {
+    const start = performance.now();
+    const format = (n) => new Intl.NumberFormat("en-US").format(n);
+
+    const step = (now) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(from + (to - from) * eased);
+      element.textContent = format(value);
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
 }
 

@@ -142,7 +142,11 @@ exports.getMovieReviewStats = async function (req, res, next) {
 exports.getGlobalReviewCount = async function (req, res, next) {
   try {
     const total = await reviewModel.getGlobalReviewCount();
-    res.status(200).json({ success: true, data: { totalReviews: total }, error: null });
+    // Evita caching intermedi (CDN/proxy) che potrebbero mostrare 0
+    res.set("Cache-Control", "no-store, max-age=0");
+    res
+      .status(200)
+      .json({ success: true, data: { totalReviews: total }, error: null });
   } catch (error) {
     next(error);
   }

@@ -12,58 +12,60 @@ class MoviesController {
     this.currentCollection = "top-rated";
     this.currentPage = 1;
     this.isLoading = false;
+    this.currentSortBy = "base";
+    this.currentOrderBy = "desc";
 
     // Configurazione delle collezioni con filtri
     this.collections = {
       "top-rated": {
         title: "Top Rated Movies",
         description: "Movies with rating 4+ stars",
-        params: { min_rating: 4, limit: 24 },
+        params: { min_rating: 4, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       "oscar-winners": {
         title: "Oscar Winners",
         description: "Movies that won at least one Academy Award",
-        params: { oscar_winner: true, limit: 24 },
+        params: { oscar_winner: true, limit: 24, sort_by: "date", order_by: "desc" },
       },
       recent: {
         title: "Recent Releases",
         description: "Movies from 2025",
-        params: { year_from: 2025, year_to: 2025, limit: 24 },
+        params: { year_from: 2025, year_to: 2025, limit: 24, sort_by: "date", order_by: "desc" },
       },
       drama: {
         title: "Drama Movies",
         description: "Compelling dramatic storytelling",
-        params: { genre: "Drama", min_rating: 3, limit: 24 },
+        params: { genre: "Drama", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       comedy: {
         title: "Comedy Movies",
         description: "Laugh-out-loud comedies",
-        params: { genre: "Comedy", min_rating: 3, limit: 24 },
+        params: { genre: "Comedy", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       action: {
         title: "Action Movies",
         description: "High-octane action and adventure films",
-        params: { genre: "Action", min_rating: 3, limit: 24 },
+        params: { genre: "Action", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       horror: {
         title: "Horror Movies",
         description: "Spine-chilling horror films",
-        params: { genre: "Horror", min_rating: 3, limit: 24 },
+        params: { genre: "Horror", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       documentary: {
         title: "Documentary Films",
         description: "Real stories, real people",
-        params: { genre: "Documentary", min_rating: 3, limit: 24 },
+        params: { genre: "Documentary", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       animation: {
         title: "Animation Movies",
         description: "Beautiful animated storytelling",
-        params: { genre: "Animation", min_rating: 3, limit: 24 },
+        params: { genre: "Animation", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       thriller: {
         title: "Thriller Movies",
         description: "Edge-of-your-seat suspense",
-        params: { genre: "Thriller", min_rating: 3, limit: 24 },
+        params: { genre: "Thriller", min_rating: 3, limit: 24, sort_by: "rating", order_by: "desc" },
       },
       custom: {
         title: "Custom Search",
@@ -84,6 +86,7 @@ class MoviesController {
 
     this.setupEventListeners();
     this.checkUrlParameters();
+    this.applyDynamicConstraints();
     this.loadCurrentCollection();
 
     console.log("✅ Movies Controller initialized successfully");
@@ -107,6 +110,12 @@ class MoviesController {
     const searchForm = document.getElementById("movie-search-form");
     if (searchForm) {
       searchForm.addEventListener("submit", (e) => {
+        const isValid = this.validateForm();
+        if (!isValid) {
+          e.preventDefault();
+          if (searchForm.reportValidity) searchForm.reportValidity();
+          return;
+        }
         e.preventDefault();
         this.performCustomSearch();
       });
@@ -126,6 +135,50 @@ class MoviesController {
 
     // Form field changes for real-time updates
     this.setupFormFieldListeners();
+
+    // Sort controls
+    const sortBySelect = document.getElementById("sort-by");
+    const orderBySelect = document.getElementById("order-by");
+    if (sortBySelect) {
+      sortBySelect.addEventListener("change", () => {
+        this.currentSortBy = sortBySelect.value || "base";
+        // Aggiorna anche la config della collezione corrente senza perdere altri filtri
+        this.collections[this.currentCollection].params = {
+          ...this.collections[this.currentCollection].params,
+          sort_by: this.currentSortBy,
+        };
+        this.loadCurrentCollection(1);
+      });
+    }
+    if (orderBySelect) {
+      orderBySelect.addEventListener("change", () => {
+        this.currentOrderBy = orderBySelect.value || "desc";
+        this.collections[this.currentCollection].params = {
+          ...this.collections[this.currentCollection].params,
+          order_by: this.currentOrderBy,
+        };
+        this.loadCurrentCollection(1);
+      });
+    }
+  }
+
+  /**
+   * @method applyDynamicConstraints
+   * @description Imposta vincoli dinamici su campi numerici (max anno corrente)
+   */
+  applyDynamicConstraints() {
+    const currentYear = new Date().getFullYear();
+    ["search-year-from", "search-year-to"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        const maxAttr = parseInt(el.getAttribute("max"), 10);
+        if (!maxAttr || maxAttr < currentYear) {
+          el.setAttribute("max", String(currentYear));
+        }
+        el.setAttribute("step", "1");
+        el.setAttribute("min", el.getAttribute("min") || "1878");
+      }
+    });
   }
 
   /**
@@ -172,7 +225,9 @@ class MoviesController {
   debounceCustomSearch() {
     clearTimeout(this.searchDebounceTimer);
     this.searchDebounceTimer = setTimeout(() => {
-      this.performCustomSearch();
+      if (this.validateForm()) {
+        this.performCustomSearch();
+      }
     }, 800);
   }
 
@@ -224,6 +279,10 @@ class MoviesController {
       this.clearFormFields();
     }
 
+    // Applica i default di sort della categoria e sincronizza i controlli UI
+    this.applySortDefaultsForCollection();
+    this.updateSortControlsUI();
+
     this.updateCollectionInfo();
     this.loadCurrentCollection();
   }
@@ -264,7 +323,13 @@ class MoviesController {
     this.currentCollection = "custom";
     this.currentPage = 1;
 
-    const formData = new FormData(document.getElementById("movie-search-form"));
+    const formEl = document.getElementById("movie-search-form");
+    if (!this.validateForm()) {
+      if (formEl && formEl.reportValidity) formEl.reportValidity();
+      return;
+    }
+
+    const formData = new FormData(formEl);
     const customParams = {};
 
     // Raccogli parametri dal form
@@ -288,11 +353,70 @@ class MoviesController {
     // Update collection config
     this.collections["custom"].params = customParams;
 
+    // Applica i sort controls correnti anche alla custom
+    this.collections["custom"].params = {
+      ...this.collections["custom"].params,
+      sort_by: this.currentSortBy,
+      order_by: this.currentOrderBy,
+    };
+
     // Update title based on search criteria
     this.updateCustomSearchTitle(customParams);
 
     this.updateCollectionInfo();
     this.loadCurrentCollection();
+  }
+
+  /**
+   * @method validateForm
+   * @description Validazione client-side dei campi ricerca
+   * @returns {boolean}
+   */
+  validateForm() {
+    const title = document.getElementById("search-title");
+    const yearFrom = document.getElementById("search-year-from");
+    const yearTo = document.getElementById("search-year-to");
+    const minRating = document.getElementById("search-min-rating");
+    const maxRating = document.getElementById("search-max-rating");
+
+    // Title length check
+    if (title && title.value && title.value.trim().length > 100) {
+      title.setCustomValidity("Title too long (max 100 characters)");
+    } else if (title) {
+      title.setCustomValidity("");
+    }
+
+    // Years numeric and range checks
+    const yearMin = 1878;
+    const yearMax = new Date().getFullYear();
+    const yFrom = yearFrom && yearFrom.value ? parseInt(yearFrom.value, 10) : null;
+    const yTo = yearTo && yearTo.value ? parseInt(yearTo.value, 10) : null;
+
+    if (yearFrom) yearFrom.setCustomValidity("");
+    if (yearTo) yearTo.setCustomValidity("");
+
+    if (yFrom !== null && (isNaN(yFrom) || yFrom < yearMin || yFrom > yearMax)) {
+      yearFrom && yearFrom.setCustomValidity(`Year must be between ${yearMin} and ${yearMax}`);
+    }
+    if (yTo !== null && (isNaN(yTo) || yTo < yearMin || yTo > yearMax)) {
+      yearTo && yearTo.setCustomValidity(`Year must be between ${yearMin} and ${yearMax}`);
+    }
+    if (yFrom !== null && yTo !== null && yFrom > yTo) {
+      yearTo && yearTo.setCustomValidity("Year To must be >= Year From");
+    }
+
+    // Ratings logical check (select values are strings)
+    const rMin = minRating && minRating.value ? parseInt(minRating.value, 10) : null;
+    const rMax = maxRating && maxRating.value ? parseInt(maxRating.value, 10) : null;
+    if (minRating) minRating.setCustomValidity("");
+    if (maxRating) maxRating.setCustomValidity("");
+    if (rMin !== null && rMax !== null && rMin > rMax) {
+      maxRating && maxRating.setCustomValidity("Max rating must be >= Min rating");
+    }
+
+    // HTML5 validity
+    const form = document.getElementById("movie-search-form");
+    return form ? form.checkValidity() : true;
   }
 
   /**
@@ -412,6 +536,8 @@ class MoviesController {
     // Costruisci parametri per l'API
     const params = new URLSearchParams({
       ...config.params,
+      sort_by: this.currentSortBy || config.params.sort_by || "base",
+      order_by: this.currentOrderBy || config.params.order_by || "desc",
       page: page,
     });
 
@@ -452,6 +578,27 @@ class MoviesController {
       this.isLoading = false;
       this.hideLoading();
     }
+  }
+
+  /**
+   * @method applySortDefaultsForCollection
+   * @description Imposta currentSortBy/currentOrderBy dai default della collezione
+   */
+  applySortDefaultsForCollection() {
+    const cfg = this.collections[this.currentCollection]?.params || {};
+    this.currentSortBy = cfg.sort_by || this.currentSortBy || "base";
+    this.currentOrderBy = cfg.order_by || this.currentOrderBy || "desc";
+  }
+
+  /**
+   * @method updateSortControlsUI
+   * @description Sincronizza i select UI con lo stato corrente
+   */
+  updateSortControlsUI() {
+    const sortBySelect = document.getElementById("sort-by");
+    const orderBySelect = document.getElementById("order-by");
+    if (sortBySelect) sortBySelect.value = this.currentSortBy || "base";
+    if (orderBySelect) orderBySelect.value = this.currentOrderBy || "desc";
   }
 
   /**
@@ -693,8 +840,8 @@ class MoviesController {
     if (!info) return;
 
     if (data.pagination) {
-      const { currentPage, totalPages, totalResults } = data.pagination;
-      info.textContent = `Page ${currentPage} of ${totalPages} • ${totalResults} movies`;
+      const { totalResults } = data.pagination;
+      info.textContent = `${totalResults} movies`;
     } else if (data.movies) {
       info.textContent = `${data.movies.length} movies found`;
     }

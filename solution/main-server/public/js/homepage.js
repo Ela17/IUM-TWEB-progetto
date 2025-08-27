@@ -59,38 +59,89 @@ class Homepage {
    */
   async loadGlobalStats() {
     try {
-      const [reviewsResp, moviesOscarsResp] = await Promise.all([
-        axios.get(`/api/reviews/stats/global`),
+      const [reviewsResult, moviesOscarsResult] = await Promise.allSettled([
+        this.fetchGlobalReviewsCount(3, 1200),
         axios.get(`/api/stats/global`),
       ]);
 
-      const totalReviews = reviewsResp?.data?.data?.totalReviews ?? 0;
-      const totalMovies = moviesOscarsResp?.data?.data?.totalMovies ?? 0;
-      const totalOscars = moviesOscarsResp?.data?.data?.totalOscars ?? 0;
+      const totalReviews =
+        (reviewsResult.status === "fulfilled" ? reviewsResult.value : 0) ?? 0;
 
-      // Aggiorna card Reviews
+      const totalMovies =
+        (moviesOscarsResult.status === "fulfilled"
+          ? moviesOscarsResult.value?.data?.data?.totalMovies
+          : 0) ?? 0;
+
+      const totalOscars =
+        (moviesOscarsResult.status === "fulfilled"
+          ? moviesOscarsResult.value?.data?.data?.totalOscars
+          : 0) ?? 0;
+
+      // Aggiorna card Reviews con animazione
       const reviewsEl = document.getElementById("home-total-reviews");
       if (reviewsEl) {
-        reviewsEl.textContent = this.toKFormat(totalReviews);
         reviewsEl.dataset.animated = "true";
+        this.countUpAnimation(
+          reviewsEl,
+          0,
+          totalReviews,
+          this.toKFormat(totalReviews),
+          1200,
+        );
       }
 
-      // Aggiorna card Movies (id dinamico previsto: home-total-movies)
+      // Aggiorna card Movies con animazione
       const moviesEl = document.getElementById("home-total-movies");
       if (moviesEl) {
-        moviesEl.textContent = this.toKFormat(totalMovies);
         moviesEl.dataset.animated = "true";
+        this.countUpAnimation(
+          moviesEl,
+          0,
+          totalMovies,
+          this.toKFormat(totalMovies),
+          1200,
+        );
       }
 
-      // Aggiorna card Oscars (id dinamico previsto: home-total-oscars)
+      // Aggiorna card Oscars con animazione
       const oscarsEl = document.getElementById("home-total-oscars");
       if (oscarsEl) {
-        oscarsEl.textContent = this.toKFormat(totalOscars);
         oscarsEl.dataset.animated = "true";
+        this.countUpAnimation(
+          oscarsEl,
+          0,
+          totalOscars,
+          this.toKFormat(totalOscars),
+          1200,
+        );
       }
     } catch (err) {
       console.warn("Unable to load global stats", err?.message || err);
     }
+  }
+
+  /**
+   * @method fetchGlobalReviewsCount
+   * @description Recupera il numero totale di recensioni con piccoli retry.
+   * @param {number} maxRetries - Numero massimo di tentativi
+   * @param {number} baseDelayMs - Delay base tra i tentativi
+   * @returns {Promise<number>} Conteggio totale recensioni
+   */
+  async fetchGlobalReviewsCount(maxRetries = 2, baseDelayMs = 800) {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const resp = await axios.get(`/api/reviews/stats/global`, {
+          timeout: 15000,
+          headers: { "Cache-Control": "no-store" },
+        });
+        return resp?.data?.data?.totalReviews ?? 0;
+      } catch (e) {
+        if (attempt === maxRetries) break;
+        const delay = baseDelayMs * (attempt + 1);
+        await new Promise((r) => setTimeout(r, delay));
+      }
+    }
+    return 0;
   }
 
   toKFormat(value) {
@@ -105,14 +156,14 @@ class Homepage {
    */
   initializeOnlineUsersRealtime() {
     try {
-      if (!window.io) return; // socket lib non caricata
-      this.socket = io();
+      const socket = window.cinemaHub && window.cinemaHub.socket ? window.cinemaHub.socket : null;
+      if (!socket) return; // socket non disponibile
 
       // Richiede subito il conteggio corrente
-      this.socket.emit("request_user_count");
+      socket.emit("request_user_count");
 
       // Ascolta aggiornamenti
-      this.socket.on("user_count_update", (count) => {
+      socket.on("user_count_update", (count) => {
         const el = document.getElementById("home-online-users");
         if (el) el.textContent = count || 0;
       });

@@ -339,7 +339,7 @@
 }
 
 #no-results .bi-film {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   opacity: 0.5;
   animation: float 3s ease-in-out infinite;
 }
@@ -360,16 +360,36 @@
 }
 
 #no-results p {
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
 /* FORM IMPROVEMENTS */
-
-.form-label {
-  color: #141414;
+.search-label {
+  color: #212529;
   font-weight: 500;
   margin-bottom: 0.5rem;
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+/* Migliora contrasto dei controlli sort/order nell'header risultati */
+#sort-by,
+#order-by {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+#sort-by:focus,
+#order-by:focus {
+  background: var(--bg-primary);
+  border-color: var(--cinema-gold);
+  color: var(--text-primary);
 }
 
 .form-control,

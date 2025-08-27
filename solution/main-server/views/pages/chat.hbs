@@ -134,6 +134,8 @@
                     class="form-control"
                     placeholder="Type your message..."
                     maxlength="500"
+                    minlength="1"
+                    required
                     autocomplete="off"
                   />
                 </div>
@@ -194,6 +196,8 @@
               class="form-control"
               id="new-room-name"
               required
+              minlength="3"
+              pattern="^[a-zA-Z0-9_\- ]{3,50}$"
               placeholder="Enter room name..."
               maxlength="50"
             />

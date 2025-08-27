@@ -34,6 +34,8 @@ const searchMovies = async (req, res, next) => {
       searchParams.set("maxRating", req.query.max_rating);
     if (req.query.oscar_winner)
       searchParams.set("oscarWinner", req.query.oscar_winner === "true" ? true : false);
+    if (req.query.sort_by) searchParams.set("sortBy", req.query.sort_by);
+    if (req.query.order_by) searchParams.set("orderBy", req.query.order_by);
 
     const endpoint = `/api/movies/search?${searchParams.toString()}`;
     console.log(
@@ -243,7 +245,12 @@ const getSuggestions = async (req, res, next) => {
     if (req.query.q) searchParams.set("q", req.query.q);
 
     const endpoint = `/api/movies/suggestions?${searchParams.toString()}`;
-    const springResponse = await proxyService.callSpringBoot(endpoint);
+    const springResponse = await proxyService.callSpringBoot(
+      endpoint,
+      "GET",
+      null,
+      20000,
+    );
 
     res.json(springResponse.data);
   } catch (error) {

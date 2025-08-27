@@ -42,6 +42,11 @@ class ChatPage {
     if (messageForm) {
       messageForm.addEventListener("submit", (e) => {
         e.preventDefault();
+        // HTML5 validity + custom
+        if (!this.validateMessageInput()) {
+          if (messageForm.reportValidity) messageForm.reportValidity();
+          return;
+        }
         this.sendMessage();
       });
     }
@@ -496,6 +501,16 @@ class ChatPage {
     const message = messageInput.value.trim();
     if (!message || !this.currentRoom || !this.isConnected) return;
 
+    // Simple anti-spam: limit 3 messages per 1000ms
+    if (!this.messageTimestamps) this.messageTimestamps = [];
+    const now = Date.now();
+    this.messageTimestamps = this.messageTimestamps.filter((t) => now - t < 1000);
+    if (this.messageTimestamps.length >= 3) {
+      this.showError("You're sending messages too fast. Please slow down.");
+      return;
+    }
+    this.messageTimestamps.push(now);
+
     if (window.cinemaHub.socket && this.currentUser) {
       window.cinemaHub.socket.emit("room_message", {
         roomName: this.currentRoom,
@@ -508,6 +523,27 @@ class ChatPage {
 
       messageInput.focus();
     }
+  }
+
+  /**
+   * @method validateMessageInput
+   * @description Valida input messaggio (non vuoto, limiti)
+   * @returns {boolean}
+   */
+  validateMessageInput() {
+    const input = document.getElementById("message-input");
+    if (!input) return true;
+
+    const value = input.value.trim();
+    input.setCustomValidity("");
+
+    if (value.length === 0) {
+      input.setCustomValidity("Message cannot be empty");
+    } else if (value.length > 500) {
+      input.setCustomValidity("Message too long (max 500 characters)");
+    }
+
+    return input.checkValidity();
   }
 
   /**

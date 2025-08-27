@@ -648,16 +648,13 @@ class MovieDetailsPage {
   }
 
   initializeRoomSocket() {
-    if (typeof io === "undefined") {
-      console.warn("Socket.IO not loaded on movie details page");
+    const existingSocket = window.cinemaHub && window.cinemaHub.socket ? window.cinemaHub.socket : null;
+    if (!existingSocket) {
+      console.warn("Global socket not available from main.js");
       return;
     }
 
-    if (!window.cinemaHub) {
-      window.cinemaHub = {};
-    }
-
-    this.socket = io({ timeout: 5000 });
+    this.socket = existingSocket;
 
     this.socket.on("connect", () => {
       console.log("✅ Connected to Socket.IO for movie room");

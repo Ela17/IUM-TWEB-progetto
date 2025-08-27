@@ -52,7 +52,7 @@ const prepareError = (axiosError, serviceType) => {
  * @throws {Error} Se la connessione al servizio Spring Boot fallisce
  * @throws {Error} Se il servizio Spring Boot restituisce un errore HTTP
  */
-const callSpringBoot = async (endpoint, method = "GET", data = null) => {
+const callSpringBoot = async (endpoint, method = "GET", data = null, timeoutOverrideMs = null) => {
   if (!ALLOWED_METHODS.includes(method.toUpperCase())) {
     throw createError(405, `HTTP method not allowed: ${method}`, {
       additionalDetails: { serviceType: "SPRING_BOOT_SERVER" },
@@ -62,7 +62,7 @@ const callSpringBoot = async (endpoint, method = "GET", data = null) => {
   const axiosCallConfig = {
     method: method.toUpperCase(),
     url: `${springBootUrl}${endpoint}`,
-    timeout: springBootTimeout,
+    timeout: typeof timeoutOverrideMs === "number" ? timeoutOverrideMs : springBootTimeout,
     maxRedirects: 0,
   };
 

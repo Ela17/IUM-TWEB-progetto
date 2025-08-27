@@ -66,7 +66,8 @@ const servicesConfig = {
 
   otherExpress: {
     url: getEnvOrDefault("OTHER_EXPRESS_SERVER_URL", "http://localhost:3001"),
-    timeout: getEnvAsIntOrDefault("OTHER_EXPRESS_SERVER_TIMEOUT", 5000), // MongoDB è più veloce
+    // Timeout aumentato per evitare errori ECONNABORTED su operazioni iniziali più lente
+    timeout: getEnvAsIntOrDefault("OTHER_EXPRESS_SERVER_TIMEOUT", 15000),
   },
 };
 
