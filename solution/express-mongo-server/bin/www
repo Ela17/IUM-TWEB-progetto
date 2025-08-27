@@ -15,7 +15,7 @@ var debug = require("debug")("express-mongo-server:server");
 var http = require("http");
 
 const databaseManager = require('../services/databaseManager');
-const { startCleanupInterval } = require('../utils/cleanupInactiveRooms')
+const { startCleanupInterval, stopCleanupInterval } = require('../utils/cleanupInactiveRooms')
 
 const roomModel = require('../models/roomModel');
 const messageModel = require('../models/messageModel');
@@ -125,6 +125,8 @@ function onListening() {
  */
 
 let isShuttingDown = false;
+const FORCE_EXIT_MS = 10000; // tempo massimo per lo shutdown ordinato
+let forceExitTimer = null;
 
 /**
  * @function forceKill
@@ -147,23 +149,46 @@ async function gracefulShutdown() {
 
   isShuttingDown = true;
   console.log('\n🛑 Shutting down MongoDB server...');
+  // Impostiamo un timeout oltre il quale forziamo l'uscita
+  forceExitTimer = setTimeout(() => {
+    console.error(`⏱️ Shutdown non completato entro ${FORCE_EXIT_MS}ms. Forzo l'uscita...`);
+    forceKill();
+  }, FORCE_EXIT_MS);
   
   try {
-    server.close();
+    // Ferma eventuali job periodici prima di chiudere le connessioni
+    stopCleanupInterval();
+
+    // Attendi la chiusura del server per permettere alle richieste in corso di terminare
+    await new Promise((resolve, reject) => {
+      server.close((err) => (err ? reject(err) : resolve()));
+    });
     await databaseManager.disconnect();
     console.log('👋 Shutdown completed');
+    if (forceExitTimer) {
+      clearTimeout(forceExitTimer);
+      forceExitTimer = null;
+    }
     process.exit(0);
   } catch (error) {
     console.error('❌ Errore durante lo shutdown:', error);
+    if (forceExitTimer) {
+      clearTimeout(forceExitTimer);
+      forceExitTimer = null;
+    }
     process.exit(1);
   }
 }
 
 // Gestione più robusta dei segnali
 process.on('SIGINT', () => {
-  console.log('\n🛑 Ricevuto SIGINT (Ctrl+C)');
-  // Per Ctrl+C facciamo un kill immediato
-  forceKill();
+  if (isShuttingDown) {
+    console.log('\n🛑 Secondo SIGINT ricevuto, forzo l\'uscita immediata');
+    forceKill();
+    return;
+  }
+  console.log('\n🛑 Ricevuto SIGINT (Ctrl+C) - avvio graceful shutdown...');
+  gracefulShutdown();
 });
 
 process.on('SIGTERM', () => gracefulShutdown());

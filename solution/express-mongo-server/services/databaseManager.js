@@ -60,17 +60,8 @@ async function disconnect() {
   }
 }
 
-process.on("SIGINT", async () => {
-  console.log("\n🛑 Shutting down database connection...");
-  await disconnect();
-  process.exit(0);
-});
-
-process.on("SIGTERM", async () => {
-  console.log("\n🛑 Received SIGTERM, shutting down database...");
-  await disconnect();
-  process.exit(0);
-});
+// Nota: la gestione dei segnali di processo è centralizzata in bin/www
+// per evitare comportamenti duplicati o incoerenti.
 
 module.exports = {
   connect,

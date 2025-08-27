@@ -34,6 +34,7 @@ class MovieDetailsPage {
     if (this.movieId) {
       this.setupEventListeners();
       this.loadMovieDetails();
+      this.initializeRoomSocket();
     } else {
       this.showError("Invalid movie ID provided");
     }
@@ -57,6 +58,10 @@ class MovieDetailsPage {
     if (discussionBtn) {
       discussionBtn.addEventListener("click", () => {
         this.startDiscussion();
+        this.toggleChatPanel(true);
+        this.scrollToChatPanel();
+        const input = document.getElementById("movie-chat-input");
+        if (input) input.focus();
       });
     }
 
@@ -453,21 +458,148 @@ class MovieDetailsPage {
       .trim();
 
     const officialRoomName = `${sanitizedTitle}_${movieId}_official`;
+    this.currentRoomName = officialRoomName;
+    this.joinMovieRoom(officialRoomName);
+  }
 
-    // Topic descrittivo per la room
-    const roomTopic = `Official discussion for "${movieTitle}" (ID: ${movieId})`;
-
-    // Reindirizza alla chat room ufficiale del film
-    const chatUrl = `/chat?room=${encodeURIComponent(officialRoomName)}&topic=${encodeURIComponent(roomTopic)}&movieId=${movieId}&autoJoin=true`;
-
-    if (window.cinemaHub) {
-      window.cinemaHub.showNotification(
-        `Joining official discussion for ${movieTitle}...`,
-        "info",
-      );
+  initializeRoomSocket() {
+    if (typeof io === "undefined") {
+      console.warn("Socket.IO not loaded on movie details page");
+      return;
     }
 
-    window.location.href = chatUrl;
+    if (!window.cinemaHub) {
+      window.cinemaHub = {};
+    }
+
+    this.socket = io({ timeout: 5000 });
+
+    this.socket.on("connect", () => {
+      console.log("✅ Connected to Socket.IO for movie room");
+    });
+
+    this.socket.on("disconnect", (reason) => {
+      console.log("❌ Disconnected from Socket.IO:", reason);
+    });
+
+    this.socket.on("welcome", (data) => {
+      console.log("🎯 Welcome:", data);
+      this.currentUserName = data.userName;
+    });
+
+    this.socket.on("room_joined", (data) => {
+      console.log("🚪 Joined room:", data.roomName);
+      if (window.cinemaHub) {
+        window.cinemaHub.showNotification(
+          `Joined discussion: ${data.roomName}`,
+          "success",
+        );
+      }
+      this.updateRoomUsersBadgeVisibility(true);
+      this.toggleChatPanel(true);
+      this.scrollToChatPanel();
+    });
+
+    this.socket.on("room_message_received", (data) => {
+      console.log("💬", data.userName + ":", data.message);
+    });
+
+    // Aggiornamento numero utenti nella stanza
+    this.socket.on("room_users_update", (data) => {
+      if (data.roomName !== this.currentRoomName) return;
+      const badge = document.getElementById("room-users-badge");
+      if (badge) {
+        badge.textContent = data.userCount || 0;
+        badge.style.display = "inline-block";
+      }
+    });
+  }
+
+  joinMovieRoom(roomName) {
+    if (!this.socket || !this.socket.connected) {
+      if (window.cinemaHub) {
+        window.cinemaHub.showNotification(
+          "Socket not connected. Please wait...",
+          "warning",
+        );
+      }
+      return;
+    }
+
+    this.socket.emit("join_room", {
+      roomName,
+      userName: this.currentUserName || `Guest_${Math.floor(Math.random() * 1000)}`,
+    });
+  }
+
+  updateRoomUsersBadgeVisibility(show) {
+    const badge = document.getElementById("room-users-badge");
+    if (badge) {
+      badge.style.display = show ? "inline-block" : "none";
+    }
+  }
+
+  scrollToChatPanel() {
+    const panel = document.getElementById("movie-chat-panel");
+    if (panel) {
+      panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  toggleChatPanel(show) {
+    const panel = document.getElementById("movie-chat-panel");
+    if (panel) panel.style.display = show ? "block" : "none";
+
+    const form = document.getElementById("movie-chat-form");
+    if (form && !form._bound) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const input = document.getElementById("movie-chat-input");
+        const message = (input && input.value ? input.value : "").trim();
+        if (!message || !this.currentRoomName) return;
+        this.socket.emit("room_message", {
+          roomName: this.currentRoomName,
+          userName: this.currentUserName || `Guest_${Math.floor(Math.random() * 1000)}`,
+          message,
+        });
+        input.value = "";
+      });
+      form._bound = true;
+    }
+
+    // Render messaggi in arrivo
+    if (!this._messagesBound) {
+      this.socket.on("room_message_received", (data) => {
+        if (data.roomName !== this.currentRoomName) return;
+        const box = document.getElementById("movie-chat-messages");
+        if (!box) return;
+        const item = document.createElement("div");
+        item.className = "mb-2";
+
+        const header = document.createElement("div");
+        header.className = "d-flex align-items-center gap-2 mb-1";
+        const userEl = document.createElement("span");
+        userEl.textContent = this.escapeHtml(data.userName);
+        userEl.style.color = "var(--cinema-gold)";
+        userEl.style.fontWeight = "600";
+        const timeEl = document.createElement("small");
+        timeEl.textContent = new Date(data.timestamp || Date.now()).toLocaleTimeString();
+        timeEl.style.color = "var(--text-secondary)";
+        header.appendChild(userEl);
+        header.appendChild(timeEl);
+
+        const body = document.createElement("div");
+        body.textContent = data.message;
+        body.style.color = "var(--text-primary)";
+        body.style.lineHeight = "1.4";
+
+        item.appendChild(header);
+        item.appendChild(body);
+        box.appendChild(item);
+        box.scrollTop = box.scrollHeight;
+      });
+      this._messagesBound = true;
+    }
   }
 
   /**

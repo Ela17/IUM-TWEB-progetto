@@ -23,9 +23,7 @@
     {{#if isMovieDetailsPage}}
         <link rel="stylesheet" href="/css/movie-details.css">
     {{/if}}
-    {{#if isChatPage}}
-        <link rel="stylesheet" href="/css/chat.css">
-    {{/if}}
+    
 </head>
 <body>
     <!-- Navigation Header -->
@@ -52,7 +50,7 @@
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    
 
     <!-- Main JavaScript -->
     <script src="/js/main.js"></script>
@@ -64,10 +62,9 @@
         <script src="/js/movies.js"></script>
     {{/if}}
     {{#if isMovieDetailsPage}}
+        <script src="/socket.io/socket.io.js"></script>
         <script src="/js/movieDetails.js"></script>
     {{/if}}
-    {{#if isChatPage}}
-        <script src="/js/chat.js"></script>
-    {{/if}}
+    
 </body>
 </html>

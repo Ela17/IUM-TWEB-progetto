@@ -6,7 +6,6 @@ require("dotenv").config();
 var app = require("../app");
 var debug = require("debug")("main-server:server");
 var http = require("http");
-
 const createSocketServer = require("../socket/serverSocketSetup");
 
 /**
@@ -20,9 +19,7 @@ app.set("port", port);
  */
 var server = http.createServer(app);
 
-/**
- * Setup Socket.IO sul server HTTP
- */
+// Setup Socket.IO sul server HTTP
 const io = createSocketServer(server);
 
 /**
@@ -36,18 +33,17 @@ server.on("listening", onListening);
  * GRACEFUL SHUTDOWN
  */
 let isShuttingDown = false;
-let socketClosed = false;
 let serverClosed = false;
 let forceShutdownTimeout = null;
+let socketClosed = false;
 
 /**
  * @function checkAndExit
- * @description Controlla se entrambi Socket.io e HTTP server sono chiusi per uscire
+ * @description Controlla se il server HTTP è chiuso per uscire
  */
 function checkAndExit() {
-  console.log(`🔍 DEBUG: checkAndExit called - socketClosed: ${socketClosed}, serverClosed: ${serverClosed}`);
-  
-  if (socketClosed && serverClosed) {
+  console.log(`🔍 DEBUG: checkAndExit called - serverClosed: ${serverClosed}, socketClosed: ${socketClosed}`);
+  if (serverClosed && socketClosed) {
     if (forceShutdownTimeout) {
       clearTimeout(forceShutdownTimeout);
       console.log('🔍 DEBUG: Timeout cancellato');
@@ -77,23 +73,20 @@ function gracefulShutdown(signal) {
     process.exit(1);
   }, 3000);
 
-  // Prima chiude Socket.io
+  // Chiude prima Socket.IO
   if (io && typeof io.close === 'function') {
     console.log('🔌 Chiusura connessioni Socket.io...');
     io.close((err) => {
       if (err) {
-        console.error('❌ Errore durante la chiusura di Socket.io:', err.message);
+        console.error('❌ Errore durante la chiusura di Socket.io:', err && err.message ? err.message : err);
       } else {
         console.log('✅ Socket.io chiuso correttamente');
       }
       socketClosed = true;
-      console.log('🔍 DEBUG: Socket.io marcato come chiuso');
       checkAndExit();
     });
   } else {
-    console.log('⚠️ Socket.io non disponibile o già chiuso');
     socketClosed = true;
-    checkAndExit();
   }
 
   // Poi chiude server HTTP
@@ -122,11 +115,7 @@ function forceKill() {
 }
 
 // Gestione più robusta dei segnali
-process.on('SIGINT', () => {
-  console.log('\n🛑 Ricevuto SIGINT (Ctrl+C)');
-  // Per Ctrl+C facciamo un kill immediato
-  forceKill();
-});
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
 

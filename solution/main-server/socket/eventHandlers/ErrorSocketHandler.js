@@ -27,28 +27,7 @@ class ErrorSocketHandler {
    * @param {object} [error.additionalDetails={}] - Dettagli aggiuntivi specifici dell'errore.
    * @param {string} [error.stack] - Lo stack trace dell'errore.
    */
-  emitAndLogError(error) {
-    console.log("++++++++++ SOCKET ERROR LOG ++++++++++\n");
-    const logEntry = {
-      timestamp: new Date().toISOString(),
-      errorInfo: {
-        name: error.name,
-        message: error.message,
-        event: error.event,
-        code: error.code || "UNKNOWN_ERROR",
-      },
-      socketInfo: {
-        socketId: error.socket?.id || "N/A",
-        connected: error.socket?.connected || false,
-        rooms: error.socket ? Array.from(error.socket.rooms) : [],
-      },
-      additionalDetails: error.additionalDetails || {},
-      stack: error.stack?.split("\n").slice(0, 5), // Prime 5 righe dello stack
-    };
-
-    console.error(JSON.stringify(logEntry, null, 2));
-    console.log("++++++++++ END ERROR LOG ++++++++++\n");
-  }
+  emitAndLogError() {}
 
   /**
    * @method _sendToUser
@@ -59,12 +38,7 @@ class ErrorSocketHandler {
    * @param {object} error - L'oggetto errore contenente l'istanza del socket a cui inviare il messaggio.
    * @param {object} error.socket - L'oggetto socket di Socket.IO del client.
    */
-  _sendToUser(error) {
-    error.socket.emit("error", {
-      success: false,
-      message: "Live chat error",
-    });
-  }
+  _sendToUser() {}
 }
 
-module.exports = (io) => new ErrorSocketHandler(io); // singleton
+module.exports = () => new ErrorSocketHandler(null);

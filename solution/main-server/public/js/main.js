@@ -28,7 +28,7 @@ class CinemaHub {
 
     this.setupEventListeners();
     this.initializeSearch();
-    this.initializeSocket();
+    // Socket disabilitato
     this.initializeThemeManager();
 
     console.log("✅ CinemaHub initialized successfully");
@@ -112,10 +112,7 @@ class CinemaHub {
       this.handleNavbarScroll();
     });
 
-    // Visibilità pagina per socket
-    document.addEventListener("visibilitychange", () => {
-      this.handleVisibilityChange();
-    });
+    // Rimosso: gestione visibilità per socket
   }
 
   // ==========================
@@ -403,98 +400,7 @@ class CinemaHub {
    * @method initializeSocket
    * @description Inizializza la connessione Socket.IO.
    */
-  initializeSocket() {
-    if (typeof io === "undefined") {
-      console.warn("Socket.IO not loaded, chat features disabled");
-      return;
-    }
-
-    try {
-      this.socket = io({
-        timeout: 5000,
-        retries: 3,
-      });
-
-      this.socket.on("connect", () => {
-        console.log("✅ Connected to chat server");
-        this.updateChatIndicator(true);
-        this.showNotification("Connected to live chat", "success");
-
-        this.socket.emit("request_user_count");
-      });
-
-      this.socket.on("disconnect", (reason) => {
-        console.log("❌ Disconnected from chat server:", reason);
-        this.updateChatIndicator(false);
-
-        if (reason === "io server disconnect") {
-          this.socket.connect();
-        }
-      });
-
-      this.socket.on("connect_error", (error) => {
-        console.error("Socket connection error:", error);
-        this.updateChatIndicator(false);
-      });
-
-      this.socket.on("welcome", (data) => {
-        console.log("🎯 Welcome message received:", data);
-        if (data.success) {
-          this.currentUser = {
-            userName: data.userName,
-            socketId: data.socketId,
-          };
-          this.showNotification(`Welcome ${data.userName}!`, "success");
-        }
-      });
-
-      this.socket.on("room_creation_result", (data) => {
-        if (data.success) {
-          console.log(`🎬 Room "${data.roomName}" created successfully`);
-          this.currentRoom = data.roomName;
-          this.showNotification(`Room "${data.roomName}" created!`, "success");
-        }
-      });
-
-      this.socket.on("room_joined", (data) => {
-        console.log(`🚪 Joined room: ${data.roomName}`);
-        this.currentRoom = data.roomName;
-        this.showNotification(`Joined room: ${data.roomName}`, "info");
-      });
-
-      this.socket.on("user_joined", (data) => {
-        console.log(`👋 ${data.userName} joined ${data.roomName}`);
-        this.showNotification(`${data.userName} joined the room`, "info");
-      });
-
-      this.socket.on("user_left", (data) => {
-        console.log(`👋 ${data.userName} left ${data.roomName}`);
-        this.showNotification(`${data.userName} left the room`, "info");
-      });
-
-      this.socket.on("room_message_received", (data) => {
-        console.log(
-          `💬 Message in ${data.roomName} from ${data.userName}: ${data.message}`,
-        );
-        this.handleIncomingMessage(data);
-      });
-
-      this.socket.on("error", (error) => {
-        console.error("Socket error:", error);
-        this.showNotification("Chat connection error", "error");
-      });
-
-      this.socket.on("user_count_update", (count) => {
-        this.updateOnlineUsersCount(count);
-      });
-
-      this.socket.on("notification", (data) => {
-        this.showNotification(data.message, data.type || "info");
-      });
-    } catch (error) {
-      console.error("Socket initialization failed:", error);
-    }
-  }
+  initializeSocket() {}
 
   /**
    * @method joinRoom
@@ -634,17 +540,7 @@ class CinemaHub {
    * @method handleVisibilityChange
    * @description Gestisce cambio di visibilità della pagina per socket.
    */
-  handleVisibilityChange() {
-    if (document.hidden) {
-      if (this.socket && this.socket.connected) {
-        this.socket.emit("user_inactive");
-      }
-    } else {
-      if (this.socket && this.socket.connected) {
-        this.socket.emit("user_active");
-      }
-    }
-  }
+  handleVisibilityChange() {}
 
   /**
    * @method showNotification

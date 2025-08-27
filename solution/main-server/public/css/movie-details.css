@@ -59,11 +59,17 @@
   align-items: center;
 }
 
+/* Evita di alterare il colore del badge genere (oro) */
+.movie-meta span:not(.badge) {
+  color: var(--text-primary) !important;
+}
+
 .movie-rating {
   background: var(--bg-primary);
   padding: 0.5rem 1rem;
   border-radius: 2rem;
   backdrop-filter: blur(10px);
+  color: var(--text-primary) !important;
 }
 
 /* Section Titles */
@@ -301,6 +307,17 @@
   color: var(--text-primary) !important;
   border: 1px solid var(--border-color) !important;
   border-radius: var(--border-radius) !important;
+}
+
+/* Chat - migliora leggibilità in dark mode */
+#movie-chat-messages {
+  background: var(--bg-secondary);
+  color: var(--text-primary) !important;
+}
+
+#movie-chat-input::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.9;
 }
 
 .theme-card .card-header {
