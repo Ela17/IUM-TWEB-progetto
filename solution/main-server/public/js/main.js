@@ -28,7 +28,8 @@ class CinemaHub {
 
     this.setupEventListeners();
     this.initializeSearch();
-    // Socket disabilitato
+    // Inizializza Socket.IO per aggiornare indicatori globali (footer, navbar)
+    this.initializeSocket();
     this.initializeThemeManager();
 
     console.log("✅ CinemaHub initialized successfully");
@@ -400,7 +401,36 @@ class CinemaHub {
    * @method initializeSocket
    * @description Inizializza la connessione Socket.IO.
    */
-  initializeSocket() {}
+  initializeSocket() {
+    try {
+      if (!window.io) return;
+      this.socket = io();
+
+      // Richiede subito il conteggio
+      this.socket.emit("request_user_count");
+
+      this.socket.on("user_count_update", (count) => {
+        this.updateOnlineUsersCount(count || 0);
+      });
+    } catch (e) {
+      console.warn("Socket init failed", e?.message || e);
+    }
+  }
+
+  /**
+   * @method startOnlineUsersPolling
+   * @description Aggiorna periodicamente il numero di utenti online chiedendolo al server via HTTP.
+   */
+  startOnlineUsersPolling() {
+    const update = async () => {
+      try {
+        const resp = await axios.get(`/api/health`);
+        // Come fallback, se non abbiamo un endpoint specifico, manteniamo il valore corrente
+        // In futuro si potrà sostituire con socket o endpoint dedicato.
+      } catch (e) {}
+    };
+    // Se in futuro aggiungiamo un endpoint, potremo usarlo qui.
+  }
 
   /**
    * @method joinRoom

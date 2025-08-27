@@ -32,6 +32,8 @@ const searchMovies = async (req, res, next) => {
       searchParams.set("minRating", req.query.min_rating);
     if (req.query.max_rating)
       searchParams.set("maxRating", req.query.max_rating);
+    if (req.query.oscar_winner)
+      searchParams.set("oscarWinner", req.query.oscar_winner === "true" ? true : false);
 
     const endpoint = `/api/movies/search?${searchParams.toString()}`;
     console.log(
@@ -200,6 +202,17 @@ function transformMovieDetails(details) {
     });
   }
 
+  // Oscars (nomination e vittorie)
+  const oscars = Array.isArray(details?.oscars)
+    ? details.oscars.map((o) => ({
+        year_film: o?.year_film ?? o?.yearFilm ?? null,
+        category: o?.category ?? null,
+        name: o?.name ?? null,
+        film: o?.film ?? null,
+        winner: !!o?.winner,
+      }))
+    : [];
+
   return {
     id: details.id,
     name: details.name,
@@ -216,6 +229,7 @@ function transformMovieDetails(details) {
     countries: details.countries,
     cast,
     releases,
+    oscars,
   };
 }
 

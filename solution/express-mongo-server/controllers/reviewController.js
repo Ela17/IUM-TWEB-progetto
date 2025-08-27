@@ -136,3 +136,16 @@ exports.getMovieReviewStats = async function (req, res, next) {
     next(error);
   }
 };
+
+/**
+ * Restituisce il conteggio totale delle recensioni presenti nel database.
+ * ENDPOINT: GET /api/reviews/stats/global
+ */
+exports.getGlobalReviewCount = async function (req, res, next) {
+  try {
+    const total = await reviewModel.getGlobalReviewCount();
+    res.status(200).json({ success: true, data: { totalReviews: total }, error: null });
+  } catch (error) {
+    next(error);
+  }
+};

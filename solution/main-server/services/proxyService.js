@@ -127,4 +127,8 @@ const callOtherExpress = async (endpoint, method = "GET", data = null) => {
 module.exports = {
   callSpringBoot,
   callOtherExpress,
+  async getGlobalReviewsCount() {
+    const response = await callOtherExpress(`/api/reviews/stats/global`);
+    return response.data?.data?.totalReviews ?? 0;
+  },
 };

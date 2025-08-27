@@ -205,6 +205,32 @@
   color: var(--text-primary) !important;
 }
 
+/* Scrollable reviews list */
+.reviews-scroll {
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.top-critic-icon {
+  color: var(--cinema-gold) !important;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.reviews-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.reviews-scroll::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.reviews-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 8px;
+}
+
 .review-score {
   min-width: 60px;
   text-align: center;
@@ -339,6 +365,16 @@
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   font-weight: 600;
+}
+
+/* Oscars section */
+.oscar-item {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.oscar-item:last-child {
+  border-bottom: none;
 }
 
 .movie-details .card:hover {

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tweb.springboot_server.model.Movie;
 import com.tweb.springboot_server.repository.MovieRepository;
+import com.tweb.springboot_server.repository.OscarRepository;
 
 /**
  * Controller RESTful per la gestione delle operazioni relative ai film.
@@ -52,6 +53,9 @@ public class MovieController {
 
     @Autowired
     private MovieRepository movieRepository;
+
+    @Autowired
+    private OscarRepository oscarRepository;
 
     /**
      * Endpoint API per recuperare i dettagli completi di un film tramite il suo ID.
@@ -244,6 +248,31 @@ public class MovieController {
     }
 
     /**
+     * Endpoint API per statistiche globali: conteggi totali di movies e oscars.
+     *
+     * @return ApiResponse con { totalMovies, totalOscars }
+     *
+     * @apiNote GET /api/movies/stats/global
+     */
+    @GetMapping("/stats/global")
+    public ResponseEntity<ApiResponse<Map<String, Long>>> getGlobalStats() {
+        try {
+            long totalMovies = movieRepository.countAllValidMovies();
+            long totalOscars = oscarRepository.countAllOscars();
+
+            Map<String, Long> payload = new HashMap<>();
+            payload.put("totalMovies", totalMovies);
+            payload.put("totalOscars", totalOscars);
+
+            return ResponseEntity.ok(new ApiResponse<>(true, payload, null));
+        } catch (Exception e) {
+            logger.error("❌ Error in getGlobalStats: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse<>(false, null, "Server Internal Error"));
+        }
+    }
+
+    /**
      * Metodo helper: converte il DTO dei filtri in una Map per il Service.
      *
      * @param filterDto Il DTO contenente i filtri.
@@ -261,6 +290,7 @@ public class MovieController {
         filters.put("year_to", filterDto.getYearTo());
         filters.put("min_duration", filterDto.getMinDuration());
         filters.put("max_duration", filterDto.getMaxDuration());
+        filters.put("oscar_winner", filterDto.getOscarWinner());
         
         // Parametri di ordinamento
         filters.put("sort_by", filterDto.getSortBy());

@@ -91,6 +91,14 @@ public class MovieFilterRequestDto {
     private Integer maxDuration;
 
     /**
+     * Indica se filtrare solo i film vincitori di un Premio Oscar (qualsiasi categoria).
+     * Se true, la ricerca restituirà solo film che hanno almeno un record Oscar con winner=true.
+     * Accetta valori {@code null} per ignorare il filtro.
+     */
+    @Nullable
+    private Boolean oscarWinner;
+
+    /**
      * Campo per l'ordinamento dei risultati.
      * Valori consentiti: base, rating, date, name, duration, random.
      * Default: "base".
@@ -263,6 +271,22 @@ public class MovieFilterRequestDto {
     }
 
     /**
+     * Restituisce il flag per filtrare i film vincitori di Oscar.
+     * @return true se filtrare solo vincitori, false/null altrimenti.
+     */
+    public Boolean getOscarWinner() {
+        return oscarWinner;
+    }
+
+    /**
+     * Imposta il flag per filtrare i film vincitori di Oscar.
+     * @param oscarWinner true per includere solo vincitori.
+     */
+    public void setOscarWinner(Boolean oscarWinner) {
+        this.oscarWinner = oscarWinner;
+    }
+
+    /**
      * Restituisce il criterio di ordinamento per i risultati.
      * @return Il criterio di ordinamento.
      */
@@ -341,6 +365,7 @@ public class MovieFilterRequestDto {
                 ", yearTo=" + yearTo +
                 ", minDuration=" + minDuration +
                 ", maxDuration=" + maxDuration +
+                ", oscarWinner=" + oscarWinner +
                 ", sortBy='" + sortBy + '\'' +
                 ", orderBy='" + orderBy + '\'' +
                 ", page=" + page +

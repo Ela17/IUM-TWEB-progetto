@@ -50,19 +50,19 @@
     <!-- JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     
 
     <!-- Main JavaScript -->
     <script src="/js/main.js"></script>
 
     {{#if isHomepage}}
-        <script src="/js/homepage.js"></script>
+        <script src="/js/homepage.js?v=2"></script>
     {{/if}}
     {{#if isMoviesPage}}
         <script src="/js/movies.js"></script>
     {{/if}}
     {{#if isMovieDetailsPage}}
-        <script src="/socket.io/socket.io.js"></script>
         <script src="/js/movieDetails.js"></script>
     {{/if}}
     

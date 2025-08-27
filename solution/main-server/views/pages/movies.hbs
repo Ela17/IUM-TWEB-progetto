@@ -60,6 +60,14 @@
                 <button
                   type="button"
                   class="collection-filter"
+                  data-collection="oscar-winners"
+                >
+                  <i class="bi bi-trophy me-1"></i>
+                  <span>Oscar Winners</span>
+                </button>
+                <button
+                  type="button"
+                  class="collection-filter"
                   data-collection="recent"
                 >
                   <i class="bi bi-calendar me-1"></i>
@@ -181,6 +189,15 @@
                   <option value="War">War</option>
                   <option value="Western">Western</option>
                 </select>
+              </div>
+
+              <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="true" id="search-oscar-winner" name="oscar_winner">
+                  <label class="form-check-label" for="search-oscar-winner">
+                    Oscar Winners Only
+                  </label>
+                </div>
               </div>
 
               <div class="col-md-3">

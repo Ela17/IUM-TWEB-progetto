@@ -48,10 +48,7 @@
             capabilities. Access information about movies, cast, crew, and
             production details.
           </p>
-          <a href="/movies" class="btn btn-outline-primary hover-lift">
-            Start Exploring
-            <i class="bi bi-arrow-right ms-1"></i>
-          </a>
+          
         </div>
       </div>
     </div>
@@ -63,15 +60,11 @@
             class="bi bi-chat-dots feature-icon text-cinema-gold mb-3"
             style="font-size: 3rem;"
           ></i>
-          <h5 class="card-title" style="color: var(--text-primary)">Live Chat</h5>
+          <h5 class="card-title" style="color: var(--text-primary)">Insights & Reviews</h5>
           <p class="card-text" style="color: var(--text-secondary)">
-            Real-time discussions between fans and journalists about films,
-            reviews, and industry insights in topic-based rooms.
+            Explore aggregated ratings and reviews from our dataset to inform your research and discovery.
           </p>
-          <a href="/chat" class="btn btn-outline-primary hover-lift">
-            Join Discussion
-            <i class="bi bi-arrow-right ms-1"></i>
-          </a>
+          
         </div>
       </div>
     </div>
@@ -87,21 +80,21 @@
 
     <div class="col-md-3 col-6 mb-3">
       <div class="stats-card bg-cinema-gold" style="color: #000;">
-        <h2 class="display-6 fw-bold">940K+</h2>
+        <h2 class="display-6 fw-bold" id="home-total-movies">0</h2>
         <h5>Movies</h5>
       </div>
     </div>
 
     <div class="col-md-3 col-6 mb-3">
       <div class="stats-card bg-cinema-gold" style="color: #000;">
-        <h2 class="display-6 fw-bold">5.7M+</h2>
-        <h5>Actor Records</h5>
+        <h2 class="display-6 fw-bold" id="home-total-reviews">0</h2>
+        <h5>Total Reviews</h5>
       </div>
     </div>
 
     <div class="col-md-3 col-6 mb-3">
       <div class="stats-card bg-cinema-gold" style="color: #000;">
-        <h2 class="display-6 fw-bold">10K+</h2>
+        <h2 class="display-6 fw-bold" id="home-total-oscars">0</h2>
         <h5>Oscar Awards</h5>
       </div>
     </div>
@@ -111,7 +104,7 @@
         <h2 class="display-6 fw-bold" id="home-online-users">
           {{#if onlineUsers}}{{onlineUsers}}{{else}}0{{/if}}
         </h2>
-        <h5>Users Online</h5>
+        <h5>Online Users</h5>
       </div>
     </div>
   </div>

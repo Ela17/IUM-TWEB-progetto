@@ -19,6 +19,7 @@ class MovieDetailsPage {
     this.movieData = null;
     this.reviewsPage = 1;
     this.reviewsLoaded = false;
+    this.showOnlyTopCritics = false;
 
     this.init();
   }
@@ -50,6 +51,34 @@ class MovieDetailsPage {
     if (loadMoreBtn) {
       loadMoreBtn.addEventListener("click", () => {
         this.loadMoreReviews();
+      });
+    }
+    // Infinite scroll within reviews container
+    const reviewsContainer = document.getElementById("reviews-container");
+    if (reviewsContainer) {
+      reviewsContainer.addEventListener("scroll", () => {
+        const nearBottom =
+          reviewsContainer.scrollTop + reviewsContainer.clientHeight >=
+          reviewsContainer.scrollHeight - 24;
+        if (nearBottom) {
+          const loadMoreBtn = document.getElementById("load-more-reviews");
+          if (loadMoreBtn && !loadMoreBtn.classList.contains("d-none")) {
+            this.loadMoreReviews();
+          }
+        }
+      });
+    }
+
+    // Toggle Top Critics
+    const toggleTopCritics = document.getElementById("toggle-top-critics");
+    if (toggleTopCritics) {
+      toggleTopCritics.addEventListener("change", (e) => {
+        this.showOnlyTopCritics = !!e.target.checked;
+        // reset paginazione visuale
+        this.reviewsPage = 1;
+        // rerender con filtro
+        const reviews = (this.movieData && this.movieData.reviews) || [];
+        this.displayReviews(reviews);
       });
     }
 
@@ -163,6 +192,8 @@ class MovieDetailsPage {
       } else {
         console.log("No review statistics available");
         this.updateElement("avg-rating", "N/A");
+        this.updateElement("max-rating", "N/A");
+        this.updateElement("min-rating", "N/A");
         this.updateElement("total-reviews", "0");
       }
     } catch (statsError) {
@@ -196,6 +227,14 @@ class MovieDetailsPage {
 
     if (movie.releases) {
       this.displayReleases(movie.releases);
+    }
+
+    // Oscars
+    if (Array.isArray(movie.oscars) && movie.oscars.length > 0) {
+      this.displayOscars(movie.oscars);
+    } else {
+      const oscarsSection = document.getElementById("oscars-section");
+      if (oscarsSection) oscarsSection.style.display = "none";
     }
   }
 
@@ -247,7 +286,14 @@ class MovieDetailsPage {
    */
   displayStatistics(stats) {
     this.updateElement("avg-rating", stats.averageScore || "N/A");
+    this.updateElement("max-rating", typeof stats.maxScore === "number" ? stats.maxScore : "N/A");
+    this.updateElement("min-rating", typeof stats.minScore === "number" ? stats.minScore : "N/A");
     this.updateElement("total-reviews", stats.totalReviews || "0");
+    const topCriticsText =
+      typeof stats.topCriticsCount === "number"
+        ? `${stats.topCriticsCount}${typeof stats.topCriticsPercentage === "number" ? ` (${stats.topCriticsPercentage}%)` : ""}`
+        : "N/A";
+    this.updateElement("top-critics", topCriticsText);
   }
 
   /**
@@ -267,8 +313,8 @@ class MovieDetailsPage {
     if (!reviews || reviews.length === 0) {
       container.innerHTML = `
         <div class="text-center py-4">
-          <i class="bi bi-chat-left-quote fs-1 text-muted mb-2"></i>
-          <p class="text-muted">No reviews available for this movie yet.</p>
+          <i class="bi bi-chat-left-quote fs-1 text-secondary mb-2"></i>
+          <p class="text-secondary">No reviews available for this movie yet.</p>
           
         </div>
       `;
@@ -277,8 +323,20 @@ class MovieDetailsPage {
 
     let html = "";
 
-    // Mostra solo le prime 3 recensioni inizialmente
-    const reviewsToShow = reviews.slice(0, 3);
+    // Applica filtro Top Critics se attivo
+    let filtered = Array.isArray(reviews) ? reviews : [];
+    if (this.showOnlyTopCritics) {
+      filtered = filtered.filter((r) => r.top_critic === true);
+    }
+
+    if (this.showOnlyTopCritics && filtered.length === 0) {
+      container.innerHTML = "";
+      this.loadMoreTopCriticsUntil(1);
+      return;
+    }
+
+    const INITIAL_COUNT = 10;
+    const reviewsToShow = filtered.slice(0, INITIAL_COUNT);
 
     reviewsToShow.forEach((review) => {
       html += this.createReviewHtml(review);
@@ -287,11 +345,64 @@ class MovieDetailsPage {
     container.innerHTML = html;
 
     // Mostra il bottone "Load More" se ci sono più recensioni
-    if (reviews.length > 3) {
-      const loadMoreBtn = document.getElementById("load-more-reviews");
+    const loadMoreBtn = document.getElementById("load-more-reviews");
+    if (filtered.length > INITIAL_COUNT) {
       if (loadMoreBtn) {
         loadMoreBtn.classList.remove("d-none");
+        loadMoreBtn.disabled = false;
+        loadMoreBtn.style.display = "";
       }
+    }
+    if (filtered.length <= INITIAL_COUNT && loadMoreBtn) {
+      loadMoreBtn.classList.add("d-none");
+      loadMoreBtn.style.display = "";
+    }
+  }
+
+  /**
+   * Carica pagine successive finché non trova almeno `minCount` recensioni Top Critics
+   * o finché non esaurisce le pagine.
+   */
+  async loadMoreTopCriticsUntil(minCount = 3) {
+    try {
+      const container = document.getElementById("reviews-container");
+      if (!container) return;
+
+      let found = container.querySelectorAll(".top-critic-icon").length;
+
+      // Evita loop infiniti: limita il numero di pagine da provare
+      const MAX_EXTRA_PAGES = 10;
+      let tried = 0;
+
+      while (found < minCount && tried < MAX_EXTRA_PAGES) {
+        this.reviewsPage++;
+        const response = await fetch(
+          `/api/movies/${this.movieId}/reviews?page=${this.reviewsPage}`,
+        );
+        if (!response.ok) break;
+        const data = await response.json();
+        if (!data || data.length === 0) break;
+
+        const list = data.filter((r) => r.top_critic === true);
+        list.forEach((review) => {
+          container.insertAdjacentHTML(
+            "beforeend",
+            this.createReviewHtml(review),
+          );
+        });
+
+        found = container.querySelectorAll(".top-critic-icon").length;
+        tried++;
+      }
+
+      const loadMoreBtn = document.getElementById("load-more-reviews");
+      if (loadMoreBtn) {
+        // Se ci sono ancora potenziali risultati, lascia il bottone visibile
+        loadMoreBtn.classList.toggle("d-none", false);
+        loadMoreBtn.disabled = false;
+      }
+    } catch (e) {
+      console.warn("loadMoreTopCriticsUntil error:", e);
     }
   }
 
@@ -301,11 +412,20 @@ class MovieDetailsPage {
    * @returns {string} HTML della recensione
    */
   createReviewHtml(review) {
+    const isTopCritic =
+      review.top_critic === true ||
+      review.top_critic === 1 ||
+      review.top_critic === "true" ||
+      review.top_critic === "True" ||
+      review.top_critic === "TRUE";
+    const crownHtml = isTopCritic
+      ? ' <i class="bi bi-award-fill top-critic-icon ms-1" title="Top Critic" aria-label="Top Critic"></i>'
+      : "";
     return `
       <div class="review-item">
         <div class="d-flex justify-content-between align-items-start mb-2">
           <div>
-            <h6 class="mb-1">${this.escapeHtml(review.critic_name || "Anonymous Reviewer")}</h6>
+            <h6 class="mb-1">${this.escapeHtml(review.critic_name || "Anonymous Reviewer")}${crownHtml}</h6>
             <small class="text-muted">
               ${review.publisher_name || "Unknown Source"} • ${this.formatDate(review.review_date)}
             </small>
@@ -380,6 +500,63 @@ class MovieDetailsPage {
   }
 
   /**
+   * @method displayOscars
+   * @param {Array} oscars - Lista di premi/nomination Oscar dal backend
+   */
+  displayOscars(oscars) {
+    const section = document.getElementById("oscars-section");
+    const container = document.getElementById("oscars-container");
+    const summaryBox = document.getElementById("oscars-summary");
+    if (!section || !container || !summaryBox) return;
+
+    // Mostra la sezione
+    section.style.display = "flex";
+
+    const totalNominations = oscars.length;
+    const totalWins = oscars.filter((o) => o.winner === true).length;
+
+    summaryBox.innerHTML = `
+      <div class="d-flex flex-column gap-2">
+        <div class="d-flex justify-content-between">
+          <span>Total Nominations:</span>
+          <span class="fw-bold">${totalNominations}</span>
+        </div>
+        <div class="d-flex justify-content-between">
+          <span>Total Wins:</span>
+          <span class="fw-bold text-cinema-gold">${totalWins}</span>
+        </div>
+      </div>
+    `;
+
+    // Ordina per anno film (year_film) decrescente, poi vincite prima
+    const sorted = [...oscars].sort((a, b) => {
+      const ya = a.year_film ?? 0;
+      const yb = b.year_film ?? 0;
+      if (yb !== ya) return yb - ya;
+      return (b.winner === true) - (a.winner === true);
+    });
+
+    let html = "";
+    sorted.forEach((o) => {
+      const badge = o.winner
+        ? '<span class="badge bg-cinema-gold text-dark">Winner</span>'
+        : '<span class="badge bg-secondary">Nominee</span>';
+      const year = o.year_film ? `(${o.year_film})` : "";
+      html += `
+        <div class="oscar-item d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <div class="fw-semibold">${this.escapeHtml(o.category || "Unknown Category")} ${year}</div>
+            <small class="text-secondary">${this.escapeHtml(o.name || o.film || "")}</small>
+          </div>
+          <div>${badge}</div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html || '<p class="text-muted mb-0">No awards data available.</p>';
+  }
+
+  /**
    * @async
    * @method loadMoreReviews
    * @description Carica più recensioni del film
@@ -398,18 +575,26 @@ class MovieDetailsPage {
       const data = await response.json();
 
       if (data && data.length > 0) {
+        // se filtro attivo, tieni solo top critics
+        const list = this.showOnlyTopCritics
+          ? data.filter((r) => r.top_critic === true)
+          : data;
         const container = document.getElementById("reviews-container");
-        data.forEach((review) => {
+        list.forEach((review) => {
           container.insertAdjacentHTML(
             "beforeend",
             this.createReviewHtml(review),
           );
         });
+        // se nulla è stato aggiunto (perché filtrato), continua a caricare fino a trovare o esaurire
+        if (list.length === 0) {
+          return this.loadMoreReviews();
+        }
       } else {
         // Nascondi il bottone se non ci sono più recensioni
         const loadMoreBtn = document.getElementById("load-more-reviews");
         if (loadMoreBtn) {
-          loadMoreBtn.style.display = "none";
+          loadMoreBtn.classList.add("d-none");
         }
 
         if (window.cinemaHub) {
@@ -508,10 +693,9 @@ class MovieDetailsPage {
     this.socket.on("room_users_update", (data) => {
       if (data.roomName !== this.currentRoomName) return;
       const badge = document.getElementById("room-users-badge");
-      if (badge) {
-        badge.textContent = data.userCount || 0;
-        badge.style.display = "inline-block";
-      }
+      const dot = document.getElementById("room-online-dot");
+      if (badge) badge.textContent = data.userCount || 0;
+      if (dot) dot.style.display = data.userCount > 0 ? "inline-block" : "none";
     });
   }
 

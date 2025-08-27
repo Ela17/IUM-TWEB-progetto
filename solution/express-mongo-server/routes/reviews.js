@@ -89,4 +89,16 @@ router.get(
   reviewController.getMovieReviewStats,
 );
 
+/**
+ * @swagger
+ * /reviews/stats/global:
+ *   get:
+ *     tags: ['Reviews']
+ *     summary: Conteggio totale recensioni
+ *     responses:
+ *       '200':
+ *         description: Conteggio totale delle recensioni
+ */
+router.get("/reviews/stats/global", reviewController.getGlobalReviewCount);
+
 module.exports = router;

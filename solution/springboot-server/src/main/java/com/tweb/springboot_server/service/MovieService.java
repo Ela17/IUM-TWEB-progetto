@@ -124,6 +124,7 @@ public class MovieService {
             Integer yearTo = (Integer) filters.get("year_to");
             Integer minDuration = (Integer) filters.get("min_duration");
             Integer maxDuration = (Integer) filters.get("max_duration");
+            Boolean oscarWinner = (Boolean) filters.get("oscar_winner");
 
             // Debug logging
             logger.info("Search filters - genre: {}, minRating: {}, maxRating: {}, yearFrom: {}, yearTo: {}", 
@@ -137,7 +138,7 @@ public class MovieService {
             // Esegue la query con filtri (SENZA fetch joins che causa MultipleBagFetchException)
             Page<Movie> moviePage = movieRepository.searchMoviesWithFilters(
                 title, titlePattern, genre, minRating, maxRating, yearFrom, yearTo,
-                minDuration, maxDuration, pageable
+                minDuration, maxDuration, oscarWinner, pageable
             );
 
             if (moviePage.isEmpty()) {

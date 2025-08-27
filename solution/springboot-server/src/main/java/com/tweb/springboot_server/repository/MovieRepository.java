@@ -112,6 +112,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
      */
     @Query("SELECT DISTINCT m FROM Movie m " +
            "LEFT JOIN m.genres g " +
+           "LEFT JOIN m.oscars o " +
            "WHERE m.name IS NOT NULL AND m.name != '' " +
            "AND (:title IS NULL OR LOWER(m.name) LIKE LOWER(:titlePattern)) AND " +
            "(:genre IS NULL OR g.genre = :genre) AND " +
@@ -120,7 +121,8 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
            "(:yearFrom IS NULL OR m.date >= :yearFrom) AND " +
            "(:yearTo IS NULL OR m.date <= :yearTo) AND " +
            "(:minDuration IS NULL OR m.minute >= :minDuration) AND " +
-           "(:maxDuration IS NULL OR m.minute <= :maxDuration)")
+           "(:maxDuration IS NULL OR m.minute <= :maxDuration) AND " +
+           "(:oscarWinner IS NULL OR (o.winner = TRUE))")
     Page<Movie> searchMoviesWithFilters(
         @Param("title") String title,
         @Param("titlePattern") String titlePattern,
@@ -131,6 +133,7 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
         @Param("yearTo") Integer yearTo,
         @Param("minDuration") Integer minDuration,
         @Param("maxDuration") Integer maxDuration,
+        @Param("oscarWinner") Boolean oscarWinner,
         Pageable pageable);
 
     /**
@@ -144,6 +147,10 @@ public interface MovieRepository extends JpaRepository<Movie, Integer>, JpaSpeci
     */
     @Query("SELECT DISTINCT m FROM Movie m LEFT JOIN FETCH m.genres WHERE m.id IN :movieIds")
     List<Movie> findMoviesWithGenres(@Param("movieIds") List<Integer> movieIds);
+
+    // Conteggio totale film con nome valido
+    @Query("SELECT COUNT(m) FROM Movie m WHERE m.name IS NOT NULL AND m.name <> ''")
+    long countAllValidMovies();
 
 }
 

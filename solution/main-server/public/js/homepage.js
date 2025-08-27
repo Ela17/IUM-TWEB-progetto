@@ -29,6 +29,12 @@ class Homepage {
     this.setupHeroAnimations();
     this.setupFeatureCardAnimations();
 
+    // Carica conteggi globali
+    this.loadGlobalStats();
+
+    // Realtime utenti online via Socket.IO
+    this.initializeOnlineUsersRealtime();
+
     console.log("✅ Homepage Controller initialized successfully");
   }
 
@@ -48,12 +54,82 @@ class Homepage {
   }
 
   /**
+   * @method loadGlobalStats
+   * @description Recupera i conteggi globali (movies, oscars, reviews) e aggiorna le card.
+   */
+  async loadGlobalStats() {
+    try {
+      const [reviewsResp, moviesOscarsResp] = await Promise.all([
+        axios.get(`/api/reviews/stats/global`),
+        axios.get(`/api/stats/global`),
+      ]);
+
+      const totalReviews = reviewsResp?.data?.data?.totalReviews ?? 0;
+      const totalMovies = moviesOscarsResp?.data?.data?.totalMovies ?? 0;
+      const totalOscars = moviesOscarsResp?.data?.data?.totalOscars ?? 0;
+
+      // Aggiorna card Reviews
+      const reviewsEl = document.getElementById("home-total-reviews");
+      if (reviewsEl) {
+        reviewsEl.textContent = this.toKFormat(totalReviews);
+        reviewsEl.dataset.animated = "true";
+      }
+
+      // Aggiorna card Movies (id dinamico previsto: home-total-movies)
+      const moviesEl = document.getElementById("home-total-movies");
+      if (moviesEl) {
+        moviesEl.textContent = this.toKFormat(totalMovies);
+        moviesEl.dataset.animated = "true";
+      }
+
+      // Aggiorna card Oscars (id dinamico previsto: home-total-oscars)
+      const oscarsEl = document.getElementById("home-total-oscars");
+      if (oscarsEl) {
+        oscarsEl.textContent = this.toKFormat(totalOscars);
+        oscarsEl.dataset.animated = "true";
+      }
+    } catch (err) {
+      console.warn("Unable to load global stats", err?.message || err);
+    }
+  }
+
+  toKFormat(value) {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M+`;
+    if (value >= 1000) return `${Math.round(value / 1000)}K+`;
+    return `${value}`;
+  }
+
+  /**
+   * @method initializeOnlineUsersRealtime
+   * @description Sottoscrive agli eventi socket per aggiornare live il conteggio utenti.
+   */
+  initializeOnlineUsersRealtime() {
+    try {
+      if (!window.io) return; // socket lib non caricata
+      this.socket = io();
+
+      // Richiede subito il conteggio corrente
+      this.socket.emit("request_user_count");
+
+      // Ascolta aggiornamenti
+      this.socket.on("user_count_update", (count) => {
+        const el = document.getElementById("home-online-users");
+        if (el) el.textContent = count || 0;
+      });
+    } catch (e) {
+      console.warn("Socket init for online users failed", e?.message || e);
+    }
+  }
+
+  /**
    * @method observeElements
    * @description Aggiunge gli elementi da osservare
    */
   observeElements() {
     // Stats cards per l'animazione counter
-    const statCards = document.querySelectorAll(".stats-card .display-6");
+    const statCards = document.querySelectorAll(
+      ".stats-card .display-6:not(#home-total-reviews)",
+    );
     statCards.forEach((card) => this.observer.observe(card));
 
     // Feature cards per l'animazione di entrata

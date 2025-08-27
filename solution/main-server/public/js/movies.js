@@ -20,6 +20,11 @@ class MoviesController {
         description: "Movies with rating 4+ stars",
         params: { min_rating: 4, limit: 24 },
       },
+      "oscar-winners": {
+        title: "Oscar Winners",
+        description: "Movies that won at least one Academy Award",
+        params: { oscar_winner: true, limit: 24 },
+      },
       recent: {
         title: "Recent Releases",
         description: "Movies from 2025",
@@ -264,9 +269,15 @@ class MoviesController {
 
     // Raccogli parametri dal form
     for (const [key, value] of formData.entries()) {
-      if (value.trim()) {
+      if (typeof value === "string" && value.trim()) {
         customParams[key] = value.trim();
       }
+    }
+
+    // Gestione checkbox booleani (es. oscar_winner)
+    const oscarCheckbox = document.getElementById("search-oscar-winner");
+    if (oscarCheckbox && oscarCheckbox.checked) {
+      customParams["oscar_winner"] = true;
     }
 
     // Set default limit if not specified
@@ -320,6 +331,8 @@ class MoviesController {
     }
     if (params.min_rating) parts.push(`Min rating: ${params.min_rating}+`);
     if (params.max_rating) parts.push(`Max rating: ${params.max_rating}`);
+    if (params.oscar_winner === true || params.oscar_winner === "true")
+      parts.push("Oscar winners only");
 
     return parts.length > 0 ? parts.join(" • ") : "Custom search criteria";
   }
@@ -334,6 +347,7 @@ class MoviesController {
       'input[type="text"], input[type="number"]',
     );
     const selects = form.querySelectorAll("select");
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
 
     inputs.forEach((input) => {
       input.value = "";
@@ -343,6 +357,11 @@ class MoviesController {
     selects.forEach((select) => {
       select.selectedIndex = 0;
       select.dispatchEvent(new Event("change"));
+    });
+
+    checkboxes.forEach((cb) => {
+      cb.checked = false;
+      cb.dispatchEvent(new Event("change"));
     });
 
     // Reset to default limit

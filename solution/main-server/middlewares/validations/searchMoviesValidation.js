@@ -54,6 +54,12 @@ const valMaxRating = query("max_rating")
   )
   .toFloat();
 
+// Filtro vincitori Oscar (booleano)
+const valOscarWinner = query("oscar_winner")
+  .optional()
+  .isIn(["true", "false", true, false])
+  .withMessage("oscar_winner must be a boolean (true/false)");
+
 const validateMovieSearch = [
   valTitle,
   valPage,
@@ -62,6 +68,7 @@ const validateMovieSearch = [
   valYearTo,
   valMinRating,
   valMaxRating,
+  valOscarWinner,
   validationErrorHandler,
 ];
 

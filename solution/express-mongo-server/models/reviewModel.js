@@ -507,3 +507,19 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
 const reviewModel = mongoose.model("Reviews", reviewSchema);
 
 module.exports = reviewModel;
+
+/**
+ * @static
+ * @async
+ * @function getGlobalReviewCount
+ * @description Restituisce il numero totale di recensioni presenti nella collection.
+ * @returns {Promise<number>} Conteggio totale documenti `reviews`.
+ */
+reviewModel.getGlobalReviewCount = async function () {
+  try {
+    return await this.countDocuments({});
+  } catch (error) {
+    console.error("Error in getGlobalReviewCount:", error);
+    throw new Error(`Error counting reviews: ${error.message}`);
+  }
+};
