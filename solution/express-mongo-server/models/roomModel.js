@@ -193,7 +193,7 @@ roomSchema.statics.getAllRooms = async function (limit = 50) {
   }
 };
 
-// Creazione del modello
+ 
 
 /**
  * Modello Mongoose per le stanze di live chatting.

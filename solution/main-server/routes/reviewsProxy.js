@@ -3,7 +3,6 @@ const router = express.Router();
 
 const proxyService = require("../services/proxyService");
 
-// Proxy: conteggio globale delle recensioni
 router.get("/reviews/stats/global", async (req, res, next) => {
   try {
     const response = await proxyService.callOtherExpress(

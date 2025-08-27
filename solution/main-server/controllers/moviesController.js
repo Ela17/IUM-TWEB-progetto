@@ -47,7 +47,6 @@ const searchMovies = async (req, res, next) => {
         springResponse.status,
       );
       const payload = springResponse.data;
-      // Normalizza i campi per il frontend: aggiunge alias `year` e garantisce rating numerico
       if (Array.isArray(payload?.data)) {
         payload.data = payload.data.map((m) => ({
           ...m,
@@ -107,10 +106,8 @@ const getMovieDetails = async (req, res, next) => {
       console.error(
         `❌ Failed to retrieve movie details: ${movieError.message}`,
       );
-      // Non lanciamo l'errore, continuiamo con recensioni e statistiche
     }
 
-    // Recupera le recensioni (chiamata opzionale)
     try {
       const reviewsResponse = await proxyService.callOtherExpress(
         `/api/reviews/movie/${movieId}`,
@@ -126,7 +123,6 @@ const getMovieDetails = async (req, res, next) => {
       reviews = [];
     }
 
-    // Recupera le statistiche (chiamata opzionale)
     try {
       const statsResponse = await proxyService.callOtherExpress(
         `/api/reviews/movie/${movieId}/stats`,
@@ -140,7 +136,6 @@ const getMovieDetails = async (req, res, next) => {
       stats = {};
     }
 
-    // Se non abbiamo nemmeno i dettagli del film, restituiamo un errore
     if (!movieDetails) {
       return res.status(404).json({
         error: "Movie not found or service unavailable",

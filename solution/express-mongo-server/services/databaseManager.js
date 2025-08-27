@@ -6,7 +6,6 @@
 const mongoose = require("mongoose");
 const { DATABASE_CONFIG } = require("../config/constants");
 
-// Configurazione database
 const mongoDB =
   process.env.MONGODB_URI ||
   `mongodb://localhost:27017/${process.env.DB_NAME || "cinema_db"}`;

@@ -162,7 +162,7 @@ const reviewSchema = new mongoose.Schema(
     /**
      * Opzioni dello schema
      */
-    collection: "reviews", // Nome esplicito della collection
+    collection: "reviews",
     timestamps: false,
     versionKey: false,
   },
@@ -205,7 +205,6 @@ reviewSchema.statics.getReviewsByMovieId = async function (
   pagination = {},
 ) {
   try {
-    // destrutturazione dell'oggetto pagination con valori di default
     const {
       page = 1,
       limit = VALIDATION_LIMITS.DEFAULT_PAGE_SIZE,
@@ -213,7 +212,6 @@ reviewSchema.statics.getReviewsByMovieId = async function (
       sortOrder = -1, // -1 = DESC, 1 = ASC
     } = pagination;
 
-    // validazione parametri
     const pageNum = Math.max(1, parseInt(page));
     const limitNum = Math.min(
       VALIDATION_LIMITS.MAX_PAGE_SIZE,
@@ -221,11 +219,9 @@ reviewSchema.statics.getReviewsByMovieId = async function (
     );
     const skip = (pageNum - 1) * limitNum;
 
-    // costruzione oggetto di ordinamento
     const sortObj = {};
     sortObj[sortBy] = sortOrder;
 
-    // query parallele -> ottimizzare le prestazioni
     const [reviews, totCount] = await Promise.all([
       this.find({ id_movie: movieId })
         .sort(sortObj)
@@ -263,7 +259,6 @@ reviewSchema.statics.getReviewsByMovieId = async function (
  */
 reviewSchema.statics.getMovieReviewStats = async function (movieId) {
   try {
-    // Prima pipeline: tutte le recensioni per il conteggio totale
     const totalPipeline = [
       {
         $match: {
@@ -278,7 +273,6 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
       },
     ];
 
-    // Seconda pipeline: solo recensioni con punteggi validi per le statistiche
     const statsPipeline = [
       {
         $match: {
@@ -301,8 +295,7 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
           averageScore: { $avg: "$review_score" },
           maxScore: { $max: "$review_score" },
           minScore: { $min: "$review_score" },
-
-          // Classificazione Rotten Tomatoes:
+          
           freshReviews: {
             $sum: {
               $cond: [
@@ -312,25 +305,21 @@ reviewSchema.statics.getMovieReviewStats = async function (movieId) {
               ],
             },
           },
-
           rottenReviews: {
             $sum: {
               $cond: [{ $in: ["$review_type", ["Rotten", "Spilled"]] }, 1, 0],
             },
           },
-
           positiveScoreReviews: {
             $sum: {
               $cond: [{ $gte: ["$review_score", 6] }, 1, 0],
             },
           },
-
           negativeScoreReviews: {
             $sum: {
               $cond: [{ $lt: ["$review_score", 6] }, 1, 0],
             },
           },
-
           topCriticsCount: {
             $sum: { $cond: [{ $eq: ["$top_critic", true] }, 1, 0] },
           },

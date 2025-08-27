@@ -78,7 +78,7 @@ public class MovieController {
                 logger.debug("Movie found for ID: {}", movieId);
                 return ResponseEntity.ok(new ApiResponse<>(true, movieDetail.get(), null));
             } else {
-                logger.warn("Movie found for ID: {}", movieId);
+                logger.warn("Movie not found for ID: {}", movieId);
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(new ApiResponse<>(false, null, "Movie ID " + movieId + " not found"));
             }

@@ -26,7 +26,6 @@ exports.getReviewsByMovieId = async function (req, res, next) {
   try {
     const movieId = parseInt(req.params.movieId);
 
-    // validazione parametri paginazione
     const parsedPage = parseInt(req.query.page);
     const page = !isNaN(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 
@@ -95,7 +94,6 @@ exports.getMovieReviewStats = async function (req, res, next) {
   try {
     const movieId = parseInt(req.params.movieId);
 
-    // chiamata al model
     const stats = await reviewModel.getMovieReviewStats(movieId);
 
     if (stats === null) {

@@ -246,7 +246,7 @@ messageSchema.statics.deleteMessages = async function (roomName) {
   }
 };
 
-// Creazione ed export del modello
+ 
 
 /**
  * Modello Mongoose per i messaggi di live chatting.

@@ -46,10 +46,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/", indexRouter); // Pagine HTML
-app.use("/", healthRouter); // Health check
-app.use("/api", moviesRouter); // API movies
-app.use("/api", reviewsProxyRouter); // API proxy per recensioni
+app.use("/", indexRouter);
+app.use("/", healthRouter);
+app.use("/api", moviesRouter);
+app.use("/api", reviewsProxyRouter);
 
 app.use(function (req, res, next) {
   const error = new Error("Not Found");

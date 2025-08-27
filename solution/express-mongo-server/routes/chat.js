@@ -21,7 +21,7 @@ const {
   validateUpdateActivity,
 } = require("../middlewares/validation/roomValidation");
 
-// ROUTES PER I MESSAGGI
+ 
 
 /**
  * @swagger
@@ -166,7 +166,7 @@ router.get(
   chatController.getMessagesBefore,
 );
 
-// ROUTES PER LE STANZE
+ 
 
 /**
  * @swagger
