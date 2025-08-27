@@ -227,7 +227,7 @@ class CinemaHub {
 
       const results = {
         query: query,
-        movies: response.data || [],
+        movies: (response.data && response.data.suggestions) ? response.data.suggestions : [],
       };
 
       this.searchCache.set(query, results);
