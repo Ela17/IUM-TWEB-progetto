@@ -2,7 +2,7 @@
 PYTHON_ENV_NAME = .venv
 PYTHON = $(PYTHON_ENV_NAME)/bin/python
 PIP = $(PYTHON_ENV_NAME)/bin/pip
-REQUIREMENTS = requirements.txt
+REQUIREMENTS = solution/database/requirements.txt
 SPRINGBOOT_DIR = solution/springboot-server
 MAIN_SERVER_DIR = solution/main-server
 EXPRESS_SERVER_DIR = solution/express-mongo-server
