@@ -1,5 +1,8 @@
 import numpy as np
+import pandas as pd
+import pycountry
 import pycountry_convert as pc
+import seaborn as sns
 
 def categorize_movie(df):
     if df['minute'] < 40:
@@ -87,6 +90,14 @@ def graphic_settings(plt):
 
   })
 
+def get_pastel_palette_light(n=24):
+    """Palette leggermente più pastello per sfondi chiari.
+
+    Colori più desaturati e più chiari rispetto a `get_elegant_palette_light`,
+    mantenendo però una buona leggibilità su bianco.
+    """
+    return sns.husl_palette(n_colors=n, s=0.55, l=0.65)
+
 
 countries = [
     'UK', 'USA', 'South Korea', 'Germany', 'Hong Kong', 'Canada',
@@ -121,6 +132,31 @@ special_mapping = {'UK': 'EU',
     'United States Minor Outlying Islands': 'OC'
 }
 
+alias_to_iso3 = {
+    "UK": "GBR",
+    "USA": "USA",
+    "South Korea": "KOR",
+    "Hong Kong": "HKG",
+    "Russian Federation": "RUS",
+    "Czechia": "CZE",
+    "Taiwan": "TWN",
+    "United Arab Emirates": "ARE",
+    # storici: meglio escluderli o mappare a stati attuali se ha senso
+    "USSR": None,
+    "Czechoslovakia": None,
+    "nan": None,
+}
+
+def name_to_iso3(name: str):
+    if not name or pd.isna(name):
+        return None
+    if name in alias_to_iso3:
+        return alias_to_iso3[name]
+    try:
+        return pycountry.countries.lookup(name).alpha_3
+    except:
+        return None
+
 def get_continent(country_name):
     # Se il paese è nella mappatura manuale, restituisci il continente
     if country_name in special_mapping:
@@ -135,20 +171,102 @@ def get_continent(country_name):
         return np.nan
 
 
-def is_major_studio(studio_name):
-    major_studios = {
-        "Walt Disney Studios": ["Walt Disney Pictures", "Pixar", "Marvel Studios", "Lucasfilm", "20th Century Studios", "Searchlight Pictures"],
-        "Warner Bros. Pictures": ["Warner Bros. Pictures", "DC Films", "New Line Cinema", "HBO Films"],
-        "Universal Pictures": ["Universal Pictures", "DreamWorks Animation", "Illumination Entertainment", "Focus Features"],
-        "Paramount Pictures": ["Paramount Pictures", "Paramount Animation", "Nickelodeon Movies", "Miramax"],
-        "Sony Pictures Entertainment": ["Columbia Pictures", "TriStar Pictures", "Sony Pictures Animation"]
-    }
-    
-    # Creiamo un set per una ricerca più veloce
-    all_major_studios = set()
-    for major, substudios in major_studios.items():
-        all_major_studios.add(major)
-        all_major_studios.update(substudios)
-    
-    return studio_name in all_major_studios
+def canonical_global_group(studio_name):
+    """Mappa un'etichetta di studio al relativo gruppo globale canonico.
 
+    La mappatura include grandi gruppi USA, Giappone, Europa e Asia.
+    Restituisce np.nan se il nome non è riconosciuto.
+    """
+    groups_aliases = {
+        # USA majors
+        "Walt Disney Studios": [
+            "Walt Disney Studios", "Walt Disney Pictures", "Walt Disney Studios Motion Pictures",
+            "Buena Vista", "Buena Vista Pictures", "Touchstone Pictures", "Pixar",
+            "Marvel Studios", "Lucasfilm", "20th Century Studios", "20th Century Fox",
+            "Fox 2000 Pictures", "Fox Searchlight Pictures", "Searchlight Pictures"
+        ],
+        "Warner Bros. Pictures": [
+            "Warner Bros. Pictures", "Warner Bros.", "Warner Bros", "New Line Cinema",
+            "DC Films", "HBO Films", "HBO Max Films"
+        ],
+        "Universal Pictures": [
+            "Universal Pictures", "Universal", "Focus Features", "Illumination",
+            "Illumination Entertainment", "DreamWorks Animation"
+        ],
+        "Paramount Pictures": [
+            "Paramount Pictures", "Paramount", "Paramount Vantage", "Paramount Animation",
+            "Nickelodeon Movies", "DreamWorks Pictures", "Miramax"
+        ],
+        "Sony Pictures Entertainment": [
+            "Sony Pictures Entertainment", "Sony Pictures Releasing", "Sony Pictures Classics",
+            "Columbia Pictures", "TriStar Pictures", "Screen Gems"
+        ],
+        "Lionsgate": [
+            "Lionsgate", "Lions Gate Films", "Summit Entertainment"
+        ],
+
+        # Japan
+        "Toho": ["Toho", "Toho Co", "Toho Company", "Toho Pictures", "Toho-Towa"],
+        "Toei": ["Toei", "Toei Company", "Toei Animation"],
+        "Shochiku": ["Shochiku", "Shochiku Co", "Shochiku Company"],
+        "Kadokawa": ["Kadokawa", "KADOKAWA", "Kadokawa Pictures", "Kadokawa Shoten"],
+        "Nikkatsu": ["Nikkatsu", "Nikkatsu Corporation"],
+        "Studio Ghibli": ["Studio Ghibli", "Ghibli"],
+
+        # United Kingdom / Ireland
+        "Working Title": ["Working Title", "Working Title Films"],
+        "BBC Films": ["BBC Films"],
+        "Film4": ["Film4", "Film4 Productions"],
+        "Eon Productions": ["Eon Productions"],
+
+        # France
+        "Pathé": ["Pathé", "Pathé Films"],
+        "Gaumont": ["Gaumont", "Gaumont Film Company"],
+        "StudioCanal": ["StudioCanal", "Canal+", "CANAL+"],
+        "EuropaCorp": ["EuropaCorp"],
+
+        # Germany
+        "Constantin Film": ["Constantin Film"],
+        "UFA": ["UFA", "UFA Film"],
+
+        # Italy
+        "Rai Cinema": ["Rai Cinema", "01 Distribution"],
+        "Medusa Film": ["Medusa Film"],
+
+        # Spain
+        "Telecinco Cinema": ["Telecinco Cinema"],
+        "El Deseo": ["El Deseo"],
+        "Filmax": ["Filmax"],
+
+        # Nordics
+        "SF Studios": ["SF Studios", "Svensk Filmindustri"],
+        "Nordisk Film": ["Nordisk Film"],
+
+        # China
+        "China Film Group": ["China Film Group", "China Film Co.", "China Film Company"],
+        "Huayi Brothers": ["Huayi Brothers"],
+        "Bona Film Group": ["Bona Film Group"],
+        "Enlight Media": ["Enlight Media"],
+        "Wanda Pictures": ["Wanda Pictures", "Legendary Pictures"],
+
+        # South Korea
+        "CJ ENM": ["CJ ENM", "CJ Entertainment"],
+        "Showbox": ["Showbox"],
+        "Lotte Entertainment": ["Lotte Entertainment"],
+
+        # Hong Kong
+        "Golden Harvest": ["Golden Harvest"],
+        "Shaw Brothers": ["Shaw Brothers"] ,
+
+        # Canada / Australia
+        "Entertainment One": ["Entertainment One", "eOne", "Alliance Films"],
+        "Village Roadshow": ["Village Roadshow", "Village Roadshow Pictures"],
+    }
+
+    if studio_name is None:
+        return np.nan
+
+    for group_name, aliases in groups_aliases.items():
+        if studio_name in aliases:
+            return group_name
+    return np.nan
